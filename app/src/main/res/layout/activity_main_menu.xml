@@ -21,11 +21,12 @@
             android:layout_height="wrap_content"
             android:text="@string/help"
             android:textSize="20sp"
+            android:textColor="@color/secondaryColor"
             android:theme="@style/PrimaryButton"
             android:background="@drawable/circle_button"
             android:layout_margin="10dp"
             android:stateListAnimator="@null"
-            android:elevation="12dp"/>
+            android:elevation="14dp"/>
 
         <Space
             android:layout_width="100dp"
@@ -38,16 +39,14 @@
             android:id="@+id/level_pb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:progressBackgroundTint="@color/colorPrimary"
-            android:progressTint="@color/colorAccent"
             android:layout_alignParentTop="true"
             android:layout_alignBottom="@+id/help_button"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@+id/space"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_marginTop="30dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_marginTop="20dp"
             android:stateListAnimator="@null"
-            android:elevation="10dp"/>
+            android:elevation="15dp"/>
 
         <TextView
             android:id="@+id/level_tv"
@@ -62,9 +61,7 @@
             android:textSize="20sp"
             android:fontFamily="sans-serif"
             android:textColor="#FFFFFF"
-            android:layout_below="@+id/space"
-            android:stateListAnimator="@null"
-            android:elevation="10dp"/>
+            android:layout_below="@+id/space"/>
 
     </RelativeLayout>
 
@@ -79,6 +76,14 @@
         android:textAllCaps="false"
         android:stateListAnimator="@null"
         android:elevation="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/incomplete_songs"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingLeft="30dp"/>
 
     <ListView
         android:id="@+id/incomplete_songs"
