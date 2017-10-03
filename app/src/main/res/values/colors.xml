@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+The colours chosen were based on material design principles, I decided to use these buttons after
+using the web app at material.io/color.
+-->
 <resources>
     <color name="colorPrimary">#00bcd4</color>
     <color name="colorPrimaryLight">#62efff</color>

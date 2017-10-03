@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Custom button file that modifies buttons so that they are circular. The button also changes colour
-when it is pressed or in focus.
+Custom button file that modifies buttons so that they are rectangular but have rounded edges. The
+button also changes colour when it is pressed or in focus.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:state_pressed="true">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp"/>
             <solid android:color="@color/colorPrimaryDark"/>
         </shape>
     </item>
     <item android:state_focused="true">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp"/>
             <solid android:color="@color/colorPrimaryLight"/>
         </shape>
     </item>
     <item >
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp"/>
             <solid android:color="@color/colorPrimary"/>
         </shape>
     </item>

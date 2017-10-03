@@ -2,4 +2,6 @@
     <string name="app_name">Songle</string>
     <string name="help">"?"</string>
     <string name="level">Level 1</string>
+    <string name="new_song">New Song</string>
+    <string name="incomplete_songs">Incomplete songs:</string>
 </resources>
