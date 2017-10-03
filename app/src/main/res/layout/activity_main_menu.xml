@@ -1,8 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.songle.MainMenu">
+    tools:context="com.example.android.songle.MainMenu"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp">
+
+        <Button
+            android:id="@+id/help_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/help" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/level"
+            android:gravity="bottom"
+            android:layout_alignBaseline="@+id/help_button"
+            android:layout_alignBottom="@+id/help_button"
+            android:layout_alignParentEnd="true"
+            android:layout_alignStart="@+id/level_progress_bar" />
+
+        <ProgressBar
+            android:id="@+id/level_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/incomplete_songs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/completed_songs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
