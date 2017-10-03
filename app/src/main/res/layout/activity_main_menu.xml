@@ -10,30 +10,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingRight="20dp"
-        android:paddingLeft="20dp">
+        android:paddingLeft="20dp"
+        android:background="@color/colorPrimaryDark">
 
         <Button
             android:id="@+id/help_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/help"
+            android:textSize="20sp"
+            android:theme="@style/PrimaryButton"
+            android:background="@drawable/circle_button"
+            android:layout_margin="10dp"/>
+
+        <Space
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/help_button"
+            android:id="@+id/space"
+            android:layout_alignParentTop="true"/>
+
+        <ProgressBar
+            android:id="@+id/level_pb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/help" />
+            android:progressBackgroundTint="@color/colorPrimary"
+            android:progressTint="@color/colorAccent"
+            android:layout_alignParentTop="true"
+            android:layout_alignBottom="@+id/help_button"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/space"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginTop="30dp"
+            />
 
         <TextView
+            android:id="@+id/level_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/level"
-            android:gravity="bottom"
-            android:layout_alignBaseline="@+id/help_button"
-            android:layout_alignBottom="@+id/help_button"
-            android:layout_alignParentEnd="true"
-            android:layout_alignStart="@+id/level_progress_bar" />
-
-        <ProgressBar
-            android:id="@+id/level_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"/>
+            android:background="#00000000"
+            android:layout_alignBottom="@+id/level_pb"
+            android:layout_alignLeft="@+id/level_pb"
+            android:layout_alignRight="@+id/level_pb"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#FFFFFF"
+            android:layout_below="@+id/space" />
 
     </RelativeLayout>
 
