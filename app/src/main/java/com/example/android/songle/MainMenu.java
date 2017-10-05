@@ -24,7 +24,7 @@ public class MainMenu extends AppCompatActivity {
         levelPb.setProgress(50);
     }
 
-    public void sendMessage(View view){
+    public void newSong(View view){
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }

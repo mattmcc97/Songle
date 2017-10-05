@@ -81,7 +81,7 @@
                 android:layout_margin="50dp"
                 android:background="@drawable/rounded_rectangular_button"
                 android:elevation="10dp"
-                android:onClick="sendMessage"
+                android:onClick="newSong"
                 android:stateListAnimator="@null"
                 android:text="@string/new_song"
                 android:textAllCaps="false"
