@@ -65,38 +65,53 @@
 
     </RelativeLayout>
 
-    <Button
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_margin="50dp"
-        android:theme="@+style/PrimaryButton"
-        android:background="@drawable/rectangle_rounded_button"
-        android:text="@string/new_song"
-        android:textSize="24sp"
-        android:textAllCaps="false"
-        android:stateListAnimator="@null"
-        android:elevation="10dp"/>
+        android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/incomplete_songs"
-        android:textSize="24sp"
-        android:textColor="@color/colorPrimaryDark"
-        android:paddingLeft="30dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/incomplete_songs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_margin="50dp"
+                android:background="@drawable/rounded_rectangular_button"
+                android:elevation="10dp"
+                android:onClick="sendMessage"
+                android:stateListAnimator="@null"
+                android:text="@string/new_song"
+                android:textAllCaps="false"
+                android:textSize="24sp"
+                android:theme="@+style/PrimaryButton" />
 
-    </ListView>
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:text="@string/incomplete_songs"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="26sp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/completed_songs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/incomplete_song"
+                android:textSize="20sp"
+                android:elevation="10dp"
+                android:stateListAnimator="@null"
+                android:background="@drawable/rounded_rectangular_button"
+                android:layout_margin="20dp"
+                android:theme="@+style/PrimaryButton"/>
 
-    </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </LinearLayout>
