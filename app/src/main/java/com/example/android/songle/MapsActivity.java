@@ -42,5 +42,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        try {
+        // Visualise current position with a small blue circle
+            mMap.setMyLocationEnabled(true);
+        } catch (SecurityException se) {
+            System.out.println("Security exception thrown [onMapReady]");
+        }
+        // Add ‘‘My location’’ button to the user interface
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 }

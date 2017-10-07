@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 public class MainMenu extends AppCompatActivity {
 
     private ProgressBar levelPb = null;
-    private Button newSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
