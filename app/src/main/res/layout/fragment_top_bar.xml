@@ -1,0 +1,67 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.songle.TopBarFragment">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:stateListAnimator="@null">
+
+        <Button
+            android:id="@+id/help_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/circle_button"
+            android:elevation="14dp"
+            android:stateListAnimator="@null"
+            android:text="@string/help"
+            android:textColor="@color/secondaryColor"
+            android:textSize="20sp"
+            android:theme="@style/PrimaryButton"
+            android:onClick="helpClick"/>
+
+        <Space
+            android:id="@+id/space"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/help_button" />
+
+        <ProgressBar
+            android:id="@+id/level_pb"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/help_button"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/space"
+            android:elevation="15dp"
+            android:stateListAnimator="@null" />
+
+        <TextView
+            android:id="@+id/level_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/level_pb"
+            android:layout_alignLeft="@+id/level_pb"
+            android:layout_alignRight="@+id/level_pb"
+            android:layout_below="@+id/space"
+            android:background="#00000000"
+            android:fontFamily="sans-serif"
+            android:text="@string/level"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+</FrameLayout>

@@ -1,6 +1,10 @@
 package com.example.android.songle;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,10 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-public class MainMenu extends AppCompatActivity {
+public class MainMenu extends AppCompatActivity{
 
     private ProgressBar levelPb = null;
-
 
 
     @Override
@@ -24,6 +27,7 @@ public class MainMenu extends AppCompatActivity {
         levelPb.setMax(100);
         levelPb.setProgress(50);
     }
+
 
     public void newSong(View view){
         Intent intent = new Intent(this, MapsActivity.class);

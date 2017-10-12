@@ -1,8 +1,14 @@
 package com.example.android.songle;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -60,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
         mGoogleApiClient.connect();
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -67,6 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mGoogleApiClient.disconnect();
         }
     }
+
 
     protected void createLocationRequest() {
         // Set the parameters for the location request
@@ -105,6 +113,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionSuspended(int flag) {
         System.out.println(" >>>> onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and a connection to Google APIs
+        // could not be established. Display an error message, or handle
+        // the failure silently
+        System.out.println(" >>>> onConnectionFailed");
     }
 
 
@@ -146,12 +162,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and a connection to Google APIs
-        // could not be established. Display an error message, or handle
-        // the failure silently
-        System.out.println(" >>>> onConnectionFailed");
-    }
 }
