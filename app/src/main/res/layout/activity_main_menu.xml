@@ -6,64 +6,13 @@
     tools:context="com.example.android.songle.MainMenu"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <!-- reused fragment -->
+    <fragment
+        android:id="@+id/my_fragment"
+        android:name="com.example.android.songle.TopBarFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp"
-        android:background="@color/colorPrimaryDark"
-        android:stateListAnimator="@null"
-        android:elevation="4dp">
-
-        <Button
-            android:id="@+id/help_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/help"
-            android:textSize="20sp"
-            android:textColor="@color/secondaryColor"
-            android:theme="@style/PrimaryButton"
-            android:background="@drawable/circle_button"
-            android:layout_margin="10dp"
-            android:stateListAnimator="@null"
-            android:elevation="14dp"/>
-
-        <Space
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/help_button"
-            android:id="@+id/space"
-            android:layout_alignParentTop="true"/>
-
-        <ProgressBar
-            android:id="@+id/level_pb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignBottom="@+id/help_button"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@+id/space"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_marginTop="20dp"
-            android:stateListAnimator="@null"
-            android:elevation="15dp"/>
-
-        <TextView
-            android:id="@+id/level_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/level"
-            android:background="#00000000"
-            android:layout_alignBottom="@+id/level_pb"
-            android:layout_alignLeft="@+id/level_pb"
-            android:layout_alignRight="@+id/level_pb"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif"
-            android:textColor="#FFFFFF"
-            android:layout_below="@+id/space"/>
-
-    </RelativeLayout>
+        android:layout_alignParentBottom="true"/>
 
     <ScrollView
         android:layout_width="match_parent"
