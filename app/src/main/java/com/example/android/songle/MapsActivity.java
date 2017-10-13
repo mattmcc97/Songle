@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -35,7 +43,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            =1;
+            = 1;
     private boolean mLocationPermissionGranted = false;
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
@@ -93,8 +101,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        try { createLocationRequest(); }
-        catch (java.lang.IllegalStateException ise) {
+        try {
+            createLocationRequest();
+        } catch (java.lang.IllegalStateException ise) {
             System.out.println("IllegalStateException thrown [onConnected]");
         }
         // Can we access the user’s current location?
@@ -144,7 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(edinburgh, zoomLevel));
 
         try {
-        // Visualise current position with a small blue circle
+            // Visualise current position with a small blue circle
             mMap.setMyLocationEnabled(true);
         } catch (SecurityException se) {
             System.out.println("Security exception thrown [onMapReady]");
@@ -157,10 +166,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(Location current) {
         System.out.println(
                 "[onLocationChanged] Lat/long now (" +
-                String.valueOf(current.getLatitude()) + "," +
-                String.valueOf(current.getLongitude()) + ")"
+                        String.valueOf(current.getLatitude()) + "," +
+                        String.valueOf(current.getLongitude()) + ")"
         );
 
     }
 
+    private class DownloadXmlTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                return loadXmlFromNetwork(urls[0]);
+            } catch (IOException e) {
+                return "Unable to load content. Check your network connection";
+            } catch (XmlPullParserException e) {
+                return "Error parsing XML";
+            }
+        }
+
+        private String loadXmlFromNetwork(String urlString) throws
+                XmlPullParserException, IOException {
+            StringBuilder result = new StringBuilder();
+            try (InputStream stream = downloadUrl(urlString)) {
+                // Do something with stream e.g. parse as XML, build result
+            }
+            return result.toString();
+        }
+
+        // Given a string representation of a URL, sets up a connection and gets
+        // an input stream.
+        private InputStream downloadUrl(String urlString) throws IOException {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            // Also available: HttpsURLConnection
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            // Starts the query
+            conn.connect();
+            return conn.getInputStream();
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            // Do something with result
+        }
+
+
+    }
 }
