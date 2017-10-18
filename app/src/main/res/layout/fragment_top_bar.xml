@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.songle.TopBarFragment">
+    tools:context="com.example.android.songle.TopBarFragment"
+    android:background="@color/colorPrimaryDark">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
@@ -61,7 +62,8 @@
             android:text="@string/level"
             android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"/>
 
     </RelativeLayout>
 </FrameLayout>
