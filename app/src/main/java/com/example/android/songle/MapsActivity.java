@@ -1,21 +1,14 @@
 package com.example.android.songle;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,14 +20,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -67,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+
+
     }
 
     @Override
@@ -147,7 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng edinburgh = new LatLng(55.944425, -3.88396);
+        LatLng edinburgh = new LatLng(55.944425, -3.188396);
         //mMap.addMarker(new MarkerOptions().position(edinburgh).title("Marker in Edinburgh"));
         float zoomLevel = 16.0f; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(edinburgh, zoomLevel));
@@ -172,48 +161,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private class DownloadXmlTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            try {
-                return loadXmlFromNetwork(urls[0]);
-            } catch (IOException e) {
-                return "Unable to load content. Check your network connection";
-            } catch (XmlPullParserException e) {
-                return "Error parsing XML";
-            }
-        }
-
-        private String loadXmlFromNetwork(String urlString) throws
-                XmlPullParserException, IOException {
-            StringBuilder result = new StringBuilder();
-            try (InputStream stream = downloadUrl(urlString)) {
-                // Do something with stream e.g. parse as XML, build result
-            }
-            return result.toString();
-        }
-
-        // Given a string representation of a URL, sets up a connection and gets
-        // an input stream.
-        private InputStream downloadUrl(String urlString) throws IOException {
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            // Also available: HttpsURLConnection
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            // Starts the query
-            conn.connect();
-            return conn.getInputStream();
-        }
-
-
-        @Override
-        protected void onPostExecute(String result) {
-            // Do something with result
-        }
-
-
-    }
 }
