@@ -21,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.data.kml.KmlLayer;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -47,10 +49,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static Placemark placemark;
     private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
 
+    private static boolean asyncFinished = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //Execute the methods in the AsyncTask class
+        ASyncKMLDownloader downloader = new ASyncKMLDownloader();
+        downloader.execute();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -65,9 +74,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-        //Execute the methods in the AsyncTask class
-        ASyncKMLDownloader downloader = new ASyncKMLDownloader();
-        downloader.execute();
+    }
+
+    private void addMarkers() {
+        Log.i(TAG, "addMarkers: Adding markers...");
+        for (Placemark marker : placemarks) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(marker.getCoordinates())
+                    .snippet(marker.getDescription())
+                    .title(marker.getName()));
+        }
     }
 
     @Override
@@ -251,6 +267,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 eventType = kmlData.next();
             }
+        }
+
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            addMarkers();
         }
     }
 

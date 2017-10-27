@@ -35,7 +35,7 @@ public class Placemark {
     public LatLng getCoordinates() {
         //remove 0 off the coordinates string and split it on the comma to extract lat and long Strings
         String[] coords = coordinates.substring(0, coordinates.length() - 2).split(",");
-        LatLng latlong = new LatLng(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]));
+        LatLng latlong = new LatLng(Double.parseDouble(coords[1]), Double.parseDouble(coords[0]));
         return latlong;
     }
 }
