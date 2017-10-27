@@ -20,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -49,8 +50,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static Placemark placemark;
     private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
 
-    private static boolean asyncFinished = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,10 +78,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void addMarkers() {
         Log.i(TAG, "addMarkers: Adding markers...");
         for (Placemark marker : placemarks) {
+            float colour = BitmapDescriptorFactory.HUE_BLUE;
+            String desc = marker.getDescription();
+            switch (desc) {
+                case ("boring"):
+                    colour = 170.0f;
+                    break;
+                case ("notboring"):
+                    colour = 190.0f;
+                    break;
+                case ("interesting"):
+                    colour = 210.0f;
+                    break;
+                case ("veryinteresting"):
+                    colour = 230.0f;
+                    break;
+            }
             mMap.addMarker(new MarkerOptions()
                     .position(marker.getCoordinates())
                     .snippet(marker.getDescription())
-                    .title(marker.getName()));
+                    .title(marker.getName())
+                    .alpha(0.82f)
+                    .icon(BitmapDescriptorFactory.defaultMarker(colour)));
         }
     }
 
@@ -187,6 +204,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String.valueOf(current.getLatitude()) + "," +
                         String.valueOf(current.getLongitude()) + ")"
         );
+
 
     }
 
