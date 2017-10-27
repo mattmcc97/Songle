@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.data.kml.KmlLayer;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -28,7 +29,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.net.URL;
-
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -36,12 +37,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            = 1;
+    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
-    private static final String kml_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/01/map5.kml";
+    private static final String kml_url =
+            "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/01/map5.kml";
+
+    private static Placemark placemark;
+    private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Long running activities are performed asynchronously in order to
         // keep the user interface responsive
         mapFragment.getMapAsync(this);
-
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -62,10 +65,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-
-
-
-
+        //Execute the methods in the AsyncTask class
+        ASyncKMLDownloader downloader = new ASyncKMLDownloader();
+        downloader.execute();
     }
 
     @Override
@@ -170,6 +172,86 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         String.valueOf(current.getLongitude()) + ")"
         );
 
+    }
+
+    private class ASyncKMLDownloader extends AsyncTask<String, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            //Call the appropriate methods to download and parse the xml data
+            Log.i(TAG, "doInBackground: " + "Started");
+            XmlPullParser receivedData = tryDownloadKmlData();
+            int songsFound = tryParseKmlData(receivedData);
+            return songsFound;
+        }
+
+        private XmlPullParser tryDownloadKmlData() {
+            try {
+                URL kmlURL = new URL(kml_url);
+                //Create a new instance of the XmlPullParser class and set the input stream
+                XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
+                receivedData.setInput(kmlURL.openStream(), null);
+                return receivedData;
+            } catch (XmlPullParserException e) {
+                Log.e("Songle", "XmlPullParserException - tryDownloadKmlData", e);
+            } catch (IOException e) {
+                Log.e("Songle", "IOException - tryDownloadKmlData", e);
+            }
+            return null;
+        }
+
+        private int tryParseKmlData(XmlPullParser receivedData) {
+            //If there is data from the input stream call the method to parse the data
+            if (receivedData != null) {
+                try {
+                    processReceivedData(receivedData);
+                } catch (XmlPullParserException e) {
+                    Log.e("Songle", "XmlPullParserException - tryParseKmlData", e);
+                } catch (IOException e) {
+                    Log.e("Songle", "IOException - tryParseKmlData", e);
+                }
+            }
+            return 0;
+        }
+
+        private void processReceivedData(XmlPullParser kmlData) throws IOException, XmlPullParserException {
+
+            String name = "";
+            String description = "";
+            String styleUrl = "";
+            String coordinates = "";
+
+            /*
+            This block goes through the kml data and when it reaches a new Placemark tag
+            it extracts the raw data into a variable. The temporary variables are then
+            used to create a new Placemark object which is added to the ArrayList of placemarks.
+             */
+            int eventType = kmlData.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String data = kmlData.getName();
+                switch (eventType) {
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
+                    case XmlPullParser.START_TAG:
+                        if (data.equalsIgnoreCase("Placemark")) {
+                            break;
+                        } else if (data.equalsIgnoreCase("name")) {
+                            name = kmlData.nextText();
+                        } else if (data.equalsIgnoreCase("description")) {
+                            description = kmlData.nextText();
+                        } else if (data.equalsIgnoreCase("styleUrl")) {
+                            styleUrl = kmlData.nextText();
+                        } else if (data.equalsIgnoreCase("coordinates")) {
+                            coordinates = kmlData.nextText();
+                            placemark = new Placemark(name, description, styleUrl, coordinates);
+                            Log.i("Adding to placemarks:", "Coords: " + placemark.getCoordinates());
+                            placemarks.add(placemark);
+                        }
+                        break;
+                }
+                eventType = kmlData.next();
+            }
+        }
     }
 
 
