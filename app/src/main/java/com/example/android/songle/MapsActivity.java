@@ -167,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -199,12 +200,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location current) {
-        System.out.println(
-                "[onLocationChanged] Lat/long now (" +
-                        String.valueOf(current.getLatitude()) + "," +
-                        String.valueOf(current.getLongitude()) + ")"
-        );
+        Log.i(TAG, "Running method: onLocationChanged");
+        mLastLocation = current;
+        checkIfUserAtMarkerLocation();
 
+    }
+
+    private void checkIfUserAtMarkerLocation() {
+        Log.i(TAG, "Running method: checkIfUserAtMarkerLocation");
+        float min = 10000000000f;
+        for (Placemark marker : placemarks) {
+            Location markerLocation = new Location(marker.getName());
+            markerLocation.setLatitude(marker.getCoordinates().latitude);
+            markerLocation.setLongitude(marker.getCoordinates().longitude);
+
+            float distance = mLastLocation.distanceTo(markerLocation);
+            //6.0f seems a reasonable distance to be away
+
+            if (distance < min) {
+                min = distance;
+            }
+        }
+        Log.i(TAG, "MINIMUM DISTANCE FROM FLOAT: " + Float.toString(min));
 
     }
 
