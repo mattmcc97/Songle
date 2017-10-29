@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,7 +25,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.data.kml.KmlLayer;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -190,38 +190,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             // Visualise current position with a small blue circle
             mMap.setMyLocationEnabled(true);
+            mMap.setOnMarkerClickListener((GoogleMap.OnMarkerClickListener) this);
         } catch (SecurityException se) {
             System.out.println("Security exception thrown [onMapReady]");
         }
         // Add ‘‘My location’’ button to the user interface
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
     }
 
     @Override
     public void onLocationChanged(Location current) {
         Log.i(TAG, "Running method: onLocationChanged");
         mLastLocation = current;
-        checkIfUserAtMarkerLocation();
-
     }
 
-    private void checkIfUserAtMarkerLocation() {
-        Log.i(TAG, "Running method: checkIfUserAtMarkerLocation");
-        float min = 10000000000f;
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        // TODO Auto-generated method stub
+        if (marker.getPosition().equals(userCloseToMarker())) {
+            Toast.makeText(MapsActivity.this, "Well done! You collected the lyric: "
+                            + marker.getTitle(),
+                    Toast.LENGTH_LONG).show();
+            marker.remove();
+        } else {
+            Toast.makeText(MapsActivity.this, "You are not close enough to this marker",
+                    Toast.LENGTH_LONG).show();
+        }
+        return true;
+    }
+
+    /*private GoogleMap.OnMarkerClickListener markerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            //if(userCloseToMarker()){
+                Toast.makeText(MapsActivity.this, "This is my Toast message!",
+                        Toast.LENGTH_LONG).show();
+            //}
+            return true;
+        }
+    };*/
+
+    private LatLng userCloseToMarker() {
+        Log.i(TAG, "Running method: userCloseToMarker");
+        //boolean inRange = false;
+        LatLng collectableMarker = null;
         for (Placemark marker : placemarks) {
             Location markerLocation = new Location(marker.getName());
             markerLocation.setLatitude(marker.getCoordinates().latitude);
             markerLocation.setLongitude(marker.getCoordinates().longitude);
 
             float distance = mLastLocation.distanceTo(markerLocation);
-            //6.0f seems a reasonable distance to be away
+            //7.5f seems a reasonable distance to be away
 
-            if (distance < min) {
-                min = distance;
+            if (distance < 7.5f) {
+                //inRange = true;
+                collectableMarker = marker.getCoordinates();
             }
         }
-        Log.i(TAG, "MINIMUM DISTANCE FROM FLOAT: " + Float.toString(min));
+        return collectableMarker;
+    }
+
+    private void collectWord() {
 
     }
 
