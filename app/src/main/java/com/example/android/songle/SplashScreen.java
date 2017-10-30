@@ -13,7 +13,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         //Move instantly from the splash screen to the main menu
-        Intent mainMenuIntent = new Intent(SplashScreen.this, MainMenu.class);
+        Intent mainMenuIntent = new Intent(SplashScreen.this, StartActivity.class);
         startActivity(mainMenuIntent);
         finish();
     }
