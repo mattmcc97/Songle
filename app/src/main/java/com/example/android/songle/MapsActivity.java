@@ -210,8 +210,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
         // TODO Auto-generated method stub
         if (marker.getPosition().equals(userCloseToMarker())) {
+            int points = 10;
             Toast.makeText(MapsActivity.this, "Well done! You collected the lyric: "
-                            + marker.getTitle(),
+                            + marker.getTitle() + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
             marker.remove();
         } else {

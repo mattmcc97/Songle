@@ -13,4 +13,6 @@ using the web app at material.io/color.
     <color name="secondaryDarkColor">#c5a600</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 </resources>

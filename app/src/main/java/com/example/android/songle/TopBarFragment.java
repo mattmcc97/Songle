@@ -45,6 +45,15 @@ public class TopBarFragment extends Fragment implements  View.OnClickListener{
         dialog.setContentView(R.layout.help_dialog);
         dialog.setTitle("Help");
         dialog.show();
+
+        Button okBtn = (Button) dialog.findViewById(R.id.help_ok_button);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
 
