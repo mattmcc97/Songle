@@ -9,12 +9,14 @@
 
     <Button
         android:id="@+id/info_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/ic_info_button"
-        android:shadowColor="@color/colorPrimaryDark"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/circle_button"
+        android:foreground="@drawable/ic_info_button"
+        android:elevation="14dp"
         android:stateListAnimator="@null"
-        android:layout_margin="20dp"
+        android:theme="@style/PrimaryButton"
         android:onClick="infoButtonClicked" />
 
     <TextView
@@ -37,11 +39,13 @@
             android:id="@+id/startButton"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/start_button"
-            android:shadowColor="@color/colorPrimaryDark"
+            android:background="@drawable/circle_button"
+            android:foreground="@drawable/start_button"
             android:onClick="startGame"
+            android:elevation="14dp"
             android:stateListAnimator="@null"
-            android:layout_margin="20dp" />
+            android:layout_margin="20dp"
+            android:theme="@style/PrimaryButton" />
 
 
     </LinearLayout>

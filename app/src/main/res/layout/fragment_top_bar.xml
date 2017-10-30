@@ -21,11 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@drawable/circle_button"
+            android:foreground="@drawable/ic_info_button"
             android:elevation="14dp"
             android:stateListAnimator="@null"
-            android:text="@string/help"
-            android:textColor="@color/secondaryColor"
-            android:textSize="20sp"
             android:theme="@style/PrimaryButton"
             android:onClick="helpClick"/>
 
