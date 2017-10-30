@@ -203,41 +203,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location current) {
         Log.i(TAG, "Running method: onLocationChanged");
+        //update location
         mLastLocation = current;
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        // TODO Auto-generated method stub
+        //if the marker clicked is nearby
         if (marker.getPosition().equals(userCloseToMarker())) {
             int points = 10;
+            //remove the marker from the map and show a toast
+            marker.remove();
             Toast.makeText(MapsActivity.this, "Well done! You collected the lyric: "
                             + marker.getTitle() + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
-            marker.remove();
+
         } else {
-            Toast.makeText(MapsActivity.this, "You are not close enough to this marker",
+            //display a message letting the user know they must be closer to the marker to
+            //collect it
+            Toast.makeText(MapsActivity.this, "You are not close enough to this lyric.",
                     Toast.LENGTH_LONG).show();
         }
         return true;
     }
 
-    /*private GoogleMap.OnMarkerClickListener markerClickListener = new GoogleMap.OnMarkerClickListener() {
-        @Override
-        public boolean onMarkerClick(Marker marker) {
-            //if(userCloseToMarker()){
-                Toast.makeText(MapsActivity.this, "This is my Toast message!",
-                        Toast.LENGTH_LONG).show();
-            //}
-            return true;
-        }
-    };*/
-
     private LatLng userCloseToMarker() {
         Log.i(TAG, "Running method: userCloseToMarker");
-        //boolean inRange = false;
+        //if there is a nearby marker then return that marker
         LatLng collectableMarker = null;
         for (Placemark marker : placemarks) {
+            //Get the coordinates from the LatLng and convert them to a Location type
+            //so that we can use the distanceTo method in the Location class.
             Location markerLocation = new Location(marker.getName());
             markerLocation.setLatitude(marker.getCoordinates().latitude);
             markerLocation.setLongitude(marker.getCoordinates().longitude);
@@ -250,11 +246,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 collectableMarker = marker.getCoordinates();
             }
         }
+        //return nearby marker
         return collectableMarker;
-    }
-
-    private void collectWord() {
-
     }
 
     private class ASyncKMLDownloader extends AsyncTask<String, Void, Integer> {
@@ -337,6 +330,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
+        //After the background thread has been executed add the markers to the map
         @Override
         protected void onPostExecute(Integer integer) {
             addMarkers();
