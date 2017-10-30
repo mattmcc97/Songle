@@ -206,6 +206,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Security exception thrown [onMapReady]");
         }
         // Add ‘‘My location’’ button to the user interface
+        // Move zoom controls to the left out of the way of floating action buttons
+        mMap.setPadding(0, 0, 920, 0);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
