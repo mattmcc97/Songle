@@ -1,16 +1,23 @@
 package com.example.android.songle;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -74,15 +81,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-
-
     }
 
     public void goToCurrentLocation(View view) {
-
         float zoomLevel = 19.0f; //This goes up to 21
         LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
+
+    }
+
+    public void guessSong(View view) {
+
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.guess_song_dialog);
+        dialog.show();
+
+        /* okBtn = (Button) dialog.findViewById(R.id.help_ok_button);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });*/
 
     }
 
@@ -177,8 +199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         System.out.println(" >>>> onConnectionFailed");
     }
 
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -206,10 +226,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Security exception thrown [onMapReady]");
         }
         // Add ‘‘My location’’ button to the user interface
-        // Move zoom controls to the left out of the way of floating action buttons
-        mMap.setPadding(0, 0, 920, 0);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
 
     }
 
@@ -262,6 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //return nearby marker
         return collectableMarker;
     }
+
 
     private class ASyncKMLDownloader extends AsyncTask<String, Void, Integer> {
 
