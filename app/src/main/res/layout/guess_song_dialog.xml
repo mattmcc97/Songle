@@ -30,9 +30,47 @@
 
     </LinearLayout>
 
-    <EditText
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter your guess here." />
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The words you have collected so far:\n"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/song1"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/song_guess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter your guess here." />
+
+            <Button
+                android:id="@+id/guess_song_submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/submit"
+                android:background="@color/white"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
 
 </LinearLayout>

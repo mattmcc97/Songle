@@ -13,11 +13,89 @@
     Press the guess button, on the map, when you think you\'ve got it!\n\nYou\'ll get points for every marker you collect.
     The more points you get, the higher level you will become.
     As you increase your level, the game will become harder.\n\nFor every 1km you walk, you will receive a Songle coin.
-    You can use your Songle coins to reveal any lyric you want.
+    You can use your Songle coins to reveal 5 random lyrics on a song of your choice.
     </string>
     <string name="ok">OK</string>
+    <string name="submit">Submit</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_blob">blob</string>
+
+    <string name="song1"> 1	Is ____ the ____ life?\n
+     2	Is this just fantasy?\n
+     3	______ in a landslide,\n
+     4	No ______ from reality.\n
+     5	\n
+     6	____ ____ eyes,\n
+     7	Look __ to the _____ and see,\n
+     8	I\'m just a ____ boy, I need no ________,\n
+     9	Because I\'m easy come, easy go,\n
+    10	_____ high, ______ low,\n
+    11	Any way the wind ____ doesn\'t really ______ to me, to me.\n
+    12	\n
+    13	Mama, ____ killed a ___,\n
+    14	Put a ___ against his head,\n
+    15	Pulled my _______, now he\'s ____.\n
+    16	Mama, ____ had just _____,\n
+    17	But ___ I\'ve gone ___ thrown __ all ____.\n
+    18	\n
+    19	____, ooh,\n
+    20	Didn\'t ____ to make ___ cry,\n
+    21	If I\'m ___ back again ____ time ________,\n
+    22	Carry on, _____ on as __ nothing ______ matters.\n
+    23	\n
+    24	Too ____, my ____ has come,\n
+    25	Sends ______ down __ spine,\n
+    26	Body\'s ______ all the ____.\n
+    27	Goodbye, _________, I\'ve got __ go,\n
+    28	Gotta _____ you all behind and ____ ___ truth.\n
+    29	\n
+    30	Mama, ___ (any way the wind blows),\n
+    31	I don\'t _____ die,\n
+    32	I ________ wish I\'d never ____ ____ at all.\n
+    33	\n
+    34	I see a ______ silhouetto of _ ___,\n
+    35	Scaramouche, Scaramouche, ____ you do the _______?\n
+    36	_________ and lightning,\n
+    37	____, ____ frightening me.\n
+    38	(Galileo) Galileo.\n
+    39	(Galileo) Galileo,\n
+    40	Galileo _______\n
+    41	Magnifico-o-o-o-o.\n
+    42	\n
+    43	I\'m just a _____ boy, nobody _____ me.\n
+    44	He\'s just a _____ boy from a poor ______,\n
+    45	Spare him his life from this monstrosity.\n
+    46	\n
+    47	____ come, ____ go, will you ___ __ go?\n
+    48	Bismillah! No, we ____ not let ___ go. (Let him go!)\n
+    49	Bismillah! We ____ not let you go. (Let him go!)\n
+    50	Bismillah! We will not ___ you go. (Let me go!)\n
+    51	Will ___ let you __. (Let me go!)\n
+    52	Never, never let ___ __\n
+    53	Never let me __, __.\n
+    54	No, no, no, no, no, no, no.\n
+    55	Oh, mama ___, mama ___ (Mama mia, let me go.)\n
+    56	Beelzebub has a _____ put _____ for __, for __, for __.\n
+    57	\n
+    58	So you _____ you can _____ me and ____ in my eye?\n
+    59	So you _____ you can ____ me and _____ me to die?\n
+    60	Oh, ____, can\'t do ____ to me, ____,\n
+    61	Just _____ get out, just _____ get right outta ____.\n
+    62	\n
+    63	(Ooooh, ooh ____, ooh yeah)\n
+    64	\n
+    65	Nothing ______ matters,\n
+    66	Anyone can see,\n
+    67	Nothing ______ matters,\n
+    68	Nothing ______ matters to __.\n
+    69	\n
+    70	Any ___ the ____ blows.\n
+
+    </string>
+    <string name="title_activity_guess_song">Guess the Song!</string>
+    <string name="action_settings">Settings</string>
+
+
 </resources>

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -58,6 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static Placemark placemark;
     private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
 
+    public String songTitle = "Bohemian Rhapsody";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,17 +95,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void guessSong(View view) {
 
-        final Dialog dialog = new Dialog(this);
+        Intent intent = new Intent(this, GuessSong.class);
+        startActivity(intent);
+
+        /*final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.guess_song_dialog);
         dialog.show();
 
-        /* okBtn = (Button) dialog.findViewById(R.id.help_ok_button);
+        Button submitBtn = (Button) dialog.findViewById(R.id.guess_song_submit);
+        EditText songGuessEt = (EditText) findViewById(R.id.song_guess);
 
-        okBtn.setOnClickListener(new View.OnClickListener() {
+        submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                String songGuess = songGuessEt.getText().toString();
+                if(songTitle.equalsIgnoreCase(songGuess)){
+                    Toast.makeText(MapsActivity.this, "Correct",
+                            Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }else{
+                    /*Toast.makeText(MapsActivity.this, "Incorrect",
+                            Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+
             }
         });*/
 

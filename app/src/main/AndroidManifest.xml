@@ -44,6 +44,10 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".StartActivity" />
+        <activity
+            android:name=".GuessSong"
+            android:label="@string/title_activity_guess_song"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
