@@ -96,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void guessSong(View view) {
 
         Intent intent = new Intent(this, GuessSong.class);
+        intent.putExtra("songTitle", songTitle);
         startActivity(intent);
 
         /*final Dialog dialog = new Dialog(this);

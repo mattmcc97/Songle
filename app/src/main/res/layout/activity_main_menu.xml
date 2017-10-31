@@ -27,7 +27,9 @@
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_margin="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginLeft="50dp"
                 android:background="@drawable/rounded_rectangular_button"
                 android:elevation="10dp"
                 android:onClick="newSong"
@@ -36,6 +38,13 @@
                 android:textAllCaps="false"
                 android:textSize="24sp"
                 android:theme="@+style/PrimaryButton" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@color/colorAccent"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp" />
 
             <TextView
                 android:id="@+id/textView"
