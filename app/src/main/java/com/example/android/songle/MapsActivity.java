@@ -2,6 +2,7 @@ package com.example.android.songle;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -61,6 +63,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public String songTitle = "Bohemian Rhapsody";
 
+    private ProgressDialog pgDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,31 +102,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(this, GuessSong.class);
         intent.putExtra("songTitle", songTitle);
         startActivity(intent);
-
-        /*final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.guess_song_dialog);
-        dialog.show();
-
-        Button submitBtn = (Button) dialog.findViewById(R.id.guess_song_submit);
-        EditText songGuessEt = (EditText) findViewById(R.id.song_guess);
-
-        submitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String songGuess = songGuessEt.getText().toString();
-                if(songTitle.equalsIgnoreCase(songGuess)){
-                    Toast.makeText(MapsActivity.this, "Correct",
-                            Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                }else{
-                    /*Toast.makeText(MapsActivity.this, "Incorrect",
-                            Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                }
-
-            }
-        });*/
 
     }
 
@@ -304,7 +283,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class ASyncKMLDownloader extends AsyncTask<String, Void, Integer> {
 
         @Override
+        protected void onPreExecute() {
+            pgDialog = new ProgressDialog(MapsActivity.this);
+            pgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pgDialog.setMessage("Loading Map...");
+            pgDialog.setIndeterminate(true);
+            pgDialog.show();
+        }
+
+        @Override
         protected Integer doInBackground(String... params) {
+
             //Call the appropriate methods to download and parse the xml data
             Log.i(TAG, "doInBackground: " + "Started");
             XmlPullParser receivedData = tryDownloadKmlData();
@@ -385,6 +374,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Integer integer) {
             addMarkers();
+            pgDialog.hide();
         }
     }
 

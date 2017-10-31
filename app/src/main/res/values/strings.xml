@@ -96,6 +96,8 @@
     </string>
     <string name="title_activity_guess_song">Guess the Song!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="congratulations">Congratulations! You guessed the song correctly.\n\nYou
+        will now return to the main menu where you can play another Song or see your statistics!</string>
+    <string name="wrong_answer">Sorry! You got the wrong answer. Please try again.</string>
 
 </resources>
