@@ -40,13 +40,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
                 android:src="@drawable/my_location"
-                app:backgroundTint="@color/colorPrimary"
+                app:backgroundTint="@color/colorAccent"
                 android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"
                 app:elevation="12dp"
                 android:onClick="goToCurrentLocation"
                 app:borderWidth="0dp"
-                app:rippleColor="@color/colorPrimaryDark"
                 app:fabSize="normal" />
 
             <android.support.design.widget.FloatingActionButton
@@ -55,14 +54,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_margin"
                 android:src="@drawable/ic_music_note_white_48px"
-                app:backgroundTint="@color/colorPrimary"
+                app:backgroundTint="@color/colorAccent"
                 android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginBottom="16dp"
                 android:onClick="guessSong"
                 app:elevation="12dp"
                 app:borderWidth="0dp"
-                app:rippleColor="@color/colorPrimaryDark"
                 app:fabSize="normal" />
 
         </LinearLayout>

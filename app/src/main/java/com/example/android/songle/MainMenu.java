@@ -1,14 +1,21 @@
 package com.example.android.songle;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -43,6 +50,47 @@ public class MainMenu extends AppCompatActivity{
         //When the new song button is clicked, open the MapsActivity
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
+    }
+
+    public void giveUpOnSong(View view) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        TextView title = new TextView(this);
+        title.setText("Give up?");
+        title.setPadding(10, 50, 10, 0);
+        title.setTextColor(Color.DKGRAY);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+        title.setTextSize(20);
+
+        alertDialogBuilder.setCustomTitle(title);
+
+        alertDialogBuilder.setTitle("Give up?");
+        alertDialogBuilder.setMessage("Are you sure you want to give up on this song? You won't be" +
+                " able to try it again.");
+        alertDialogBuilder.setPositiveButton("Give Up",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Toast.makeText(MainMenu.this, "Song removed.", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+        TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+        messageText.setGravity(Gravity.CENTER);
+        alertDialog.show();
+
     }
 
     private boolean isNetworkConnected() {

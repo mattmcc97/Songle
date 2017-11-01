@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class GuessSong extends AppCompatActivity {
@@ -45,6 +46,9 @@ public class GuessSong extends AppCompatActivity {
             dialogCorrect.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialogCorrect.setContentView(R.layout.dialog_correct_answer);
             dialogCorrect.show();
+
+            TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
+            songTitleTv.setText(getIntent().getStringExtra("songTitle"));
 
             Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
 
