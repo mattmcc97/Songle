@@ -106,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addMarkers() {
+        int count = 0;
         Log.i(TAG, "addMarkers: Adding markers...");
         for (Placemark marker : placemarks) {
             float colour = BitmapDescriptorFactory.HUE_BLUE;
@@ -130,7 +131,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(marker.getName())
                     .alpha(0.82f)
                     .icon(BitmapDescriptorFactory.defaultMarker(colour)));
+            count++;
         }
+        Log.i(TAG, "addMarkers: Number of markers: " + count);
     }
 
     @Override

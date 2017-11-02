@@ -47,7 +47,8 @@
         <activity
             android:name=".GuessSong"
             android:label="@string/title_activity_guess_song"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".StatisticsActivity"></activity>
     </application>
 
 </manifest>

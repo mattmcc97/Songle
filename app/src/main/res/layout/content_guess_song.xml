@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/submit"
-            android:background="@color/white"
+            android:background="?android:attr/selectableItemBackground"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             android:onClick="submitGuess" />

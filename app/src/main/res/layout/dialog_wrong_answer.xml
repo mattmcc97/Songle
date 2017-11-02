@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="WRONG!"
+                    android:text="Wrong!"
                     android:textSize="24sp"
                     android:layout_gravity="center"
                     android:gravity="center"
@@ -56,7 +56,7 @@
                 android:id="@+id/wrong_ok_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
+                android:background="?android:attr/selectableItemBackground"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
                 android:text="@string/ok" />

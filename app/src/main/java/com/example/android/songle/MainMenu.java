@@ -52,6 +52,12 @@ public class MainMenu extends AppCompatActivity{
         startActivity(intent);
     }
 
+    public void viewStatistics(View view) {
+        //When the statistics button is clicked, open the StatisticsActivity
+        Intent intent = new Intent(this, StatisticsActivity.class);
+        startActivity(intent);
+    }
+
     public void giveUpOnSong(View view) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
