@@ -7,17 +7,12 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/info_button"
-        android:layout_width="50dp"
+    <fragment
+        android:id="@+id/my_fragment"
+        android:name="com.example.android.songle.TopBarFragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/circle_button"
-        android:foreground="@drawable/ic_info_button"
-        android:elevation="14dp"
-        android:stateListAnimator="@null"
-        android:theme="@style/PrimaryButton"
-        android:onClick="infoButtonClicked" />
+        android:layout_alignParentBottom="true" />
 
     <View
         android:layout_width="match_parent"

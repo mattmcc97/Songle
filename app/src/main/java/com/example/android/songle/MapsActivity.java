@@ -249,14 +249,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             int points = 10;
             //remove the marker from the map and show a toast
             marker.remove();
-            Toast.makeText(MapsActivity.this, "Well done! You collected the lyric: "
+            Toast.makeText(MapsActivity.this, "Well done! You collected the word: "
                             + marker.getTitle() + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
 
         } else {
             //display a message letting the user know they must be closer to the marker to
             //collect it
-            Toast.makeText(MapsActivity.this, "You are not close enough to this lyric.",
+            Toast.makeText(MapsActivity.this, "You are not close enough to this word to collect it.",
                     Toast.LENGTH_LONG).show();
         }
         return true;
