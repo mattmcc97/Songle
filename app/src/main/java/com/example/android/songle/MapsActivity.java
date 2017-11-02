@@ -124,6 +124,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 case ("veryinteresting"):
                     colour = 230.0f;
                     break;
+                case ("unclassified"):
+                    colour = BitmapDescriptorFactory.HUE_BLUE;
+                    break;
             }
             mMap.addMarker(new MarkerOptions()
                     .position(marker.getCoordinates())
