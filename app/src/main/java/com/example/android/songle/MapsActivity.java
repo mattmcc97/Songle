@@ -106,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addMarkers() {
+
         int count = 0;
         Log.i(TAG, "addMarkers: Adding markers...");
         for (Placemark marker : placemarks) {
@@ -229,6 +230,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Security exception thrown [onMapReady]");
         }
         // Add ‘‘My location’’ button to the user interface
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
 
         //mMap.getUiSettings().setMyLocationButtonEnabled(true);
         //mMap.getUiSettings().setZoomControlsEnabled(true);

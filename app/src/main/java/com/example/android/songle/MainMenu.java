@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +36,9 @@ public class MainMenu extends AppCompatActivity{
 
     private static Song song;
 
+    private boolean connectedToNetwork = true;
+    private boolean locationServicesAvailable = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +52,19 @@ public class MainMenu extends AppCompatActivity{
 
     public void newSong(View view){
         //When the new song button is clicked, open the MapsActivity
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
+        if (connectedToNetwork) {
+            if (locationServicesAvailable) {
+                Intent intent = new Intent(this, MapsActivity.class);
+                startActivity(intent);
+            } else {
+                Snackbar.make(view, "Songle can't get your location. Please ensure you have a " +
+                        "mobile signal and location services enabled.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        } else {
+            Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
     public void viewStatistics(View view) {
@@ -79,7 +94,7 @@ public class MainMenu extends AppCompatActivity{
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        Toast.makeText(MainMenu.this, "Song removed.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainMenu.this, "The song was Bohemian Rhapsody.", Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -96,6 +111,7 @@ public class MainMenu extends AppCompatActivity{
         TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
         messageText.setGravity(Gravity.CENTER);
         alertDialog.show();
+
 
     }
 
