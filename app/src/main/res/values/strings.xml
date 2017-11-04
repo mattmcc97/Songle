@@ -22,8 +22,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_blob">blob</string>
 
-    <string name="song1"> 1	Is ____ the ____ life?\n
-     2	Is this just fantasy?\n
+    <string name="song1">1	Is ____ the ____ life?\n
+        2	Is this just
+        fantasy?\n
      3	______ in a landslide,\n
      4	No ______ from reality.\n
      5	\n
@@ -108,5 +109,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="level_up">Well done! You have collected so many markers that
     you\'ve went up a level!\n\nYou are now:</string>
+    <string name="close">Close</string>
 
 </resources>

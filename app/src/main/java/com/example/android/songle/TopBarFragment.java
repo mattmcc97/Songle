@@ -32,7 +32,7 @@ public class TopBarFragment extends Fragment implements  View.OnClickListener{
 
         levelPb = (ProgressBar) myLayout.findViewById(R.id.level_pb);
         levelPb.setMax(100);
-        levelPb.setProgress(50);
+        levelPb.setProgress(60);
 
         return myLayout;
     }

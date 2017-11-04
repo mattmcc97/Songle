@@ -1,6 +1,7 @@
 package com.example.android.songle;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,8 @@ import org.xmlpull.v1.XmlPullParser;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 public class MainMenu extends AppCompatActivity{
 
@@ -39,6 +44,11 @@ public class MainMenu extends AppCompatActivity{
     private boolean connectedToNetwork = true;
     private boolean locationServicesAvailable = true;
 
+    Dialog dialogYouTube;
+    public static final String API_KEY = "AIzaSyBjaJZj0WwqxFVOD8pUsAuGVnYCqXUvYa8";
+    public static final String VIDEO_ID = "fJ9rUzIMcZQ";
+    Button youtubeButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +57,30 @@ public class MainMenu extends AppCompatActivity{
         //Execute the methods in the AsyncTask class
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
+
+        youtubeButton = (Button) this.findViewById(R.id.youtube_button);
+        youtubeButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                /**
+                 * Calling youtube stand alone player
+                 *
+                 * You should read this parameter to change them
+                 * Parameters
+                 *activity*  The calling activity from which the standalone player will be started.
+                 *developerKey*  A valid API key which is enabled to use the YouTube Data API v3 service. To generate a new key, visit the Google APIs Console.
+                 *videoId*  The id of the video to be played.
+                 *timeMillis*  The time, in milliseconds, where playback should start in the video.
+                 *autoplay*  true to have the video start playback as soon as the standalone player loads, false to cue the video.
+                 *lightboxMode*  true to have the video play in a dialog view above your current Activity, false to have the video play fullscreen.
+                 */
+                Intent intent = YouTubeStandalonePlayer.createVideoIntent(
+                        MainMenu.this, API_KEY, VIDEO_ID, 0, true, true);
+                startActivity(intent);
+
+            }
+        });
 
     }
 
@@ -113,6 +147,17 @@ public class MainMenu extends AppCompatActivity{
         alertDialog.show();
 
 
+    }
+
+    public void openYouTubePlayer(View view) {
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
+                MainMenu.this, API_KEY, VIDEO_ID, 0, true, true);
+        startActivity(intent);
+    }
+
+    public void showToast(View view) {
+        Toast.makeText(MainMenu.this, "Sorry you gave up! The song was: Song 2 by Blur.",
+                Toast.LENGTH_LONG).show();
     }
 
     private boolean isNetworkConnected() {

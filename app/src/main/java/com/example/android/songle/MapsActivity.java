@@ -126,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     colour = 230.0f;
                     break;
                 case ("unclassified"):
-                    colour = BitmapDescriptorFactory.HUE_BLUE;
+                    colour = BitmapDescriptorFactory.HUE_AZURE;
                     break;
             }
             mMap.addMarker(new MarkerOptions()
@@ -249,11 +249,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
         //if the marker clicked is nearby
         if (marker.getPosition().equals(userCloseToMarker())) {
-            int points = 10;
+            int points = 15;
             //remove the marker from the map and show a toast
             marker.remove();
             Toast.makeText(MapsActivity.this, "Well done! You collected the word: "
-                            + marker.getTitle() + ". +" + points + " points!",
+                            +
+                            //marker.getTitle()
+                            "killed"
+                            + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
 
         } else {
