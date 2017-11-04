@@ -8,12 +8,12 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_maps_activityerfd">Map</string>
     <string name="instructions">
-    Move around the map and collect lyrics by clicking on nearby markers.
-    Use these lyrics to guess the song.
-    Press the guess button, on the map, when you think you\'ve got it!\n\nYou\'ll get points for every marker you collect.
-    The more points you get, the higher level you will become.
+    Move around the map and collect words by clicking on nearby markers.
+    Use these words to guess the song.
+    Press the guess button, on the map, when you think you\'ve got it!\n\nYou\'ll get points for every marker you collect. Collect
+        more points for more interesting markers!\n\nThe more points you get, the higher level you will become.
     As you increase your level, the game will become harder.\n\nFor every 1km you walk, you will receive a Songle coin.
-    You can use your Songle coins to reveal 5 random lyrics on a song of your choice.
+    You can use your Songle coins to reveal 10 random words on a song of your choice.
     </string>
     <string name="ok">OK</string>
     <string name="submit">Submit</string>
@@ -102,8 +102,11 @@
     <string name="wrong_answer">Sorry! You got the wrong answer. Please try again.</string>
     <string name="statistics">Statistics</string>
     <string name="walked_one_kilometre">You just walked another 1km!</string>
-    <string name="songle_coin">You have been awarded with 1 new Songle coin.</string>
+    <string name="songle_coin">You have been awarded with 1 new Songle coin. Use this to reveal 10
+    random words in a song of your choice!</string>
     <string name="title_activity_statistics">StatisticsActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="level_up">Well done! You have collected so many markers that
+    you\'ve went up a level!\n\nYou are now:</string>
 
 </resources>
