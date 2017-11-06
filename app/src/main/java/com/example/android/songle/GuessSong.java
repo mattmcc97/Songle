@@ -1,12 +1,17 @@
 package com.example.android.songle;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -27,7 +32,7 @@ public class GuessSong extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,8 +40,9 @@ public class GuessSong extends AppCompatActivity {
                 Snackbar.make(view, "No Songle Coins available.", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 //else - are you sure you want to reveal 5 lyrics using 1 songle coin?
+
             }
-        });
+        });*/
     }
 
     public void submitGuess(View view) {
@@ -76,6 +82,45 @@ public class GuessSong extends AppCompatActivity {
             });
 
         }
+    }
+
+    public void spendSongleCoin(View view) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        TextView title = new TextView(this);
+        title.setText("Spend Songle coin?");
+        title.setPadding(10, 50, 10, 0);
+        title.setTextColor(Color.DKGRAY);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+        title.setTextSize(20);
+
+        alertDialogBuilder.setCustomTitle(title);
+
+        alertDialogBuilder.setTitle("Spend Songle coin?");
+        alertDialogBuilder.setMessage("Are you sure you want to spend a Songle coin? This will" +
+                " reveal 10 words from the song you are playing.");
+        alertDialogBuilder.setPositiveButton("Spend",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        finish();
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+        TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+        messageText.setGravity(Gravity.CENTER);
+        alertDialog.show();
     }
 
     private void backToMainMenu() {

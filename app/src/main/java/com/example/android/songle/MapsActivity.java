@@ -94,6 +94,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float zoomLevel = 19.0f; //This goes up to 21
         LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
+        /*Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.congratulations_songle_coin);
+        dialog.show();*/
 
     }
 
@@ -258,6 +262,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             "killed"
                             + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
+            /*Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.level_up);
+            dialog.show();*/
 
         } else {
             //display a message letting the user know they must be closer to the marker to
@@ -282,7 +290,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             float distance = mLastLocation.distanceTo(markerLocation);
             //7.5f seems a reasonable distance to be away
 
-            if (distance < 7.5f) {
+            if (distance < 20.0f) {
                 //inRange = true;
                 collectableMarker = marker.getCoordinates();
             }

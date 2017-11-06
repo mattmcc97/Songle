@@ -149,12 +149,6 @@ public class MainMenu extends AppCompatActivity{
 
     }
 
-    public void openYouTubePlayer(View view) {
-        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
-                MainMenu.this, API_KEY, VIDEO_ID, 0, true, true);
-        startActivity(intent);
-    }
-
     public void showToast(View view) {
         Toast.makeText(MainMenu.this, "Sorry you gave up! The song was: Song 2 by Blur.",
                 Toast.LENGTH_LONG).show();
