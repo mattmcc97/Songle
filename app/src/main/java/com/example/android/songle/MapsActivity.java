@@ -44,6 +44,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -55,8 +56,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean mLocationPermissionGranted = false;
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
-    private static final String kml_url =
-            "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/01/map5.kml";
+
+    private int mapDifficulty = 5;
+    private String songNumber = "01";
+    private int userLevel = 2;
+    private  String kml_url =
+            "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
+                    "/map" + mapDifficulty + ".kml";
 
     private static Placemark placemark;
     private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
@@ -69,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        chooseSongNumber();
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -91,6 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void goToCurrentLocation(View view) {
+        //On the click of location button this method causes the UI to zoom to the users current location
+
         float zoomLevel = 19.0f; //This goes up to 21
         LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
@@ -107,6 +117,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra("songTitle", songTitle);
         startActivity(intent);
 
+    }
+
+    private String chooseSongNumber(){
+        //When the new song button is clicked, a new random song is selected from the available list
+        Random rand = new Random();
+        int randomSongNumberInt = rand.nextInt(15) + 1;
+        String randomSongNumber = "";
+        if(randomSongNumberInt <= 9){
+            randomSongNumber = "0" + randomSongNumberInt;
+        }else{
+            randomSongNumber = "" + randomSongNumberInt;
+        }
+        return randomSongNumber;
+    }
+
+    private int getMapDifficulty(int userLevel){
+        //Produces a map difficulty number based on the users level
+
+        //Calculates the fraction  of the max level (99), if the user was level 99 they would get a
+        //difficulty of 4 and a level of 1 (5 - 4 = 1). If the user was level 1 they would get a
+        //difficulty of 0 and a level of 5 (5 - 0 = 5).
+        int difficulty = (int) Math.round((userLevel/99.0)*4);
+        int level = 5 - difficulty;
+        return level;
     }
 
     private void addMarkers() {
@@ -262,6 +296,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             "killed"
                             + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
+
+            
             /*Dialog dialog = new Dialog(this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.level_up);
@@ -323,6 +359,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         private XmlPullParser tryDownloadKmlData() {
             try {
+                kml_url =
+                        "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + chooseSongNumber() +
+                                "/map" + getMapDifficulty(userLevel) + ".kml";
                 URL kmlURL = new URL(kml_url);
                 //Create a new instance of the XmlPullParser class and set the input stream
                 XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
