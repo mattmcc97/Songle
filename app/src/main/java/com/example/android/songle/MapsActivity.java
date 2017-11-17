@@ -1,8 +1,10 @@
 package com.example.android.songle;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -58,15 +60,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
 
-    private int mapDifficulty = 5;
-    private String songNumber = "01";
-    private int userLevel = 2;
-    private  String kml_url =
-            "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
-                    "/map" + mapDifficulty + ".kml";
+    private int userLevel = 24;
+    private  String kml_url = "";
 
     private static Placemark placemark;
-    private static HashSet<Placemark> placemarks = new HashSet<>();
+    private static HashSet<Placemark> placemarks;
 
     public String songTitle = "Bohemian Rhapsody";
 
@@ -77,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        chooseSongNumber();
+        placemarks = new HashSet<>();
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -139,7 +137,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Calculates the fraction  of the max level (99), if the user was level 99 they would get a
         //difficulty of 4 and a level of 1 (5 - 4 = 1). If the user was level 1 they would get a
         //difficulty of 0 and a level of 5 (5 - 0 = 5).
-        int difficulty = (int) Math.round((userLevel/99.0)*4);
+        //variation is used so that the user can get a small range of map difficulties
+        Random rand = new Random();
+        int variation = rand.nextInt((25 - (-25)) + 1) + (-25);
+        Log.i(TAG, "getMapDifficulty: SongNumber variation: " + variation);
+        int difficulty = (int) Math.round(((userLevel+variation)/99.0)*4);
+        //make sure the variation doesn't cause the difficulty to be an impossible value
+        if(difficulty > 4 ){
+            difficulty = 4;
+        }else if(difficulty < 0){
+            difficulty = 0;
+        }
         int level = 5 - difficulty;
         return level;
     }
@@ -240,6 +248,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // could not be established. Display an error message, or handle
         // the failure silently
         System.out.println(" >>>> onConnectionFailed");
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to exit? Your progress for this song will be saved.")
+                .setCancelable(false)
+                .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MapsActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     /**
@@ -366,9 +388,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         private XmlPullParser tryDownloadKmlData() {
             try {
+                String songNumber = chooseSongNumber();
+                Integer difficulty = getMapDifficulty(userLevel);
                 kml_url =
-                        "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + chooseSongNumber() +
-                                "/map" + getMapDifficulty(userLevel) + ".kml";
+                        "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
+                                "/map" + difficulty + ".kml";
+                Log.i(TAG, "tryDownloadKmlData: SongNumber: " + songNumber +
+                        " - MapDifficulty: " + difficulty);
                 URL kmlURL = new URL(kml_url);
                 //Create a new instance of the XmlPullParser class and set the input stream
                 XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
