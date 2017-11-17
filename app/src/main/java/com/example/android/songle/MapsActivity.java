@@ -44,6 +44,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -65,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     "/map" + mapDifficulty + ".kml";
 
     private static Placemark placemark;
-    private static ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
+    private static HashSet<Placemark> placemarks = new HashSet<>();
 
     public String songTitle = "Bohemian Rhapsody";
 
@@ -286,7 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         //if the marker clicked is nearby
-        if (marker.getPosition().equals(userCloseToMarker())) {
+        if (userCloseToMarker().contains(marker.getPosition())) {
             int points = 15;
             //remove the marker from the map and show a toast
             marker.remove();
@@ -297,7 +298,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
 
-            
+            for(Placemark word : placemarks){
+                if(word.getName() == marker.getTitle()){
+                    placemarks.remove(word);
+                }
+            }
             /*Dialog dialog = new Dialog(this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.level_up);
@@ -312,10 +317,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return true;
     }
 
-    private LatLng userCloseToMarker() {
+    private ArrayList<LatLng> userCloseToMarker() {
         Log.i(TAG, "Running method: userCloseToMarker");
         //if there is a nearby marker then return that marker
-        LatLng collectableMarker = null;
+        ArrayList<LatLng> collectableMarkers = new ArrayList<>();
         for (Placemark marker : placemarks) {
             //Get the coordinates from the LatLng and convert them to a Location type
             //so that we can use the distanceTo method in the Location class.
@@ -324,15 +329,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerLocation.setLongitude(marker.getCoordinates().longitude);
 
             float distance = mLastLocation.distanceTo(markerLocation);
+            Log.i(TAG, "userCloseToMarker: distance: " + distance );
             //7.5f seems a reasonable distance to be away
 
             if (distance < 20.0f) {
                 //inRange = true;
-                collectableMarker = marker.getCoordinates();
+                Log.i(TAG, "inside 20: " + marker.getCoordinates() + " - " + marker.getName());
+                collectableMarkers.add(marker.getCoordinates());
             }
         }
         //return nearby marker
-        return collectableMarker;
+        return collectableMarkers;
     }
 
 
