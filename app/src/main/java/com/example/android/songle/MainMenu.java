@@ -109,7 +109,7 @@ public class MainMenu extends AppCompatActivity{
 
     public void giveUpOnSong(View view) {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
         TextView title = new TextView(this);
         title.setText("Give up?");
@@ -135,7 +135,7 @@ public class MainMenu extends AppCompatActivity{
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+
             }
         });
 

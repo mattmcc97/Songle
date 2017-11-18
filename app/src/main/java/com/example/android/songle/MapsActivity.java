@@ -43,9 +43,14 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -61,12 +66,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "MapsActivity";
 
     private int userLevel = 24;
-    private  String kml_url = "";
+    private String kml_url = "";
+    private  String text_url = "";
 
     private static Placemark placemark;
     private static HashSet<Placemark> placemarks;
 
+    HashMap<Integer, HashMap<Integer, String>> wholeSong;
+
     public String songTitle = "Bohemian Rhapsody";
+
+    private String songNumber;
 
     private ProgressDialog pgDialog;
 
@@ -179,7 +189,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(marker.getCoordinates())
                     .snippet(marker.getDescription())
-                    .title(marker.getName())
+                    .title(marker.getWord())
                     .alpha(0.82f)
                     .icon(BitmapDescriptorFactory.defaultMarker(colour)));
             count++;
@@ -311,20 +321,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //if the marker clicked is nearby
         if (userCloseToMarker().contains(marker.getPosition())) {
             int points = 15;
-            //remove the marker from the map and show a toast
-            marker.remove();
+
             Toast.makeText(MapsActivity.this, "Well done! You collected the word: "
                             +
-                            //marker.getTitle()
-                            "killed"
+                            marker.getTitle()
                             + ". +" + points + " points!",
                     Toast.LENGTH_LONG).show();
 
+            //remove the word from the set of lyrics
+            Placemark forRemoval = null;
             for(Placemark word : placemarks){
-                if(word.getName() == marker.getTitle()){
-                    placemarks.remove(word);
+                Log.i(TAG, "onMarkerClick: word: (" + word.getWord() + " - " + marker.getTitle()+ ")");
+                if(word.getCoordinates().equals(marker.getPosition())){
+                    Log.i(TAG, "onMarkerClick: boom: " + marker.getTitle());
+                    forRemoval = word;
                 }
             }
+            placemarks.remove(forRemoval);
+
+            //remove the marker from the map and show a toast
+            marker.remove();
+
+            Log.i(TAG, "onMarkerClick: Number of remaining markers: " + placemarks.size());
             /*Dialog dialog = new Dialog(this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.level_up);
@@ -346,17 +364,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (Placemark marker : placemarks) {
             //Get the coordinates from the LatLng and convert them to a Location type
             //so that we can use the distanceTo method in the Location class.
-            Location markerLocation = new Location(marker.getName());
+            Location markerLocation = new Location(marker.getWord());
             markerLocation.setLatitude(marker.getCoordinates().latitude);
             markerLocation.setLongitude(marker.getCoordinates().longitude);
 
             float distance = mLastLocation.distanceTo(markerLocation);
-            Log.i(TAG, "userCloseToMarker: distance: " + distance );
             //7.5f seems a reasonable distance to be away
 
             if (distance < 20.0f) {
-                //inRange = true;
-                Log.i(TAG, "inside 20: " + marker.getCoordinates() + " - " + marker.getName());
+                Log.i(TAG, "inside 20: " + marker.getCoordinates() + " - " + marker.getWord());
                 collectableMarkers.add(marker.getCoordinates());
             }
         }
@@ -374,21 +390,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             pgDialog.setMessage("Loading Map...");
             pgDialog.setIndeterminate(true);
             pgDialog.show();
+
+            songNumber = chooseSongNumber();
         }
 
         @Override
         protected Integer doInBackground(String... params) {
 
-            //Call the appropriate methods to download and parse the xml data
+            //Call the appropriate methods to read the text file from the url
+            // and after that parse the kml map data
             Log.i(TAG, "doInBackground: " + "Started");
-            XmlPullParser receivedData = tryDownloadKmlData();
-            int songsFound = tryParseKmlData(receivedData);
-            return songsFound;
+            readTextFile(songNumber);
+            return 0;
         }
 
-        private XmlPullParser tryDownloadKmlData() {
+        private void readTextFile(String songNumber) {
+
+            //A HashMap that contains all the lines of the song and the line numbers
+            wholeSong = new HashMap<>();
+
+            text_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber
+                    + "/words.txt";
+            URL url = null;
             try {
-                String songNumber = chooseSongNumber();
+                url = new URL(text_url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            // Read all the text returned by the server
+            try {
+                //read in the text file using the url
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                String songLine;
+                Integer i = 1;
+                //while not at the end of the text file
+                while ((songLine = in.readLine()) != null) {
+                    //create a HashMap of all the words of the song and their position in the line
+                    HashMap<Integer, String> lineOfSong = new HashMap();
+                    Integer j = 1;
+
+                    //remove the first 7 characters to remove the line numbers and whitespace
+                    //remove punctuation from the string
+                    //split the string into the words
+                    for(String word : songLine.substring(7).replaceFirst("\\p{P}+$", "").split(" ")) {
+                        //add the word to the HashMap for that line
+                        lineOfSong.put(j, word);
+                        j++;
+                    }
+                    //addthat line to the HashMap for the song
+                    wholeSong.put(i, lineOfSong);
+                    i++;
+                }
+                //close buffer stream
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.i(TAG, "readTextFile: " + Arrays.asList(wholeSong));
+
+            //Now once we have the words linked to the line numbers we can parse the kml data
+            XmlPullParser receivedData = tryDownloadKmlData(songNumber);
+            tryParseKmlData(receivedData);
+        }
+
+        private XmlPullParser tryDownloadKmlData(String songNumber) {
+            try {
                 Integer difficulty = getMapDifficulty(userLevel);
                 kml_url =
                         "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
@@ -408,7 +474,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
 
-        private int tryParseKmlData(XmlPullParser receivedData) {
+        private void tryParseKmlData(XmlPullParser receivedData) {
             //If there is data from the input stream call the method to parse the data
             if (receivedData != null) {
                 try {
@@ -419,7 +485,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.e("Songle", "IOException - tryParseKmlData", e);
                 }
             }
-            return 0;
         }
 
         private void processReceivedData(XmlPullParser kmlData) throws IOException, XmlPullParserException {
@@ -451,8 +516,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             styleUrl = kmlData.nextText();
                         } else if (data.equalsIgnoreCase("coordinates")) {
                             coordinates = kmlData.nextText();
-                            placemark = new Placemark(name, description, styleUrl, coordinates);
-                            Log.i("Adding to placemarks:", "Coords: " + placemark.getCoordinates());
+
+
+                            Log.i(TAG, "processReceivedData: " + name);
+                            //break up the line and the word location
+                            String[] lineWord = name.split(":");
+                            //Find the actual word by searching the hashmap with the line number
+                            //and word location in that line
+                            String word = wholeSong.get(Integer.parseInt(lineWord[0]))
+                                    .get(Integer.parseInt(lineWord[1]));
+
+                            //Instantiate/create a new placemark
+                            placemark = new Placemark(word, description, styleUrl, coordinates);
+                            Log.i("Adding to placemarks:", "Coords: " + placemark.getCoordinates()
+                            + " Word: " + word);
+
+                            //add the new Placemark to the set of placemarks
                             placemarks.add(placemark);
                         }
                         break;

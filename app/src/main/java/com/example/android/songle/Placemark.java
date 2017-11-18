@@ -7,21 +7,21 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class Placemark {
-    public final String name;
+    public final String word;
     public final String description;
     public final String styleUrl;
     public final String coordinates;
 
 
-    public Placemark(String name, String description, String styleUrl, String coordinates) {
-        this.name = name;
+    public Placemark(String word, String description, String styleUrl, String coordinates) {
+        this.word = word;
         this.description = description;
         this.styleUrl = styleUrl;
         this.coordinates = coordinates;
     }
 
-    public String getName() {
-        return name;
+    public String getWord() {
+        return word;
     }
 
     public String getDescription() {
