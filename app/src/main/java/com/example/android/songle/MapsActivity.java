@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
 
-    private int userLevel = 24;
+    private int userLevel = 2;
     private String kml_url = "";
     private  String text_url = "";
 
@@ -78,6 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public String songTitle;
     private String songNumber;
 
+    private ArrayList<String> collectedMarkers;
+
     private ProgressDialog pgDialog;
 
     @Override
@@ -88,6 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placemarks = new HashSet<>();
         wholeSong = new HashMap<>();
         songs = (ArrayList<Song>) getIntent().getExtras().getSerializable("listOfSongs");
+        collectedMarkers = new ArrayList<>();
 
         Log.i(TAG, "onCreate: " + songs);
 
@@ -149,6 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(this, GuessSong.class);
         intent.putExtra("songTitle", songTitle);
         intent.putExtra("wholeSong", wholeSong);
+        intent.putExtra("collectedMarkers", collectedMarkers);
         startActivity(intent);
 
     }
@@ -355,14 +359,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Toast.LENGTH_LONG).show();
 
             //remove the word from the set of lyrics
+            //lyric location e.g. 18:13 18th line 13th word
+            String lyricLocation = "";
             Placemark forRemoval = null;
             for(Placemark word : placemarks){
                 Log.i(TAG, "onMarkerClick: word: (" + word.getWord() + " - " + marker.getTitle()+ ")");
                 if(word.getCoordinates().equals(marker.getPosition())){
                     Log.i(TAG, "onMarkerClick: boom: " + marker.getTitle());
+                    lyricLocation = word.getLocation();
                     forRemoval = word;
                 }
             }
+
+            Log.i(TAG, "onMarkerClick: " + lyricLocation);
+            collectedMarkers.add(lyricLocation);
+
+            /*String[] lineWord = lyricLocation.split(":");
+            Log.i(TAG, "onMarkerClick: wordRemoved: " +
+                    wholeSong.get(Integer.parseInt(lineWord[0])).get(Integer.parseInt(lineWord[1])));
+            Log.i(TAG, "onMarkerClick: wordRemoved: " + lyricLocation + wholeSong);
+
+            wholeSong.get(Integer.parseInt(lineWord[0])).get(Integer.parseInt(lineWord[1]));*/
+
             placemarks.remove(forRemoval);
 
             //remove the marker from the map and show a toast
@@ -545,6 +563,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                             Log.i(TAG, "processReceivedData: " + name);
+                            String location = name;
                             //break up the line and the word location
                             String[] lineWord = name.split(":");
                             //Find the actual word by searching the hashmap with the line number
@@ -553,7 +572,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .get(Integer.parseInt(lineWord[1]));
 
                             //Instantiate/create a new placemark
-                            placemark = new Placemark(word, description, styleUrl, coordinates);
+                            placemark = new Placemark(word, location, description, styleUrl, coordinates);
                             Log.i("Adding to placemarks:", "Coords: " + placemark.getCoordinates()
                             + " Word: " + word);
 

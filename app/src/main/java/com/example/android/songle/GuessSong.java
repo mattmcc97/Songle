@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GuessSong extends AppCompatActivity {
@@ -31,6 +33,7 @@ public class GuessSong extends AppCompatActivity {
 
     private String songTitle = "";
     private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
+    private ArrayList<String> collectedMarkers = null;
 
     private TextView lyricsTextView;
 
@@ -57,6 +60,9 @@ public class GuessSong extends AppCompatActivity {
         wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getExtras().getSerializable("wholeSong");
         Log.i(TAG, "onCreate: songTitle: "+ songTitle + " wholeSong: " + wholeSong);
 
+        collectedMarkers = (ArrayList<String>) getIntent().getStringArrayListExtra("collectedMarkers");
+        Log.i(TAG, "onCreate: songTitle: collectedMarkers: " + collectedMarkers);
+
         buildSong(wholeSong);
     }
 
@@ -66,14 +72,22 @@ public class GuessSong extends AppCompatActivity {
         for(int i=1; i <= songLyrics.size(); i++){
             HashMap<Integer, String> songLine = null;
             songLine = songLyrics.get(i);
+            song += i + ". ";
             for(int j = 1; j <= songLine.size(); j++){
-                song = song + songLine.get(j) + " ";
+                String wordLocation = i + ":" + j;
+                if(collectedMarkers.contains(wordLocation)){
+                    song = song + songLine.get(j) + " ";
+                    Log.i(TAG, "buildSong: This marker has been collected: " + wordLocation);
+                }else{
+                    song = song + songLine.get(j).replaceAll("[A-Za-z0-9]", "_") + " ";
+                    Log.i(TAG, "buildSong: This marker has not been collected.");
+                }
             }
             song += "\n";
         }
         Log.i(TAG, "buildSong: " + song);
-        song = song.replaceAll("[A-Za-z0-9]", "_");
-        Log.i(TAG, "buildSong: " + song);
+        /*song = song.replaceAll("[A-Za-z0-9]", "_");
+        Log.i(TAG, "buildSong: " + song);*/
 
         lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
         lyricsTextView.setText(song);

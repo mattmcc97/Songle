@@ -10,13 +10,15 @@ import java.io.Serializable;
 
 public class Placemark implements Serializable {
     public final String word;
+    public final String location;
     public final String description;
     public final String styleUrl;
     public final String coordinates;
 
 
-    public Placemark(String word, String description, String styleUrl, String coordinates) {
+    public Placemark(String word, String location, String description, String styleUrl, String coordinates) {
         this.word = word;
+        this.location = location;
         this.description = description;
         this.styleUrl = styleUrl;
         this.coordinates = coordinates;
@@ -24,6 +26,10 @@ public class Placemark implements Serializable {
 
     public String getWord() {
         return word;
+    }
+
+    public String getLocation(){
+        return location;
     }
 
     public String getDescription() {
