@@ -20,12 +20,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 public class GuessSong extends AppCompatActivity {
 
     private String TAG = "GuessSong";
 
     Dialog dialogCorrect;
     Dialog dialogWrong;
+
+    private String songTitle = "";
+    private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
+
+    private TextView lyricsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,30 @@ public class GuessSong extends AppCompatActivity {
             }
         });*/
         Log.i(TAG, "onCreate: songTitle: " + getIntent().getStringExtra("songTitle"));
+        songTitle = getIntent().getStringExtra("songTitle");
+        wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getExtras().getSerializable("wholeSong");
+        Log.i(TAG, "onCreate: songTitle: "+ songTitle + " wholeSong: " + wholeSong);
+
+        buildSong(wholeSong);
+    }
+
+    private void buildSong(HashMap<Integer, HashMap<Integer, String>> songLyrics) {
+        Log.i(TAG, "buildSong: sizeOfSong: " + songLyrics.size());
+        String song = "";
+        for(int i=1; i <= songLyrics.size(); i++){
+            HashMap<Integer, String> songLine = null;
+            songLine = songLyrics.get(i);
+            for(int j = 1; j <= songLine.size(); j++){
+                song = song + songLine.get(j) + " ";
+            }
+            song += "\n";
+        }
+        Log.i(TAG, "buildSong: " + song);
+        song = song.replaceAll("[A-Za-z0-9]", "_");
+        Log.i(TAG, "buildSong: " + song);
+
+        lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
+        lyricsTextView.setText(song);
     }
 
     public void submitGuess(View view) {

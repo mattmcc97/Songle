@@ -140,6 +140,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void guessSong(View view) {
 
+        /*When the guess song button is pressed get the song title using the song number and then
+        pass the song title and the HashMap containing all the lyrics to the song, to the
+        GuessActivity
+         */
         songTitle = getSongTitle(songNumber);
         Log.i(TAG, "guessSong: " + songTitle);
         Intent intent = new Intent(this, GuessSong.class);
@@ -152,7 +156,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String chooseSongNumber(){
         //When the new song button is clicked, a new random song is selected from the available list
         Random rand = new Random();
-        int randomSongNumberInt = rand.nextInt(15) + 1;
+        Log.i(TAG, "chooseSongNumber: sizeOfSongs: " + songs.size());
+        int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
         String randomSongNumber = "";
         if(randomSongNumberInt <= 9){
             randomSongNumber = "0" + randomSongNumberInt;
@@ -452,9 +457,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Integer j = 1;
 
                     //remove the first 7 characters to remove the line numbers and whitespace
-                    //remove punctuation from the string
                     //split the string into the words
-                    for(String word : songLine.substring(7).replaceFirst("\\p{P}+$", "").split(" ")) {
+                    for(String word : songLine.substring(7).split(" ")) {
                         //add the word to the HashMap for that line
                         lineOfSong.put(j, word);
                         j++;
