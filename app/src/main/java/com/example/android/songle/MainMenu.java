@@ -89,6 +89,7 @@ public class MainMenu extends AppCompatActivity{
         if (connectedToNetwork) {
             if (locationServicesAvailable) {
                 Intent intent = new Intent(this, MapsActivity.class);
+                intent.putExtra("listOfSongs", songs);
                 startActivity(intent);
             } else {
                 Snackbar.make(view, "Songle can't get your location. Please ensure you have a " +

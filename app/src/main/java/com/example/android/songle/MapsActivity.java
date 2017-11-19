@@ -72,10 +72,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static Placemark placemark;
     private static HashSet<Placemark> placemarks;
 
-    HashMap<Integer, HashMap<Integer, String>> wholeSong;
+    private HashMap<Integer, HashMap<Integer, String>> wholeSong;
 
-    public String songTitle = "Bohemian Rhapsody";
-
+    private ArrayList<Song> songs;
+    public String songTitle;
     private String songNumber;
 
     private ProgressDialog pgDialog;
@@ -86,6 +86,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         placemarks = new HashSet<>();
+        wholeSong = new HashMap<>();
+        songs = (ArrayList<Song>) getIntent().getExtras().getSerializable("listOfSongs");
+
+        Log.i(TAG, "onCreate: " + songs);
+
+        /*Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(0));
+        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(1));
+        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(2));*/
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -120,10 +128,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private String getSongTitle(String songNum){
+        String songName = "";
+        for(Song song: songs){
+            if(songNum.equals(song.getNumber())){
+                songName = song.getTitle();
+            }
+        }
+        return songName;
+    }
+
     public void guessSong(View view) {
 
+        songTitle = getSongTitle(songNumber);
+        Log.i(TAG, "guessSong: " + songTitle);
         Intent intent = new Intent(this, GuessSong.class);
         intent.putExtra("songTitle", songTitle);
+        intent.putExtra("wholeSong", wholeSong);
         startActivity(intent);
 
     }
@@ -401,6 +422,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // and after that parse the kml map data
             Log.i(TAG, "doInBackground: " + "Started");
             readTextFile(songNumber);
+            Log.i(TAG, "doInBackground: guessSong: " + songNumber);
             return 0;
         }
 

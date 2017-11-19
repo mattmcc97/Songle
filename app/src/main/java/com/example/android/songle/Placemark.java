@@ -2,11 +2,13 @@ package com.example.android.songle;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+
 /**
  * Created by Matthew on 26/10/2017.
  */
 
-public class Placemark {
+public class Placemark implements Serializable {
     public final String word;
     public final String description;
     public final String styleUrl;

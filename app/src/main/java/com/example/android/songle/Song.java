@@ -1,10 +1,14 @@
 package com.example.android.songle;
 
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by Matthew on 18/10/2017.
  */
 
-public class Song {
+public class Song implements Serializable {
     public final String title;
     public final String link;
     public final String number;
