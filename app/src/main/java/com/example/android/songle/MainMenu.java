@@ -37,7 +37,7 @@ public class MainMenu extends AppCompatActivity{
     private static final String xml_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
 
     //An ArrayList containing all of the songs
-    public static ArrayList<Song> songs = new ArrayList<Song>();
+    public static ArrayList<Song> songs;
 
     private static Song song;
 
@@ -82,6 +82,8 @@ public class MainMenu extends AppCompatActivity{
             }
         });
 
+        songs = new ArrayList<Song>();
+
     }
 
     public void newSong(View view){
@@ -89,7 +91,7 @@ public class MainMenu extends AppCompatActivity{
         if (connectedToNetwork) {
             if (locationServicesAvailable) {
                 Intent intent = new Intent(this, MapsActivity.class);
-                intent.putExtra("listOfSongs", songs);
+                intent.putParcelableArrayListExtra("listOfSongs", songs);
                 startActivity(intent);
             } else {
                 Snackbar.make(view, "Songle can't get your location. Please ensure you have a " +

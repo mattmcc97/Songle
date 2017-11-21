@@ -89,14 +89,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         placemarks = new HashSet<>();
         wholeSong = new HashMap<>();
-        songs = (ArrayList<Song>) getIntent().getExtras().getSerializable("listOfSongs");
+        songs =  getIntent().getParcelableArrayListExtra("listOfSongs");
         collectedMarkers = new ArrayList<>();
 
         Log.i(TAG, "onCreate: " + songs);
 
-        /*Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(0));
+        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(0));
         Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(1));
-        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(2));*/
+        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(2));
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -415,7 +415,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             float distance = mLastLocation.distanceTo(markerLocation);
             //7.5f seems a reasonable distance to be away
 
-            if (distance < 20.0f) {
+            if (distance < 2000.0f) {
                 Log.i(TAG, "inside 20: " + marker.getCoordinates() + " - " + marker.getWord());
                 collectableMarkers.add(marker.getCoordinates());
             }

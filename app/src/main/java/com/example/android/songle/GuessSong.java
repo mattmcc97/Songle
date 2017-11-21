@@ -57,7 +57,7 @@ public class GuessSong extends AppCompatActivity {
         });*/
         Log.i(TAG, "onCreate: songTitle: " + getIntent().getStringExtra("songTitle"));
         songTitle = getIntent().getStringExtra("songTitle");
-        wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getExtras().getSerializable("wholeSong");
+        wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getSerializableExtra("wholeSong");
         Log.i(TAG, "onCreate: songTitle: "+ songTitle + " wholeSong: " + wholeSong);
 
         collectedMarkers = (ArrayList<String>) getIntent().getStringArrayListExtra("collectedMarkers");
