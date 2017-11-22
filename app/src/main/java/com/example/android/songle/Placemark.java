@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Created by Matthew on 26/10/2017.
  */
 
-public class Placemark implements Parcelable{
+public class Placemark implements Parcelable, Serializable{
     public final String word;
     public final String location;
     public final String description;

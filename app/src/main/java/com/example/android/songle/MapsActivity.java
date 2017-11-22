@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -65,12 +66,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
 
-    private int userLevel = 2;
+    private int userLevel = 99;
     private String kml_url = "";
     private  String text_url = "";
 
-    private static Placemark placemark;
+    //private static Placemark placemark;
     private static HashSet<Placemark> placemarks;
+
+    //The markers on the map and their song line:number as key
+    private HashMap<String,Marker> hashMapMarkers;
 
     private HashMap<Integer, HashMap<Integer, String>> wholeSong;
 
@@ -78,7 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public String songTitle;
     private String songNumber;
 
-    private ArrayList<String> collectedMarkers;
+    private HashSet<String> collectedMarkers;
 
     private ProgressDialog pgDialog;
 
@@ -90,13 +94,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placemarks = new HashSet<>();
         wholeSong = new HashMap<>();
         songs =  getIntent().getParcelableArrayListExtra("listOfSongs");
-        collectedMarkers = new ArrayList<>();
+        collectedMarkers = new HashSet<>();
+        hashMapMarkers = new HashMap<>();
 
         Log.i(TAG, "onCreate: " + songs);
-
-        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(0));
-        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(1));
-        Log.i("MainMenu", "newSong: listOfSongs: " + songs.get(2));
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -153,8 +154,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra("songTitle", songTitle);
         intent.putExtra("wholeSong", wholeSong);
         intent.putExtra("collectedMarkers", collectedMarkers);
-        startActivity(intent);
+        intent.putExtra("placemarks", placemarks);
+        startActivityForResult(intent, 1);
 
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
+                Log.i(TAG, "onActivityResult: collectedMarkers: " + collectedMarkers);
+                for (String markerLocation : collectedMarkers){
+                    if(hashMapMarkers.containsKey(markerLocation)){
+                        Marker marker = hashMapMarkers.get(markerLocation);
+
+                        marker.remove();
+                        hashMapMarkers.remove(markerLocation);
+                    }
+
+                }
+            }
+        }
     }
 
     private String chooseSongNumber(){
@@ -216,16 +237,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     colour = BitmapDescriptorFactory.HUE_AZURE;
                     break;
             }
-            mMap.addMarker(new MarkerOptions()
+            Marker mapMarker = mMap.addMarker(new MarkerOptions()
                     .position(marker.getCoordinates())
                     .snippet(marker.getDescription())
                     .title(marker.getWord())
                     .alpha(0.82f)
                     .icon(BitmapDescriptorFactory.defaultMarker(colour)));
+            hashMapMarkers.put(marker.getLocation(), mapMarker);
             count++;
         }
         Log.i(TAG, "addMarkers: Number of markers: " + count);
     }
+
+
 
     @Override
     protected void onStart() {
@@ -365,7 +389,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             for(Placemark word : placemarks){
                 Log.i(TAG, "onMarkerClick: word: (" + word.getWord() + " - " + marker.getTitle()+ ")");
                 if(word.getCoordinates().equals(marker.getPosition())){
-                    Log.i(TAG, "onMarkerClick: boom: " + marker.getTitle());
                     lyricLocation = word.getLocation();
                     forRemoval = word;
                 }
@@ -572,12 +595,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .get(Integer.parseInt(lineWord[1]));
 
                             //Instantiate/create a new placemark
-                            placemark = new Placemark(word, location, description, styleUrl, coordinates);
-                            Log.i("Adding to placemarks:", "Coords: " + placemark.getCoordinates()
+                            Placemark newPlacemark = new Placemark(word, location, description, styleUrl, coordinates);
+                            Log.i("Adding to placemarks:", "Coords: " + newPlacemark.getCoordinates()
                             + " Word: " + word);
 
                             //add the new Placemark to the set of placemarks
-                            placemarks.add(placemark);
+                            placemarks.add(newPlacemark);
                         }
                         break;
                 }

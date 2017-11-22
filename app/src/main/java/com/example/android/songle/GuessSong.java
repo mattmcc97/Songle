@@ -2,6 +2,7 @@ package com.example.android.songle;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,8 +25,10 @@ import android.widget.Toast;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 
-public class GuessSong extends AppCompatActivity {
+public class GuessSong extends AppCompatActivity{
 
     private String TAG = "GuessSong";
 
@@ -33,7 +37,8 @@ public class GuessSong extends AppCompatActivity {
 
     private String songTitle = "";
     private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
-    private ArrayList<String> collectedMarkers = null;
+    private HashSet<String> collectedMarkers = null;
+    private HashSet<Placemark> placemarks = null;
 
     private TextView lyricsTextView;
 
@@ -60,8 +65,11 @@ public class GuessSong extends AppCompatActivity {
         wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getSerializableExtra("wholeSong");
         Log.i(TAG, "onCreate: songTitle: "+ songTitle + " wholeSong: " + wholeSong);
 
-        collectedMarkers = (ArrayList<String>) getIntent().getStringArrayListExtra("collectedMarkers");
+        collectedMarkers = (HashSet<String>) getIntent().getSerializableExtra("collectedMarkers");
         Log.i(TAG, "onCreate: songTitle: collectedMarkers: " + collectedMarkers);
+
+        placemarks = (HashSet<Placemark>) getIntent().getSerializableExtra("placemarks");
+        Log.i(TAG, "onCreate: songTitle: placemarks: " + placemarks);
 
         buildSong(wholeSong);
     }
@@ -145,6 +153,7 @@ public class GuessSong extends AppCompatActivity {
 
         alertDialogBuilder.setCustomTitle(title);
 
+
         alertDialogBuilder.setTitle("Spend Songle coin?");
         alertDialogBuilder.setMessage("Are you sure you want to spend a Songle coin? This will" +
                 " reveal 10 words from the song you are playing.");
@@ -152,14 +161,25 @@ public class GuessSong extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        finish();
+                        arg0.dismiss();
+                        spentSongleCoin();
+                        /*int i=0;
+                        for(Placemark placemark : placemarks){
+                            if(i < 10){
+                                collectedMarkers.add(placemark.getLocation());
+                            }else{
+                                break;
+                            }
+                            i++;
+                        }
+                        buildSong(wholeSong);*/
                     }
                 });
 
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                dialog.dismiss();
             }
         });
 
@@ -171,10 +191,56 @@ public class GuessSong extends AppCompatActivity {
         alertDialog.show();
     }
 
+    public void spentSongleCoin(){
+        int numberOfRandomMarkersAdded = 0;
+        while((numberOfRandomMarkersAdded <=10)&&(placemarks.size() - collectedMarkers.size() > 10)){
+            numberOfRandomMarkersAdded = collectRandomMarker(numberOfRandomMarkersAdded);
+            Log.i(TAG, "spentSongleCoin: numberOfRandomMarkersAdded: " + numberOfRandomMarkersAdded);
+        }
+        if(placemarks.size() - collectedMarkers.size() > 10){
+            buildSong(wholeSong);
+        }else{
+            Toast.makeText(GuessSong.this, "There is less than 10 markers to be collected, your" +
+                    " Songle coin can't be redeemed. Please use it on another song.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private int collectRandomMarker(int numberOfRandomMarkersAdded){
+
+        /*
+                This method retrieves a random marker from the HashSet of markers and adds it to
+                the collected markers. This method is called when a songle coin has been spent. If
+                a marker has already been added then it shouldn't be added again.
+                 */
+        Random rand = new Random();
+        int randomMarker = rand.nextInt(placemarks.size());
+        int i = 0;
+        for(Placemark placemark: placemarks){
+            if((i == randomMarker) && (!collectedMarkers.contains(placemark.getLocation()))){
+                collectedMarkers.add(placemark.getLocation());
+                numberOfRandomMarkersAdded++;
+                Log.i(TAG, "collectRandomMarker: SUCCESS: " + "Marker added to collected markers: " +
+                        "collectedMarkers size: " + collectedMarkers.size());
+                i++;
+            }
+        }
+        return numberOfRandomMarkersAdded;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("collectedMarkers", collectedMarkers);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+
     private void backToMainMenu() {
 
         Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
 
     }
+
 }
