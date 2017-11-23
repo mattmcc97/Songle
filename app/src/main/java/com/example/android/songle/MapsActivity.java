@@ -69,7 +69,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
 
-    private int userLevel = 1;
     private String kml_url = "";
     private  String text_url = "";
 
@@ -88,6 +87,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private HashSet<String> collectedMarkers;
 
     private ProgressDialog pgDialog;
+    Dialog levelUpDialog;
+
+    private int userLevel = 0;
+
+    private double distanceWalkedWhilePlaying = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         hashMapMarkers = new HashMap<>();
 
         Log.i(TAG, "onCreate: " + songs);
+
+        //Obtain the user's level from SharedPreferences
+        SharedPreferences scoreAndLevel = getSharedPreferences("score", Context.MODE_PRIVATE);
+        userLevel = scoreAndLevel.getInt("level", 1);
 
         //Execute the methods in the AsyncTask class
         ASyncKMLDownloader downloader = new ASyncKMLDownloader();
@@ -368,6 +376,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location current) {
+
+        //calculate distance the user has moved
+        distanceWalkedWhilePlaying += mLastLocation.distanceTo(current);
+        Log.i(TAG, "onLocationChanged: Distance walked while playing: " + distanceWalkedWhilePlaying);
+
+
         Log.i(TAG, "Running method: onLocationChanged");
         //update location
         mLastLocation = current;
@@ -425,30 +439,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Log.i(TAG, "onMarkerClick: Number of remaining markers: " + placemarks.size());
 
+            //Obtain the score from SharedPreferences and update the score after a marker has been
+            //collected.
             SharedPreferences scoreAndLevel = getSharedPreferences("score", Context.MODE_PRIVATE);
             int currentScore = scoreAndLevel.getInt("score", 0);
             Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
+
             int newScore = currentScore + points;
             SharedPreferences.Editor editor = scoreAndLevel.edit();
             editor.putInt("score", newScore);
             Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
+
             editor.apply();
 
             int currentLevel = scoreAndLevel.getInt("level", 1);
 
+            //Also update the score on the progress bar in the fragment above the map
             TopBarFragment fragment = (TopBarFragment)
                     getFragmentManager().findFragmentById(R.id.top_bar_fragment);
             fragment.updateLevel();
 
+            //Get the users level after a marker is collected
             int newLevel = scoreAndLevel.getInt("level", 1);
 
+            //If the collection of a marker scores the user enough points to level up then a
+            //dialog should popup letting them know, this is done by comparing the level before
+            //and after the marker is collected.
             if(newLevel == (currentLevel+1)){
-                Dialog dialog = new Dialog(this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.level_up);
-                dialog.show();
-                TextView tv = (TextView) dialog.findViewById(R.id.new_level_number_tv);
-                tv.setText(newLevel);
+                levelUpDialog = new Dialog(this);
+                levelUpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                levelUpDialog.setContentView(R.layout.level_up);
+                levelUpDialog.show();
+                TextView tv = (TextView) levelUpDialog.findViewById(R.id.new_level_number_tv);
+                tv.setText("" + newLevel);
+
+                Button okBtn = (Button) levelUpDialog.findViewById(R.id.level_up_ok_button);
+
+                okBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        levelUpDialog.dismiss();
+                    }
+                });
             }
 
         } else {
@@ -488,6 +520,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onPreExecute() {
+            /*
+            When loading the map display a circular loading map that says Loading Map...
+             */
             pgDialog = new ProgressDialog(MapsActivity.this);
             pgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             pgDialog.setMessage("Loading Map...");
@@ -501,7 +536,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected Integer doInBackground(String... params) {
 
             //Call the appropriate methods to read the text file from the url
-            // and after that parse the kml map data
+            //and after that parse the kml map data
             Log.i(TAG, "doInBackground: " + "Started");
             readTextFile(songNumber);
             Log.i(TAG, "doInBackground: guessSong: " + songNumber);
@@ -558,7 +593,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         private XmlPullParser tryDownloadKmlData(String songNumber) {
             try {
+
+                Log.i(TAG, "tryDownloadKmlData: The user is level: " + userLevel);
                 Integer difficulty = getMapDifficulty(userLevel);
+
                 kml_url =
                         "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
                                 "/map" + difficulty + ".kml";

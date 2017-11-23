@@ -36,6 +36,7 @@ public class GuessSong extends AppCompatActivity{
 
     Dialog dialogCorrect;
     Dialog dialogWrong;
+    Dialog levelUpDialog;
 
     private String songTitle = "";
     private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
@@ -106,33 +107,51 @@ public class GuessSong extends AppCompatActivity{
     public void submitGuess(View view) {
         EditText songGuessEt = (EditText) (findViewById(R.id.song_guess_et));
         if (songGuessEt.getText().toString().equalsIgnoreCase(getIntent().getStringExtra("songTitle"))) {
-            dialogCorrect = new Dialog(this);
-            dialogCorrect.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialogCorrect.setContentView(R.layout.dialog_correct_answer);
-            dialogCorrect.show();
-
-            TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
-            songTitleTv.setText(getIntent().getStringExtra("songTitle"));
-
-            Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
-
-            okBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogCorrect.dismiss();
-                    backToMainMenu();
-                }
-            });
 
             //Add 500 points for a correct guess
             SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
+            int currentLevel = sharedPrefs.getInt("level", 1);
             int currentScore = sharedPrefs.getInt("score", 0);
             Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
             int newScore = currentScore + 500;
             SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putInt("score", newScore);
             Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
+
             editor.apply();
+
+            //calculate the users level after the 500 points has been added
+            newScore = sharedPrefs.getInt("score", 1);
+            double level = newScore/1000.0;
+            int integerLevel = (int) level;
+            int newLevel = integerLevel + 1;
+
+            //If the guessing of a song scores the user enough points to level up then a
+            //dialog should popup letting them know, this is done by comparing the level before
+            //and after the marker is collected.
+            Log.i(TAG, "submitGuess: current level: " + currentLevel);
+            Log.i(TAG, "submitGuess: new level: " + newLevel);
+            if(newLevel == (currentLevel+1)){
+                levelUpDialog = new Dialog(this);
+                levelUpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                levelUpDialog.setContentView(R.layout.level_up);
+                levelUpDialog.show();
+                TextView tv = (TextView) levelUpDialog.findViewById(R.id.new_level_number_tv);
+                tv.setText("" + newLevel);
+
+                Button okBtnLevelUp = (Button) levelUpDialog.findViewById(R.id.level_up_ok_button);
+
+                okBtnLevelUp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        levelUpDialog.dismiss();
+                        showCorrectAnswerDialog();
+                    }
+                });
+            }else{
+                showCorrectAnswerDialog();
+            }
+
 
         } else {
             dialogWrong = new Dialog(this);
@@ -150,6 +169,27 @@ public class GuessSong extends AppCompatActivity{
             });
 
         }
+    }
+
+    private void showCorrectAnswerDialog() {
+        dialogCorrect = new Dialog(this);
+        dialogCorrect.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogCorrect.setContentView(R.layout.dialog_correct_answer);
+        dialogCorrect.show();
+
+        TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
+        songTitleTv.setText(getIntent().getStringExtra("songTitle"));
+
+        Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogCorrect.dismiss();
+
+                backToMainMenu();
+            }
+        });
     }
 
     public void spendSongleCoin(View view) {

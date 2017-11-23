@@ -66,6 +66,7 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
 
         SharedPreferences.Editor editor = scoreAndLevel.edit();
         editor.putInt("level", (integerLevel + 1));
+        Log.i("ok", "updateLevel: The user is level: " + (integerLevel +1));
         editor.apply();
 
     }
