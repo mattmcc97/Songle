@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -66,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mLastLocation;
     private static final String TAG = "MapsActivity";
 
-    private int userLevel = 99;
+    private int userLevel = 1;
     private String kml_url = "";
     private  String text_url = "";
 
@@ -374,13 +376,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
         //if the marker clicked is nearby
         if (userCloseToMarker().contains(marker.getPosition())) {
-            int points = 15;
+            int points = 0;
+            String desc = marker.getSnippet();
+            switch (desc) {
+                case ("boring"):
+                    points = 5;
+                    break;
+                case ("notboring"):
+                    points = 10;
+                    break;
+                case ("interesting"):
+                    points = 15;
+                    break;
+                case ("veryinteresting"):
+                    points = 20;
+                    break;
+                case ("unclassified"):
+                    points = 15;
+                    break;
+            }
 
             Toast.makeText(MapsActivity.this, "Well done! You collected the word: "
                             +
                             marker.getTitle()
                             + ". +" + points + " points!",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
 
             //remove the word from the set of lyrics
             //lyric location e.g. 18:13 18th line 13th word
@@ -415,11 +435,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dialog.setContentView(R.layout.level_up);
             dialog.show();*/
 
+            SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
+            int currentScore = sharedPrefs.getInt("score", 0);
+            Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
+            int newScore = currentScore + points;
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putInt("score", newScore);
+            Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
+            editor.apply();
+
         } else {
             //display a message letting the user know they must be closer to the marker to
             //collect it
             Toast.makeText(MapsActivity.this, "You are not close enough to this word to collect it.",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
         }
         return true;
     }

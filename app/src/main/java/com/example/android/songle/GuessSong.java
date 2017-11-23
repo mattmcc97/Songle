@@ -3,8 +3,10 @@ package com.example.android.songle;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -121,6 +123,16 @@ public class GuessSong extends AppCompatActivity{
                     backToMainMenu();
                 }
             });
+
+            //Add 500 points for a correct guess
+            SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
+            int currentScore = sharedPrefs.getInt("score", 0);
+            Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
+            int newScore = currentScore + 500;
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.putInt("score", newScore);
+            Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
+            editor.apply();
 
         } else {
             dialogWrong = new Dialog(this);
