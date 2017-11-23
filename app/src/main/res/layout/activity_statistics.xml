@@ -83,6 +83,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/distance_walked_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4.3km"

@@ -45,6 +45,8 @@ public class GuessSong extends AppCompatActivity{
 
     private TextView lyricsTextView;
 
+    private float distanceWalkedWhilePlaying;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,9 @@ public class GuessSong extends AppCompatActivity{
 
         placemarks = (HashSet<Placemark>) getIntent().getSerializableExtra("placemarks");
         Log.i(TAG, "onCreate: songTitle: placemarks: " + placemarks);
+
+        distanceWalkedWhilePlaying = getIntent().getFloatExtra("distanceWalkedWhilePlaying", 0.0f);
+        Log.i(TAG, "onCreate: distanceWalkedWhilePlaying: " + distanceWalkedWhilePlaying);
 
         buildSong(wholeSong);
     }
@@ -136,6 +141,7 @@ public class GuessSong extends AppCompatActivity{
                 levelUpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 levelUpDialog.setContentView(R.layout.level_up);
                 levelUpDialog.show();
+                levelUpDialog.setCancelable(false);
                 TextView tv = (TextView) levelUpDialog.findViewById(R.id.new_level_number_tv);
                 tv.setText("" + newLevel);
 
@@ -148,6 +154,7 @@ public class GuessSong extends AppCompatActivity{
                         showCorrectAnswerDialog();
                     }
                 });
+
             }else{
                 showCorrectAnswerDialog();
             }
@@ -176,11 +183,20 @@ public class GuessSong extends AppCompatActivity{
         dialogCorrect.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogCorrect.setContentView(R.layout.dialog_correct_answer);
         dialogCorrect.show();
+        dialogCorrect.setCancelable(false);
 
         TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
         songTitleTv.setText(getIntent().getStringExtra("songTitle"));
 
         Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
+
+        //Update the total distance walked when the user leaves the map screen
+        SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+        float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
+        SharedPreferences.Editor editorStats = statistics.edit();
+        editorStats.putFloat("totalDistanceWalked", totalDistanceWalked + distanceWalkedWhilePlaying );
+        editorStats.apply();
+        Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
 
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override

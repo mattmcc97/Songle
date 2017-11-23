@@ -91,7 +91,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private int userLevel = 0;
 
-    private double distanceWalkedWhilePlaying = 0.0;
+    private float distanceWalkedWhilePlaying = 0.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         intent.putExtra("wholeSong", wholeSong);
         intent.putExtra("collectedMarkers", collectedMarkers);
         intent.putExtra("placemarks", placemarks);
+        intent.putExtra("distanceWalkedWhilePlaying", distanceWalkedWhilePlaying);
         startActivityForResult(intent, 1);
 
     }
@@ -265,12 +266,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart() {
         super.onStart();
+        //reset distance walked
+        distanceWalkedWhilePlaying = 0.0f;
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
+        //add distance walked to shared preferences
+        SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+        float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
+        SharedPreferences.Editor editor = statistics.edit();
+        editor.putFloat("totalDistanceWalked", totalDistanceWalked +distanceWalkedWhilePlaying );
+        editor.apply();
+        Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
+
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -332,6 +344,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setCancelable(false)
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        //Update the total distance walked when the user leaves the map screen
+                        SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+                        float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
+                        SharedPreferences.Editor editor = statistics.edit();
+                        editor.putFloat("totalDistanceWalked", totalDistanceWalked +distanceWalkedWhilePlaying );
+                        editor.apply();
+                        Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
                         MapsActivity.this.finish();
                     }
                 })
@@ -378,7 +397,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(Location current) {
 
         //calculate distance the user has moved
-        distanceWalkedWhilePlaying += mLastLocation.distanceTo(current);
+        if(mLastLocation!= null){
+            distanceWalkedWhilePlaying +=  mLastLocation.distanceTo(current);
+        }
         Log.i(TAG, "onLocationChanged: Distance walked while playing: " + distanceWalkedWhilePlaying);
 
 
