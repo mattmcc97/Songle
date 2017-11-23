@@ -18,8 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-public class TopBarFragment extends PreferenceFragment implements View.OnClickListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class TopBarFragment extends PreferenceFragment implements View.OnClickListener{
 
 
     Dialog dialog;
@@ -38,8 +37,18 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         Button helpButton = (Button) myLayout.findViewById(R.id.help_button);
         helpButton.setOnClickListener(this);
 
-        SharedPreferences sharedPrefs = getActivity().getSharedPreferences("score", Context.MODE_PRIVATE);
-        int currentScore = sharedPrefs.getInt("score", 0);
+        levelPb = (ProgressBar) myLayout.findViewById(R.id.level_pb);
+        levelTextView = (TextView) myLayout.findViewById(R.id.level_tv);
+
+        updateLevel();
+
+        return myLayout;
+    }
+
+    public void updateLevel() {
+
+        SharedPreferences scoreAndLevel = getActivity().getSharedPreferences("score", Context.MODE_PRIVATE);
+        int currentScore = scoreAndLevel.getInt("score", 0);
 
         double level = currentScore/1000.0;
         int integerLevel = (int) level;
@@ -48,16 +57,17 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         //4.325 - 4 = 0.325 , 0.325*1000 = 325.
         int levelProgress = (int) ((level - integerLevel)*1000);
 
-        levelPb = (ProgressBar) myLayout.findViewById(R.id.level_pb);
+
         levelPb.setMax(1000);
         levelPb.setProgress(levelProgress);
 
-        levelTextView = (TextView) myLayout.findViewById(R.id.level_tv);
         //add 1 to level so user starts at level 1 not level 0
         levelTextView.setText("Level " + (integerLevel + 1));
 
+        SharedPreferences.Editor editor = scoreAndLevel.edit();
+        editor.putInt("level", (integerLevel + 1));
+        editor.apply();
 
-        return myLayout;
     }
 
 
@@ -84,17 +94,5 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         super.onResume();
         //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(getActivity());
 
-    }
-
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.i("beep", "onSharedPreferenceChanged: nochance");
-        if (key.equals("points"))
-        {
-            /* Set summary to be the user-description for the selected value
-            Preference exercisesPref = findPreference(key);
-            exercisesPref.setSummary(sharedPreferences.getString(key, ""));*/
-        }
     }
 }

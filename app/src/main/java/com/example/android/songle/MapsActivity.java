@@ -25,6 +25,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -417,32 +418,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i(TAG, "onMarkerClick: " + lyricLocation);
             collectedMarkers.add(lyricLocation);
 
-            /*String[] lineWord = lyricLocation.split(":");
-            Log.i(TAG, "onMarkerClick: wordRemoved: " +
-                    wholeSong.get(Integer.parseInt(lineWord[0])).get(Integer.parseInt(lineWord[1])));
-            Log.i(TAG, "onMarkerClick: wordRemoved: " + lyricLocation + wholeSong);
-
-            wholeSong.get(Integer.parseInt(lineWord[0])).get(Integer.parseInt(lineWord[1]));*/
-
             placemarks.remove(forRemoval);
 
             //remove the marker from the map and show a toast
             marker.remove();
 
             Log.i(TAG, "onMarkerClick: Number of remaining markers: " + placemarks.size());
-            /*Dialog dialog = new Dialog(this);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.level_up);
-            dialog.show();*/
 
-            SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
-            int currentScore = sharedPrefs.getInt("score", 0);
+            SharedPreferences scoreAndLevel = getSharedPreferences("score", Context.MODE_PRIVATE);
+            int currentScore = scoreAndLevel.getInt("score", 0);
             Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
             int newScore = currentScore + points;
-            SharedPreferences.Editor editor = sharedPrefs.edit();
+            SharedPreferences.Editor editor = scoreAndLevel.edit();
             editor.putInt("score", newScore);
             Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
             editor.apply();
+
+            int currentLevel = scoreAndLevel.getInt("level", 1);
+
+            TopBarFragment fragment = (TopBarFragment)
+                    getFragmentManager().findFragmentById(R.id.top_bar_fragment);
+            fragment.updateLevel();
+
+            int newLevel = scoreAndLevel.getInt("level", 1);
+
+            if(newLevel == (currentLevel+1)){
+                Dialog dialog = new Dialog(this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.level_up);
+                dialog.show();
+                TextView tv = (TextView) dialog.findViewById(R.id.new_level_number_tv);
+                tv.setText(newLevel);
+            }
 
         } else {
             //display a message letting the user know they must be closer to the marker to

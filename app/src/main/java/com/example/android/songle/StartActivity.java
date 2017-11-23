@@ -43,5 +43,11 @@ public class StartActivity extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    protected void onResume() {
+        TopBarFragment fragment = (TopBarFragment)
+                getFragmentManager().findFragmentById(R.id.top_bar_fragment);
+        fragment.updateLevel();
+        super.onResume();
+    }
 }

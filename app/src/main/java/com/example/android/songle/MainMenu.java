@@ -172,6 +172,14 @@ public class MainMenu extends AppCompatActivity{
                 && networkInfo.isConnected();
     }
 
+    @Override
+    protected void onResume() {
+        TopBarFragment fragment = (TopBarFragment)
+                getFragmentManager().findFragmentById(R.id.top_bar_fragment);
+        fragment.updateLevel();
+        super.onResume();
+    }
+
     private class AsyncXMLDownloader extends AsyncTask<Object, String, Integer>{
 
         @Override
