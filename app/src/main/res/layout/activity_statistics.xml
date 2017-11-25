@@ -50,6 +50,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/total_play_time_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="3hr 56m"
@@ -127,6 +128,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/number_of_markers_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="214"
@@ -160,6 +162,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/number_of_songle_coins_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="4"
@@ -204,6 +207,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/number_of_guesses_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="27"
@@ -237,6 +241,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/number_of_correct_guesses_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="5"

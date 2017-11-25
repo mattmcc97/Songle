@@ -58,360 +58,69 @@
             android:layout_marginTop="30dp"
             android:background="@color/colorAccent" />
 
-        <!--
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="@string/incomplete_songs"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="26sp" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/incomplete_song"
-            android:textSize="20sp"
-            android:elevation="10dp"
-            android:stateListAnimator="@null"
-            android:background="@drawable/rounded_rectangular_button"
-            android:layout_margin="20dp"
-            android:theme="@+style/PrimaryButton"/> -->
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:weightSum="1">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="18dp"
-                    android:layout_marginTop="12dp"
-                    android:text="Incomplete Songs"
-                    android:textSize="14sp" />
+                <ScrollView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:fillViewport="true">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="30" />
+                        <TextView
+                            android:id="@+id/incomplete_songs_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginLeft="18dp"
+                            android:text="Incomplete Songs"
+                            android:textSize="14sp" />
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Song 1"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99"
-                        android:onClick="giveUpOnSong" />
+                        <ListView
+                            android:id="@+id/incomplete_songs_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/incomplete_complete_separator"
+                            android:layout_below="@+id/incomplete_songs_tv">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/give_up_icon"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp" />
+                        </ListView>
 
-                </LinearLayout>
+                        <View
+                            android:id="@+id/incomplete_complete_separator"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@color/colorAccent" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
+                        <TextView
+                            android:id="@+id/complete_songs_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginLeft="18dp"
+                            android:text="Completed Songs"
+                            android:textSize="14sp" />
 
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="75" />
+                        <ListView
+                            android:id="@+id/completed_songs_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/complete_songs_tv">
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Song 2"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99"
-                        android:onClick="showToast" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/give_up_icon"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="53" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Song 3"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/give_up_icon"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp" />
-
-                </LinearLayout>
-
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/colorAccent" />
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="18dp"
-                    android:layout_marginTop="12dp"
-                    android:text="Completed Songs" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="100" />
-
-                    <Button
-                        android:id="@+id/youtube_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Bohemian Rhapsody"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_youtube"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="100" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="I Fought the Law"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_youtube"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="100" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Life on Mars?"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_youtube"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="100" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Nothing Compares 2 U"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_youtube"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:weightSum="1">
-
-                    <ProgressBar
-                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="20dp"
-                        android:progress="100" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:paddingLeft="24dp"
-                        android:paddingTop="8dp"
-                        android:text="Mr. Brightside"
-                        android:textAlignment="viewStart"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        android:layout_weight="0.99" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_youtube"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginLeft="16dp"
-                        android:paddingTop="8dp" />
-
-                </LinearLayout>
-
+                        </ListView>
+                    </RelativeLayout>
+                </ScrollView>
 
             </LinearLayout>
-
-
-        </ScrollView>
 
 
     </LinearLayout>

@@ -141,7 +141,7 @@
                 android:gravity="center_horizontal" />
 
             <Button
-                android:id="@+id/help_ok_button"
+                android:id="@+id/congratulations_ok_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?android:attr/selectableItemBackground"

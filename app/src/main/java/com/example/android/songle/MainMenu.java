@@ -16,8 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +49,9 @@ public class MainMenu extends AppCompatActivity{
     public static final String VIDEO_ID = "fJ9rUzIMcZQ";
     Button youtubeButton;
 
+    ArrayList<String> incompleteSongs;
+    ArrayList<String> completeSongs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +61,14 @@ public class MainMenu extends AppCompatActivity{
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
 
+        /*
+
         youtubeButton = (Button) this.findViewById(R.id.youtube_button);
         youtubeButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                /**
+                *
                  * Calling youtube stand alone player
                  *
                  * You should read this parameter to change them
@@ -74,25 +79,59 @@ public class MainMenu extends AppCompatActivity{
                  *timeMillis*  The time, in milliseconds, where playback should start in the video.
                  *autoplay*  true to have the video start playback as soon as the standalone player loads, false to cue the video.
                  *lightboxMode*  true to have the video play in a dialog view above your current Activity, false to have the video play fullscreen.
-                 */
+
                 Intent intent = YouTubeStandalonePlayer.createVideoIntent(
                         MainMenu.this, API_KEY, VIDEO_ID, 0, true, true);
                 startActivity(intent);
 
             }
         });
+        */
 
         songs = new ArrayList<Song>();
 
+        incompleteSongs = new ArrayList<String>();
+        incompleteSongs.add("item3");
+        incompleteSongs.add("item1");
+        incompleteSongs.add("item2");
+        incompleteSongs.add("item3");
+        incompleteSongs.add("item1");
+        incompleteSongs.add("item2");
+        incompleteSongs.add("item3");
+        incompleteSongs.add("item1");
+        incompleteSongs.add("item2");
+
+        completeSongs = new ArrayList<String>();
+        completeSongs.add("Bohemian Rhapsody");
+        completeSongs.add("Song 2");
+
+        //instantiate custom adapter
+        IncompleteSongsArrayAdapter adapter = new IncompleteSongsArrayAdapter(incompleteSongs, this);
+
+        //handle listview and assign adapter
+        ListView incompleteSongs = (ListView)findViewById(R.id.incomplete_songs_list);
+        incompleteSongs.setAdapter(adapter);
+
+        ListView completeSongs = (ListView)findViewById(R.id.completed_songs_list);
+        completeSongs.setAdapter(adapter);
+
+        Utility.setListViewHeightBasedOnChildren(incompleteSongs);
+        Utility.setListViewHeightBasedOnChildren(completeSongs);
     }
 
     public void newSong(View view){
         //When the new song button is clicked, open the MapsActivity
         if (connectedToNetwork) {
             if (locationServicesAvailable) {
-                Intent intent = new Intent(this, MapsActivity.class);
-                intent.putParcelableArrayListExtra("listOfSongs", songs);
-                startActivity(intent);
+                if(songs.size() > 0){
+                    Intent intent = new Intent(this, MapsActivity.class);
+                    intent.putParcelableArrayListExtra("listOfSongs", songs);
+                    startActivity(intent);
+                }else{
+                    Snackbar.make(view, "Sorry, no songs are available at the minute. " +
+                            "Please try again later.", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
             } else {
                 Snackbar.make(view, "Songle can't get your location. Please ensure you have a " +
                         "mobile signal and location services enabled.", Snackbar.LENGTH_LONG)

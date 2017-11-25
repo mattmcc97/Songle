@@ -9,22 +9,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,10 +48,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -88,10 +83,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ProgressDialog pgDialog;
     Dialog levelUpDialog;
+    Dialog songleCoinCollectedDialog;
 
     private int userLevel = 0;
 
+    //Statistics
     private float distanceWalkedWhilePlaying = 0.0f;
+    long startTime;
+    long endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         songs =  getIntent().getParcelableArrayListExtra("listOfSongs");
         collectedMarkers = new HashSet<>();
         hashMapMarkers = new HashMap<>();
+        startTime = Calendar.getInstance().getTimeInMillis();
 
         Log.i(TAG, "onCreate: " + songs);
 
@@ -283,11 +283,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editor.apply();
         Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
 
+        long totalTimePlayed = statistics.getLong("totalPlayTime", Context.MODE_PRIVATE);
+        endTime = Calendar.getInstance().getTimeInMillis();
+        long elapsedTime = (endTime - startTime)/1000;
+        editor.putLong("totalPlayTime", totalTimePlayed + elapsedTime);
+        Log.i(TAG, "onStop: totalPlayTime: Elapsed Time: " + elapsedTime);
+        editor.apply();
+        totalTimePlayed = statistics.getLong("totalPlayTime", Context.MODE_PRIVATE);
+        Log.i(TAG, "onStop: totalPlayTime: Total Time: " + totalTimePlayed);
+
+
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startTime = Calendar.getInstance().getTimeInMillis();
+    }
 
     protected void createLocationRequest() {
         // Set the parameters for the location request
@@ -344,13 +359,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setCancelable(false)
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //Update the total distance walked when the user leaves the map screen
-                        SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
-                        float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
-                        SharedPreferences.Editor editor = statistics.edit();
-                        editor.putFloat("totalDistanceWalked", totalDistanceWalked +distanceWalkedWhilePlaying );
-                        editor.apply();
-                        Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
                         MapsActivity.this.finish();
                     }
                 })
@@ -398,7 +406,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //calculate distance the user has moved
         if(mLastLocation!= null){
+            SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+            float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
+            int totalKilometres = (int) (totalDistanceWalked/1000);
+            Log.i(TAG, "onLocationChanged: totalKilometres: " + totalKilometres);
             distanceWalkedWhilePlaying +=  mLastLocation.distanceTo(current);
+            Log.i(TAG, "onLocationChanged: totalMetresToNextCoin: " + ((totalKilometres+1) * 1000.0f));
+            Log.i(TAG, "onLocationChanged: totalMetres: " + (totalDistanceWalked + distanceWalkedWhilePlaying));
+            if(totalDistanceWalked + distanceWalkedWhilePlaying > ((totalKilometres+1) * 1000.0f)){
+                SharedPreferences.Editor editor = statistics.edit();
+                editor.putFloat("totalDistanceWalked", (totalDistanceWalked +distanceWalkedWhilePlaying) );
+                editor.apply();
+
+                songleCoinCollectedDialog = new Dialog(this);
+                songleCoinCollectedDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                songleCoinCollectedDialog.setContentView(R.layout.congratulations_songle_coin);
+                songleCoinCollectedDialog.show();
+
+                Button okBtn = (Button) songleCoinCollectedDialog.findViewById(R.id.congratulations_ok_button);
+
+                okBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        songleCoinCollectedDialog.dismiss();
+                    }
+                });
+
+                distanceWalkedWhilePlaying = 0.0f;
+
+                SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+                int totalNumberOfCoins = songleCoins.getInt("totalNumberOfCoins", 0);
+                int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
+                SharedPreferences.Editor editorSongleCoins = songleCoins.edit();
+                editorSongleCoins.putInt("totalNumberOfCoins", (totalNumberOfCoins + 1) );
+                editorSongleCoins.putInt("currentNumberOfCoins", (currentNumberOfCoins + 1));
+                editorSongleCoins.apply();
+            }
+
+
+            LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+
         }
         Log.i(TAG, "onLocationChanged: Distance walked while playing: " + distanceWalkedWhilePlaying);
 
@@ -412,6 +460,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
         //if the marker clicked is nearby
         if (userCloseToMarker().contains(marker.getPosition())) {
+
+            //Adding to shared preferences the total number of markers collected for statistics page
+            SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+            int LifetimeNumberOfMarkersCollected =
+                    statistics.getInt("LifetimeNumberOfMarkersCollected", 0);
+            SharedPreferences.Editor editorStats = statistics.edit();
+            editorStats.putInt("LifetimeNumberOfMarkersCollected",
+                    LifetimeNumberOfMarkersCollected + 1);
+            editorStats.apply();
+            Log.i(TAG, "onMarkerClick: LifetimeNumberOfMarkersCollected: " +
+                    statistics.getInt("LifetimeNumberOfMarkersCollected", 0));
+
+
             int points = 0;
             String desc = marker.getSnippet();
             switch (desc) {

@@ -79,7 +79,18 @@ public class GuessSong extends AppCompatActivity{
         distanceWalkedWhilePlaying = getIntent().getFloatExtra("distanceWalkedWhilePlaying", 0.0f);
         Log.i(TAG, "onCreate: distanceWalkedWhilePlaying: " + distanceWalkedWhilePlaying);
 
+        updateNumberOfSongleCoinsText();
+
         buildSong(wholeSong);
+    }
+
+    private void updateNumberOfSongleCoinsText() {
+
+        SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+        int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
+        TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
+        numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins  + " Songle coins available.");
+
     }
 
     private void buildSong(HashMap<Integer, HashMap<Integer, String>> songLyrics) {
@@ -111,7 +122,29 @@ public class GuessSong extends AppCompatActivity{
 
     public void submitGuess(View view) {
         EditText songGuessEt = (EditText) (findViewById(R.id.song_guess_et));
+
+        //Adding to shared preferences the total number of guesses for statistics page
+        SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
+        int numberOfGuesses =
+                statistics.getInt("NumberOfGuesses", 0);
+        SharedPreferences.Editor editorStats = statistics.edit();
+        editorStats.putInt("NumberOfGuesses",
+                numberOfGuesses + 1);
+        editorStats.apply();
+        Log.i(TAG, "submitGuess: NumberOfGuesses: " +
+                statistics.getInt("NumberOfGuesses", 0));
+
+        //If the guess is correct
         if (songGuessEt.getText().toString().equalsIgnoreCase(getIntent().getStringExtra("songTitle"))) {
+
+            //Adding to shared preferences the total number of correctGuesses for statistics page
+            int numberOfCorrectGuesses =
+                    statistics.getInt("NumberOfCorrectGuesses", 0);
+            editorStats.putInt("NumberOfCorrectGuesses",
+                    numberOfCorrectGuesses + 1);
+            editorStats.apply();
+            Log.i(TAG, "submitGuess: NumberOfCorrectGuesses: " +
+                    statistics.getInt("NumberOfCorrectGuesses", 0));
 
             //Add 500 points for a correct guess
             SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
@@ -209,54 +242,68 @@ public class GuessSong extends AppCompatActivity{
     }
 
     public void spendSongleCoin(View view) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-        TextView title = new TextView(this);
-        title.setText("Spend Songle coin?");
-        title.setPadding(10, 50, 10, 0);
-        title.setTextColor(Color.DKGRAY);
-        title.setTypeface(null, Typeface.BOLD);
-        title.setGravity(Gravity.CENTER);
-        title.setTextSize(20);
+        SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+        int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
+        if(currentNumberOfCoins > 0){
 
-        alertDialogBuilder.setCustomTitle(title);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            TextView title = new TextView(this);
+            title.setText("Spend Songle coin?");
+            title.setPadding(10, 50, 10, 0);
+            title.setTextColor(Color.DKGRAY);
+            title.setTypeface(null, Typeface.BOLD);
+            title.setGravity(Gravity.CENTER);
+            title.setTextSize(20);
+
+            alertDialogBuilder.setCustomTitle(title);
 
 
-        alertDialogBuilder.setTitle("Spend Songle coin?");
-        alertDialogBuilder.setMessage("Are you sure you want to spend a Songle coin? This will" +
-                " reveal 10 words from the song you are playing.");
-        alertDialogBuilder.setPositiveButton("Spend",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        arg0.dismiss();
-                        spentSongleCoin();
-                        /*int i=0;
-                        for(Placemark placemark : placemarks){
-                            if(i < 10){
-                                collectedMarkers.add(placemark.getLocation());
-                            }else{
-                                break;
-                            }
-                            i++;
+            alertDialogBuilder.setTitle("Spend Songle coin?");
+            alertDialogBuilder.setMessage("Are you sure you want to spend a Songle coin? This will" +
+                    " reveal 10 words from the song you are playing.");
+            alertDialogBuilder.setPositiveButton("Spend",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            arg0.dismiss();
+                            spentSongleCoin();
+                            decrementNumberOfSongleCoins();
+                            updateNumberOfSongleCoinsText();
                         }
-                        buildSong(wholeSong);*/
-                    }
-                });
+                    });
 
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+            alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
 
-        TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
-        messageText.setGravity(Gravity.CENTER);
-        alertDialog.show();
+            TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+            messageText.setGravity(Gravity.CENTER);
+            alertDialog.show();
+
+        }else{
+
+            Snackbar.make(view, "Sorry, you do not have any Songle coins " +
+                    "available at the moment.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+        }
+
+    }
+
+    private void decrementNumberOfSongleCoins() {
+        SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+        int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
+        SharedPreferences.Editor editorSongleCoins = songleCoins.edit();
+        editorSongleCoins.putInt("currentNumberOfCoins", (currentNumberOfCoins - 1));
+        editorSongleCoins.apply();
     }
 
     public void spentSongleCoin(){
