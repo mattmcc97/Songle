@@ -171,6 +171,19 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View view) {
 
+                            /*
+                            * Calling youtube stand alone player
+                            *
+                            * You should read this parameter to change them
+                            * Parameters
+                            *activity*  The calling activity from which the standalone player will be started.
+                            *developerKey*  A valid API key which is enabled to use the YouTube Data API v3 service. To generate a new key, visit the Google APIs Console.
+                            *videoId*  The id of the video to be played.
+                            *timeMillis*  The time, in milliseconds, where playback should start in the video.
+                            *autoplay*  true to have the video start playback as soon as the standalone player loads, false to cue the video.
+                            *lightboxMode*  true to have the video play in a dialog view above your current Activity, false to have the video play fullscreen.
+                            */
+
                             try{
                                 view.getContext().startActivity(YouTubeStandalonePlayer.createVideoIntent(
                                         activity, API_KEY, object.link, 0, true, true));
@@ -204,41 +217,6 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         }
     }
 
-
-    /*@Override
-    public void onBindViewHolder(MyViewHolder myViewHolder, final int position) {
-
-        //myViewHolder.textview.setText(data.get(position).title);
-        //myViewHolder.imageView.setImageResource(data.get(position).imageId);
-        myViewHolder.songNumber.setText(incompleteSongs.get(position).title);
-        myViewHolder.songProgress.setProgress(incompleteSongs.get(position).progress);
-
-
-        previousPosition = position;
-
-        final int currentPosition = position;
-        final IncompleteSong incompleteSong = incompleteSongs.get(position);
-
-        myViewHolder.songNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(context, "song OnClick Called at position " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        myViewHolder.giveUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(context, "give up OnClick Called at position " + position, Toast.LENGTH_SHORT).show();
-                removeItem(incompleteSong);
-            }
-        });
-
-
-    }*/
-
     @Override
     public int getItemCount() {
         return dataSet.size();
@@ -252,11 +230,6 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         dataSet.remove(currPosition);
         notifyItemRemoved(currPosition);
     }
-    /*
-    // This method adds(duplicates) a Object (item ) to our Data set as well as Recycler View.
-    private void addItem(int position, IncompleteSong song) {
 
-        incompleteSongs.add(position, song);
-        notifyItemInserted(position);
-    }*/
+
 }

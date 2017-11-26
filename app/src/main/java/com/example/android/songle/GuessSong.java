@@ -235,7 +235,6 @@ public class GuessSong extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 dialogCorrect.dismiss();
-
                 backToMainMenu();
             }
         });
@@ -354,6 +353,7 @@ public class GuessSong extends AppCompatActivity{
     private void backToMainMenu() {
 
         Intent intent = new Intent(this, MainMenu.class);
+        intent.putExtra("songTitle", songTitle);
         startActivity(intent);
 
     }

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -29,14 +30,21 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlPullParser;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainMenu extends AppCompatActivity{
 
     //URL
     private static final String xml_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
+    private static final String TAG = "MainMenu";
 
     //An ArrayList containing all of the songs
     public static ArrayList<Song> songs;
@@ -51,54 +59,37 @@ public class MainMenu extends AppCompatActivity{
     public static final String VIDEO_ID = "fJ9rUzIMcZQ";
     Button youtubeButton;
 
-    //ArrayList<IncompleteSong> incompleteSongs;
-    ListView incompleteSongsList, completeSongsList;
-
-    RecyclerView recyclerViewIncomplete;
-    RecyclerView recyclerViewCompleted;
-
-    MultiViewTypeSongsAdapter adapterIncomplete;
+    //HashMap containing the SongTitle (as the key) and the Youtube link
+    HashMap<String, String> completedSongs;
+    String completedSongTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        songs = new ArrayList<Song>();
+
+        completedSongs = new HashMap<>();
+        /*try
+        {
+            FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(completedSongs);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
         //Execute the methods in the AsyncTask class
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
-
-        /*
-
-        youtubeButton = (Button) this.findViewById(R.id.youtube_button);
-        youtubeButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                *
-                 * Calling youtube stand alone player
-                 *
-                 * You should read this parameter to change them
-                 * Parameters
-                 *activity*  The calling activity from which the standalone player will be started.
-                 *developerKey*  A valid API key which is enabled to use the YouTube Data API v3 service. To generate a new key, visit the Google APIs Console.
-                 *videoId*  The id of the video to be played.
-                 *timeMillis*  The time, in milliseconds, where playback should start in the video.
-                 *autoplay*  true to have the video start playback as soon as the standalone player loads, false to cue the video.
-                 *lightboxMode*  true to have the video play in a dialog view above your current Activity, false to have the video play fullscreen.
-
-                Intent intent = YouTubeStandalonePlayer.createVideoIntent(
-                        MainMenu.this, API_KEY, VIDEO_ID, 0, true, true);
-                startActivity(intent);
-
-            }
-        });
-        */
 
         ArrayList list= new ArrayList();
         list.add(new Model(Model.INCOMPLETE_TYPE,"Song 1",53, ""));
         list.add(new Model(Model.INCOMPLETE_TYPE,"Song 2",88, ""));
         list.add(new Model(Model.INCOMPLETE_TYPE,"Song 3",22, ""));
+        list.add(new Model(Model.SEPARATOR, "Completed Songs",0, ""));
         list.add(new Model(Model.COMPLETE_TYPE,"Bohemian Rhapsody",100, "fJ9rUzIMcZQ"));
         list.add(new Model(Model.COMPLETE_TYPE,"I Fought The Law",100, "AL8chWFuM-s"));
         list.add(new Model(Model.COMPLETE_TYPE,"Life On Mars?",100, "v--IqqusnNQ"));
@@ -123,7 +114,7 @@ public class MainMenu extends AppCompatActivity{
                 if(songs.size() > 0){
                     Intent intent = new Intent(this, MapsActivity.class);
                     intent.putParcelableArrayListExtra("listOfSongs", songs);
-                    startActivity(intent);
+                    startActivityForResult(intent, 1);
                 }else{
                     Snackbar.make(view, "Sorry, no songs are available at the minute. " +
                             "Please try again later.", Snackbar.LENGTH_LONG)
@@ -137,6 +128,53 @@ public class MainMenu extends AppCompatActivity{
         } else {
             Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+        }
+    }
+
+    private void populateCompletedSongs(){
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/CompletedSongs.ser");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            completedSongs = (HashMap)objectInputStream.readObject();
+            Log.i(TAG, "populateCompletedSongs: initial read from file: " + completedSongs);
+            objectInputStream.close();
+        }
+        catch(ClassNotFoundException | IOException | ClassCastException e) {
+            e.printStackTrace();
+        }
+
+        Log.i(TAG, "populateCompletedSongs: completedSongs before adding new one: " + completedSongs);
+
+        completedSongTitle = getIntent().getStringExtra("songTitle");
+        if(completedSongTitle != null){
+            Log.i(TAG, "populateCompletedSongs: songLink: not null sizeOfSongs: " + songs.size());
+            for (Song song: songs){
+                if(song.getTitle().equals(completedSongTitle)){
+                    Log.i(TAG, "populateCompletedSongs: songLink: " + song.getLink());
+                    completedSongs.put(completedSongTitle, song.getLink());
+                }
+            }
+        }
+        Log.i(TAG, "populateCompletedSongs: completedSongs: after read from file about to write: " + completedSongs);
+        try
+        {
+            FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(completedSongs);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+
+            }
         }
     }
 
@@ -223,6 +261,7 @@ public class MainMenu extends AppCompatActivity{
             //Call the appropriate methods to download and parse the xml data
             XmlPullParser receivedData = tryDownloadXmlData();
             int songsFound = tryParseXmlData(receivedData);
+            populateCompletedSongs();
             return songsFound;
         }
 

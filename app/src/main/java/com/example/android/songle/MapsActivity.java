@@ -68,10 +68,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  String text_url = "";
 
     //private static Placemark placemark;
+
+    //A set of all the placemarks for the song.
     private static HashSet<Placemark> placemarks;
 
     //The markers on the map and their song line:number as key
     private HashMap<String,Marker> hashMapMarkers;
+
+    //The markers that have been collected when a user previously attempted the song.
+    private HashMap<String,Marker> incompleteSongCollectedMarkers;
+
 
     private HashMap<Integer, HashMap<Integer, String>> wholeSong;
 
@@ -359,11 +365,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setCancelable(false)
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent();
+                        intent.putExtra("collectedMarkers", incompleteSongCollectedMarkers);
+                        intent.putExtra("songTitle",songTitle);
+                        setResult(RESULT_OK, intent);
                         MapsActivity.this.finish();
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+
+
     }
 
     /**

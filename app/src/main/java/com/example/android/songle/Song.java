@@ -36,7 +36,8 @@ public class Song implements Parcelable {
     }
 
     public String getLink() {
-        return link;
+        String idOfLink = (link.split("/"))[3];
+        return idOfLink;
     }
 
 
