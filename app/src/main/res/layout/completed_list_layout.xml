@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content" >
 
     <LinearLayout
         android:id="@+id/song_three"
@@ -9,39 +9,36 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="10dp"
-        android:weightSum="1">
+        android:weightSum="100">
 
         <ProgressBar
-            android:id="@+id/list_item_progress_bar"
+            android:id="@+id/complete_list_item_progress_bar"
             style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
-            android:progress="53" />
+            android:progress="100" />
 
         <Button
-            android:id="@+id/list_item_song"
+            android:id="@+id/complete_list_item_song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.99"
             android:background="?android:attr/selectableItemBackground"
             android:paddingLeft="24dp"
             android:paddingTop="8dp"
-            android:text="Song 3"
             android:textAlignment="viewStart"
             android:textAllCaps="false"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_weight="99.99"/>
 
         <Button
-            android:id="@+id/list_item_give_up"
+            android:id="@+id/complete_list_item_youtube"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:background="@drawable/circle_button"
-            android:foreground="@drawable/give_up_icon"
-            android:stateListAnimator="@null"
-            android:theme="@style/PrimaryButton" />
+            android:layout_marginTop="10dp"
+            android:foreground="@drawable/ic_youtube"/>
 
     </LinearLayout>
 

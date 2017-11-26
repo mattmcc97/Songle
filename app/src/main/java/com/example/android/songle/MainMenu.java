@@ -13,6 +13,10 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -28,8 +32,6 @@ import org.xmlpull.v1.XmlPullParser;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 public class MainMenu extends AppCompatActivity{
 
@@ -49,8 +51,13 @@ public class MainMenu extends AppCompatActivity{
     public static final String VIDEO_ID = "fJ9rUzIMcZQ";
     Button youtubeButton;
 
-    ArrayList<String> incompleteSongs;
-    ArrayList<String> completeSongs;
+    //ArrayList<IncompleteSong> incompleteSongs;
+    ListView incompleteSongsList, completeSongsList;
+
+    RecyclerView recyclerViewIncomplete;
+    RecyclerView recyclerViewCompleted;
+
+    MultiViewTypeSongsAdapter adapterIncomplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,35 +95,25 @@ public class MainMenu extends AppCompatActivity{
         });
         */
 
-        songs = new ArrayList<Song>();
+        ArrayList list= new ArrayList();
+        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 1",53, ""));
+        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 2",88, ""));
+        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 3",22, ""));
+        list.add(new Model(Model.COMPLETE_TYPE,"Bohemian Rhapsody",100, "fJ9rUzIMcZQ"));
+        list.add(new Model(Model.COMPLETE_TYPE,"I Fought The Law",100, "AL8chWFuM-s"));
+        list.add(new Model(Model.COMPLETE_TYPE,"Life On Mars?",100, "v--IqqusnNQ"));
+        list.add(new Model(Model.COMPLETE_TYPE,"Nothing Compares 2 U",100, "SJwb_KXWsbk"));
 
-        incompleteSongs = new ArrayList<String>();
-        incompleteSongs.add("item3");
-        incompleteSongs.add("item1");
-        incompleteSongs.add("item2");
-        incompleteSongs.add("item3");
-        incompleteSongs.add("item1");
-        incompleteSongs.add("item2");
-        incompleteSongs.add("item3");
-        incompleteSongs.add("item1");
-        incompleteSongs.add("item2");
 
-        completeSongs = new ArrayList<String>();
-        completeSongs.add("Bohemian Rhapsody");
-        completeSongs.add("Song 2");
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(list,this,MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
 
-        //instantiate custom adapter
-        IncompleteSongsArrayAdapter adapter = new IncompleteSongsArrayAdapter(incompleteSongs, this);
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(adapter);
 
-        //handle listview and assign adapter
-        ListView incompleteSongs = (ListView)findViewById(R.id.incomplete_songs_list);
-        incompleteSongs.setAdapter(adapter);
 
-        ListView completeSongs = (ListView)findViewById(R.id.completed_songs_list);
-        completeSongs.setAdapter(adapter);
-
-        Utility.setListViewHeightBasedOnChildren(incompleteSongs);
-        Utility.setListViewHeightBasedOnChildren(completeSongs);
     }
 
     public void newSong(View view){
@@ -289,7 +286,11 @@ public class MainMenu extends AppCompatActivity{
                             link = xmlData.nextText();
                             song = new Song(title, number, link, artist);
                             Log.i("Adding to songs:", "Title: " + song.getTitle());
-                            songs.add(song);
+                            try {
+                                songs.add(song);
+                            }catch (NullPointerException e){
+                                Log.e("MainMenu ", "processReceivedData: ", e);
+                            }
                         }
                         break;
                 }

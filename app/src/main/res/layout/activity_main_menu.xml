@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.android.songle.MainMenu"
     android:orientation="vertical">
 
@@ -14,116 +15,132 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/new_song_button"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/rounded_rectangular_button"
-            android:elevation="10dp"
-            android:onClick="newSong"
-            android:stateListAnimator="@null"
-            android:text="@string/new_song"
-            android:textAllCaps="false"
-            android:textSize="20sp"
-            android:theme="@+style/PrimaryButton" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/statistics_button"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/rounded_rectangular_button"
-            android:elevation="10dp"
-            android:onClick="viewStatistics"
-            android:stateListAnimator="@null"
-            android:text="@string/statistics"
-            android:textAllCaps="false"
-            android:textSize="20sp"
-            android:theme="@+style/PrimaryButton" />
+            <Button
+                android:id="@+id/new_song_button"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/rounded_rectangular_button"
+                android:elevation="10dp"
+                android:onClick="newSong"
+                android:stateListAnimator="@null"
+                android:text="@string/new_song"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                android:theme="@+style/PrimaryButton"
+                app:layout_constraintBottom_toTopOf="@+id/statistics_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="30dp"
-            android:background="@color/colorAccent" />
+            <Button
+                android:id="@+id/statistics_button"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/rounded_rectangular_button"
+                android:elevation="10dp"
+                android:onClick="viewStatistics"
+                android:stateListAnimator="@null"
+                android:text="@string/statistics"
+                android:textAllCaps="false"
+                android:textSize="20sp"
+                android:theme="@+style/PrimaryButton"
+                app:layout_constraintBottom_toTopOf="@+id/button_separator"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/new_song_button"/>
 
+            <View
+                android:id="@+id/button_separator"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintBottom_toTopOf="@+id/incomplete_songs_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statistics_button"/>
 
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/incomplete_songs_tv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:weightSum="1">
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="18dp"
+                android:text="Incomplete Songs"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/songs_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_separator" />
 
-                <ScrollView
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:fillViewport="true">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/songs_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/incomplete_songs_tv">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
 
-                        <TextView
-                            android:id="@+id/incomplete_songs_tv"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginLeft="18dp"
-                            android:text="Incomplete Songs"
-                            android:textSize="14sp" />
+            <!--<View
+                android:id="@+id/incomplete_complete_separator"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintBottom_toTopOf="@+id/complete_songs_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/incomplete_songs_list"/>
 
-                        <ListView
-                            android:id="@+id/incomplete_songs_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_above="@+id/incomplete_complete_separator"
-                            android:layout_below="@+id/incomplete_songs_tv">
+            <TextView
+                android:id="@+id/complete_songs_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="10dp"
+                android:text="Completed Songs"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/complete_songs_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/incomplete_complete_separator"/>
 
-                        </ListView>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/complete_songs_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/complete_songs_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/complete_songs_tv">
 
-                        <View
-                            android:id="@+id/incomplete_complete_separator"
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginTop="12dp"
-                            android:background="@color/colorAccent" />
-
-                        <TextView
-                            android:id="@+id/complete_songs_tv"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginLeft="18dp"
-                            android:text="Completed Songs"
-                            android:textSize="14sp" />
-
-                        <ListView
-                            android:id="@+id/completed_songs_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/complete_songs_tv">
-
-                        </ListView>
-                    </RelativeLayout>
-                </ScrollView>
-
-            </LinearLayout>
+            </android.support.v7.widget.RecyclerView>-->
 
 
-    </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
 
 
 </LinearLayout>
