@@ -202,6 +202,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                             try{
                                 view.getContext().startActivity(YouTubeStandalonePlayer.createVideoIntent(
                                         activity, API_KEY, object.link, 0, true, true));
+
                             }catch(ActivityNotFoundException e){
                                 Toast.makeText(activity, "Please install YouTube on your device.", Toast.LENGTH_LONG).show();
                             }

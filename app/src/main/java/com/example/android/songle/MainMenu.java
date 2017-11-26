@@ -63,13 +63,15 @@ public class MainMenu extends AppCompatActivity{
     HashMap<String, String> completedSongs;
     String completedSongTitle;
 
+    ArrayList mainMenuList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
         songs = new ArrayList<Song>();
-
+        mainMenuList = new ArrayList();
         completedSongs = new HashMap<>();
         /*try
         {
@@ -85,25 +87,23 @@ public class MainMenu extends AppCompatActivity{
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
 
-        ArrayList list= new ArrayList();
-        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 1",53, ""));
-        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 2",88, ""));
-        list.add(new Model(Model.INCOMPLETE_TYPE,"Song 3",22, ""));
-        list.add(new Model(Model.SEPARATOR, "Completed Songs",0, ""));
-        list.add(new Model(Model.COMPLETE_TYPE,"Bohemian Rhapsody",100, "fJ9rUzIMcZQ"));
+
+        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 1",53, ""));
+        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 2",88, ""));
+        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 3",22, ""));
+        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs",0, ""));
+        /*list.add(new Model(Model.COMPLETE_TYPE,"Bohemian Rhapsody",100, "fJ9rUzIMcZQ"));
         list.add(new Model(Model.COMPLETE_TYPE,"I Fought The Law",100, "AL8chWFuM-s"));
         list.add(new Model(Model.COMPLETE_TYPE,"Life On Mars?",100, "v--IqqusnNQ"));
-        list.add(new Model(Model.COMPLETE_TYPE,"Nothing Compares 2 U",100, "SJwb_KXWsbk"));
+        list.add(new Model(Model.COMPLETE_TYPE,"Nothing Compares 2 U",100, "SJwb_KXWsbk"));*/
 
-
-        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(list,this,MainMenu.this);
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(adapter);
-
 
     }
 
@@ -165,6 +165,16 @@ public class MainMenu extends AppCompatActivity{
             objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        addCompletedSongsToMainMenuList(completedSongs);
+    }
+
+    private void addCompletedSongsToMainMenuList(HashMap<String, String> completedSongs) {
+        for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
+            String songTitle = entry.getKey();
+            String songLink = entry.getValue();
+            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink));
         }
     }
 
