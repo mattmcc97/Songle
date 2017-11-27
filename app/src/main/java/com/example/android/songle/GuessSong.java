@@ -355,6 +355,7 @@ public class GuessSong extends AppCompatActivity{
         Intent intent = new Intent(this, MainMenu.class);
         intent.putExtra("songTitle", songTitle);
         startActivity(intent);
+        finish();
 
     }
 

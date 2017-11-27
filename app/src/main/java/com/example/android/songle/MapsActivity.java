@@ -366,8 +366,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent();
-                        intent.putExtra("collectedMarkers", incompleteSongCollectedMarkers);
-                        intent.putExtra("songTitle",songTitle);
+                        intent.putExtra("collectedMarkers", collectedMarkers);
+                        intent.putExtra("songTitle", getSongTitle(songNumber));
                         setResult(RESULT_OK, intent);
                         MapsActivity.this.finish();
                     }
@@ -781,7 +781,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Integer integer) {
             addMarkers();
-            pgDialog.hide();
+            pgDialog.dismiss();
         }
     }
 

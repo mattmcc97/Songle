@@ -2,6 +2,7 @@ package com.example.android.songle;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlPullParser;
@@ -38,6 +41,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class MainMenu extends AppCompatActivity{
@@ -54,14 +58,15 @@ public class MainMenu extends AppCompatActivity{
     private boolean connectedToNetwork = true;
     private boolean locationServicesAvailable = true;
 
-    Dialog dialogYouTube;
+    ProgressDialog loadingDialog;
     public static final String API_KEY = "AIzaSyBjaJZj0WwqxFVOD8pUsAuGVnYCqXUvYa8";
     public static final String VIDEO_ID = "fJ9rUzIMcZQ";
-    Button youtubeButton;
 
     //HashMap containing the SongTitle (as the key) and the Youtube link
     HashMap<String, String> completedSongs;
     String completedSongTitle;
+
+    HashMap<String, HashSet<String>> incompleteSongs;
 
     ArrayList mainMenuList;
 
@@ -73,37 +78,16 @@ public class MainMenu extends AppCompatActivity{
         songs = new ArrayList<Song>();
         mainMenuList = new ArrayList();
         completedSongs = new HashMap<>();
-        /*try
-        {
-            FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(completedSongs);
-            objectOutputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        incompleteSongs = new HashMap<>();
 
         //Execute the methods in the AsyncTask class
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
 
+        /*incompleteSongs.put("Bohemian Rhapsody", new HashSet<String>());
+        incompleteSongs.put("Song 2", new HashSet<String>());
+        incompleteSongs.put("Ironic", new HashSet<String>());*/
 
-        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 1",53, ""));
-        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 2",88, ""));
-        mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song 3",22, ""));
-        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs",0, ""));
-        /*list.add(new Model(Model.COMPLETE_TYPE,"Bohemian Rhapsody",100, "fJ9rUzIMcZQ"));
-        list.add(new Model(Model.COMPLETE_TYPE,"I Fought The Law",100, "AL8chWFuM-s"));
-        list.add(new Model(Model.COMPLETE_TYPE,"Life On Mars?",100, "v--IqqusnNQ"));
-        list.add(new Model(Model.COMPLETE_TYPE,"Nothing Compares 2 U",100, "SJwb_KXWsbk"));*/
-
-        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
-
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(adapter);
 
     }
 
@@ -112,9 +96,16 @@ public class MainMenu extends AppCompatActivity{
         if (connectedToNetwork) {
             if (locationServicesAvailable) {
                 if(songs.size() > 0){
-                    Intent intent = new Intent(this, MapsActivity.class);
-                    intent.putParcelableArrayListExtra("listOfSongs", songs);
-                    startActivityForResult(intent, 1);
+                    if(incompleteSongs.size() < 3){
+                        Intent intent = new Intent(this, MapsActivity.class);
+                        intent.putParcelableArrayListExtra("listOfSongs", songs);
+                        startActivityForResult(intent, 1);
+                    }else{
+                        Toast.makeText(MainMenu.this, "The maximum number of songs you can " +
+                                "play, at once, is 3. Please give up on one of the " +
+                                "incomplete songs, if you want to guess a " +
+                                "new song.", Toast.LENGTH_LONG).show();
+                    }
                 }else{
                     Snackbar.make(view, "Sorry, no songs are available at the minute. " +
                             "Please try again later.", Snackbar.LENGTH_LONG)
@@ -129,6 +120,31 @@ public class MainMenu extends AppCompatActivity{
             Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK){
+                Log.i(TAG, "onActivityResult: here we go!");
+                HashSet<String> collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
+                Log.i(TAG, "onActivityResult: here we go! collectedMarkers:  " + collectedMarkers);
+                String songTitle = data.getStringExtra("songTitle");
+                Log.i(TAG, "onActivityResult: here we go! songTitle:  " + songTitle);
+                incompleteSongs.put(songTitle, collectedMarkers);
+                Log.i(TAG, "onActivityResult: here we go! incompleteSongs:  " + incompleteSongs);
+            }
+        }
+
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
+
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(adapter);
+
     }
 
     private void populateCompletedSongs(){
@@ -167,25 +183,33 @@ public class MainMenu extends AppCompatActivity{
             e.printStackTrace();
         }
 
+        addIncompleteSongsToMainMenuList();
         addCompletedSongsToMainMenuList(completedSongs);
     }
 
+    private void addIncompleteSongsToMainMenuList() {
+        int i = 1;
+        for (HashSet<String> value : incompleteSongs.values()) {
+            mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song " + i, 100, ""));
+            i++;
+        }
+    }
+
     private void addCompletedSongsToMainMenuList(HashMap<String, String> completedSongs) {
+        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs", 0, ""));
         for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
             String songTitle = entry.getKey();
             String songLink = entry.getValue();
             mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink));
         }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK){
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
 
-            }
-        }
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(adapter);
     }
 
     public void viewStatistics(View view) {
@@ -264,14 +288,30 @@ public class MainMenu extends AppCompatActivity{
         super.onResume();
     }
 
+    //Stop the user from going back to the song after finishing it
+    @Override
+    public void onBackPressed() {
+    }
+
     private class AsyncXMLDownloader extends AsyncTask<Object, String, Integer>{
+
+        @Override
+        protected void onPreExecute() {
+            /*
+            When loading the map display a circular loading map that says Loading Map...
+             */
+            loadingDialog = new ProgressDialog(MainMenu.this);
+            loadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            loadingDialog.setMessage("Loading Game...");
+            loadingDialog.setIndeterminate(true);
+            loadingDialog.show();
+        }
 
         @Override
         protected Integer doInBackground(Object... params) {
             //Call the appropriate methods to download and parse the xml data
             XmlPullParser receivedData = tryDownloadXmlData();
             int songsFound = tryParseXmlData(receivedData);
-            populateCompletedSongs();
             return songsFound;
         }
 
@@ -345,6 +385,13 @@ public class MainMenu extends AppCompatActivity{
                 }
                 eventType = xmlData.next();
             }
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            populateCompletedSongs();
+            loadingDialog.dismiss();
         }
     }
 
