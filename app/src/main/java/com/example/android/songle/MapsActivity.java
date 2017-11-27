@@ -609,6 +609,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return collectableMarkers;
     }
 
+    private void saveGameState(){
+
+    }
+
 
     private class ASyncKMLDownloader extends AsyncTask<String, Void, Integer> {
 

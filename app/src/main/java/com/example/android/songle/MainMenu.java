@@ -127,27 +127,19 @@ public class MainMenu extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK){
-                Log.i(TAG, "onActivityResult: here we go!");
                 HashSet<String> collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
-                Log.i(TAG, "onActivityResult: here we go! collectedMarkers:  " + collectedMarkers);
+                Log.i(TAG, "onActivityResult: collectedMarkers:  " + collectedMarkers);
                 String songTitle = data.getStringExtra("songTitle");
-                Log.i(TAG, "onActivityResult: here we go! songTitle:  " + songTitle);
+                Log.i(TAG, "onActivityResult: songTitle:  " + songTitle);
                 incompleteSongs.put(songTitle, collectedMarkers);
-                Log.i(TAG, "onActivityResult: here we go! incompleteSongs:  " + incompleteSongs);
+                Log.i(TAG, "onActivityResult: incompleteSongs:  " + incompleteSongs);
+
+                populateSongs();
             }
         }
-
-        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
-
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(adapter);
-
     }
 
-    private void populateCompletedSongs(){
+    private void populateSongs(){
         try
         {
             FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/CompletedSongs.ser");
@@ -183,25 +175,8 @@ public class MainMenu extends AppCompatActivity{
             e.printStackTrace();
         }
 
+        mainMenuList = new ArrayList();
         addIncompleteSongsToMainMenuList();
-        addCompletedSongsToMainMenuList(completedSongs);
-    }
-
-    private void addIncompleteSongsToMainMenuList() {
-        int i = 1;
-        for (HashSet<String> value : incompleteSongs.values()) {
-            mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song " + i, 100, ""));
-            i++;
-        }
-    }
-
-    private void addCompletedSongsToMainMenuList(HashMap<String, String> completedSongs) {
-        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs", 0, ""));
-        for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
-            String songTitle = entry.getKey();
-            String songLink = entry.getValue();
-            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink));
-        }
 
         MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
@@ -210,6 +185,24 @@ public class MainMenu extends AppCompatActivity{
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(adapter);
+    }
+
+    private void addIncompleteSongsToMainMenuList() {
+        int i = 1;
+        for (String songTitle : incompleteSongs.keySet()) {
+            mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song " + i, 100, songTitle));
+            i++;
+        }
+        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs", 0, ""));
+        addCompletedSongsToMainMenuList(completedSongs);
+    }
+
+    private void addCompletedSongsToMainMenuList(HashMap<String, String> completedSongs) {
+        for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
+            String songTitle = entry.getKey();
+            String songLink = entry.getValue();
+            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink));
+        }
     }
 
     public void viewStatistics(View view) {
@@ -258,11 +251,6 @@ public class MainMenu extends AppCompatActivity{
         alertDialog.show();
 
 
-    }
-
-    public void showToast(View view) {
-        Toast.makeText(MainMenu.this, "Sorry you gave up! The song was: Song 2 by Blur.",
-                Toast.LENGTH_LONG).show();
     }
 
     private boolean isNetworkConnected() {
@@ -390,7 +378,7 @@ public class MainMenu extends AppCompatActivity{
         @Override
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
-            populateCompletedSongs();
+            populateSongs();
             loadingDialog.dismiss();
         }
     }

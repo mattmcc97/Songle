@@ -1,11 +1,16 @@
 package com.example.android.songle;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,7 +164,43 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View view) {
 
-                            removeItem(object);
+                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+
+                            TextView title = new TextView(activity);
+                            title.setText("Give up?");
+                            title.setPadding(10, 50, 10, 0);
+                            title.setTextColor(Color.DKGRAY);
+                            title.setTypeface(null, Typeface.BOLD);
+                            title.setGravity(Gravity.CENTER);
+                            title.setTextSize(20);
+
+                            alertDialogBuilder.setCustomTitle(title);
+
+                            alertDialogBuilder.setTitle("Give up?");
+                            alertDialogBuilder.setMessage("Are you sure you want to give up on this song? You won't be" +
+                                    " able to try it again.");
+                            alertDialogBuilder.setPositiveButton("Give Up",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface arg0, int arg1) {
+                                            Toast.makeText(activity, "The song was: " + object.link + ".", Toast.LENGTH_LONG).show();
+                                            removeItem(object);
+                                        }
+                                    });
+
+                            alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+
+                            TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+                            messageText.setGravity(Gravity.CENTER);
+                            alertDialog.show();
 
                         }
 
