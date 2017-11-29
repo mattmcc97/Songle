@@ -19,6 +19,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -33,6 +34,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlPullParser;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,7 +68,11 @@ public class MainMenu extends AppCompatActivity{
     HashMap<String, String> completedSongs;
     String completedSongTitle;
 
-    HashMap<String, HashSet<String>> incompleteSongs;
+    //HashMap<songName, HashMap<ListOfCollectedPlacemarks, numberOfPlacemarksForThatSong>
+    ArrayList<IncompleteSong> incompleteSongs;
+
+    IncompleteSong incompleteSong;
+    Song theSong;
 
     ArrayList mainMenuList;
 
@@ -78,7 +84,15 @@ public class MainMenu extends AppCompatActivity{
         songs = new ArrayList<Song>();
         mainMenuList = new ArrayList();
         completedSongs = new HashMap<>();
-        incompleteSongs = new HashMap<>();
+        incompleteSongs = new ArrayList<IncompleteSong>();
+
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
+
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(adapter);
 
         //Execute the methods in the AsyncTask class
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
@@ -127,19 +141,37 @@ public class MainMenu extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK){
-                HashSet<String> collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
+                /*collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
                 Log.i(TAG, "onActivityResult: collectedMarkers:  " + collectedMarkers);
-                String songTitle = data.getStringExtra("songTitle");
-                Log.i(TAG, "onActivityResult: songTitle:  " + songTitle);
-                incompleteSongs.put(songTitle, collectedMarkers);
-                Log.i(TAG, "onActivityResult: incompleteSongs:  " + incompleteSongs);
-
+                incompleteSongTitle = data.getStringExtra("songTitle");
+                Log.i(TAG, "onActivityResult: songTitle:  " + incompleteSongTitle);
+                numberOfPlacemarks = data.getIntExtra("numberOfPlacemarks", 1);*/
+                incompleteSong = (IncompleteSong) data.getSerializableExtra("incompleteSong");
+                Log.i(TAG, "onActivityResult: incompleteSong: " + incompleteSong.getSongTitle()
+                + incompleteSong.getCollectedMarkers() + incompleteSong.getTotalNumberOfPlacemarks());
+                theSong = (Song) data.getSerializableExtra("theSong");
+                buildIncompleteSongs();
                 populateSongs();
             }
         }
     }
 
-    private void populateSongs(){
+    private void buildCompletedSongs(){
+
+        completedSongTitle = getIntent().getStringExtra("songTitle");
+        if((completedSongTitle != null)&&(!completedSongs.containsKey(completedSongTitle))){
+            Log.i(TAG, "populateCompletedSongs: songLink: not null sizeOfSongs: " + songs.size());
+            for (Song song: songs){
+                if(song.getTitle().equals(completedSongTitle)){
+                    Log.i(TAG, "populateCompletedSongs: songLink: " + song.getLink());
+                    completedSongs.put(completedSongTitle, song.getLink());
+                }
+            }
+        }
+
+    }
+
+    private void readCompleteSongsFromFile(){
         try
         {
             FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/CompletedSongs.ser");
@@ -151,20 +183,9 @@ public class MainMenu extends AppCompatActivity{
         catch(ClassNotFoundException | IOException | ClassCastException e) {
             e.printStackTrace();
         }
+    }
 
-        Log.i(TAG, "populateCompletedSongs: completedSongs before adding new one: " + completedSongs);
-
-        completedSongTitle = getIntent().getStringExtra("songTitle");
-        if(completedSongTitle != null){
-            Log.i(TAG, "populateCompletedSongs: songLink: not null sizeOfSongs: " + songs.size());
-            for (Song song: songs){
-                if(song.getTitle().equals(completedSongTitle)){
-                    Log.i(TAG, "populateCompletedSongs: songLink: " + song.getLink());
-                    completedSongs.put(completedSongTitle, song.getLink());
-                }
-            }
-        }
-        Log.i(TAG, "populateCompletedSongs: completedSongs: after read from file about to write: " + completedSongs);
+    private void writeCompleteSongsFromFile(){
         try
         {
             FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
@@ -174,6 +195,74 @@ public class MainMenu extends AppCompatActivity{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void buildIncompleteSongs(){
+
+        boolean songIsAlreadyIncomplete = false;
+        if(incompleteSong!=null){
+            for(IncompleteSong incomplete : incompleteSongs){
+                if (incomplete.getSongTitle().equals(incompleteSong.getSongTitle())){
+                    songIsAlreadyIncomplete = songIsAlreadyIncomplete || true;
+                    incomplete.collectedMarkers.addAll(incompleteSong.collectedMarkers);
+                }
+            }
+            if(!songIsAlreadyIncomplete){
+                incompleteSongs.add(incompleteSong);
+            }else{
+
+            }
+        }
+        Log.i(TAG, "onActivityResult: incompleteSongs:  " + incompleteSongs);
+    }
+
+    private void readIncompleteSongsFromFile(){
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/IncompleteSongs.ser");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            incompleteSongs = (ArrayList<IncompleteSong>) objectInputStream.readObject();
+            Log.i(TAG, "readincompleteSongsFromFile: initial read from file: " + incompleteSongs);
+            objectInputStream.close();
+        }
+        catch(ClassNotFoundException | IOException | ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeIncompleteSongsFromFile(){
+        try
+        {
+            FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(incompleteSongs);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void populateSongs(){
+
+        /*readCompleteSongsFromFile();
+        Log.i(TAG, "populateSongs: completedSongs before adding new one: " + completedSongs);
+        buildCompletedSongs();
+        Log.i(TAG, "populateSongs: completedSongs: after read from file about to write: " + completedSongs);
+        writeCompleteSongsFromFile();
+
+        readIncompleteSongsFromFile();
+        Log.i(TAG, "populateSongs: incompleteSongs before adding new one: " + incompleteSongs);
+        buildIncompleteSongs();
+        Log.i(TAG, "populateSongs: incompleteSongs: after read from file about to write: " + incompleteSongs);
+        writeIncompleteSongsFromFile();*/
+
+        File dir = getFilesDir();
+        File file = new File(dir, "IncompleteSongs.ser");
+        boolean deleted = file.delete();
+        File dir1 = getFilesDir();
+        File file1 = new File(dir1, "CompletedSongs.ser");
+        boolean deleted1 = file1.delete();
+
 
         mainMenuList = new ArrayList();
         addIncompleteSongsToMainMenuList();
@@ -189,11 +278,19 @@ public class MainMenu extends AppCompatActivity{
 
     private void addIncompleteSongsToMainMenuList() {
         int i = 1;
-        for (String songTitle : incompleteSongs.keySet()) {
-            mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song " + i, 100, songTitle));
+        for (IncompleteSong incomplete : incompleteSongs) {
+            //calculate progress by comparing the number of collected markers with the total number
+            //of markers.
+            Log.i(TAG, "addIncompleteSongsToMainMenuList: songTitle: " + incomplete.getSongTitle());
+            Log.i(TAG, "addIncompleteSongsToMainMenuList: collectedMarkersSize: " + incomplete.getCollectedMarkers().size());
+            Log.i(TAG, "addIncompleteSongsToMainMenuList: numberOfPlacemark: " + incomplete.getTotalNumberOfPlacemarks());
+            int progress = (int)(((incomplete.getCollectedMarkers().size())/((double)incomplete.getTotalNumberOfPlacemarks()))*100);
+            Log.i(TAG, "addIncompleteSongsToMainMenuList: progress: " + progress);
+            mainMenuList.add(new Model(Model.INCOMPLETE_TYPE,"Song " + i, progress, incomplete.getSongTitle(),incomplete.getTheSong(), incomplete));
             i++;
+            Log.i(TAG, "addIncompleteSongsToMainMenuList: -----------------------------------------");
         }
-        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs", 0, ""));
+        mainMenuList.add(new Model(Model.SEPARATOR, "Completed Songs", 0, "", null, null));
         addCompletedSongsToMainMenuList(completedSongs);
     }
 
@@ -201,7 +298,7 @@ public class MainMenu extends AppCompatActivity{
         for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
             String songTitle = entry.getKey();
             String songLink = entry.getValue();
-            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink));
+            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink, null, null));
         }
     }
 
@@ -290,7 +387,7 @@ public class MainMenu extends AppCompatActivity{
              */
             loadingDialog = new ProgressDialog(MainMenu.this);
             loadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            loadingDialog.setMessage("Loading Game...");
+            loadingDialog.setMessage("Loading Menu...");
             loadingDialog.setIndeterminate(true);
             loadingDialog.show();
         }
@@ -378,8 +475,8 @@ public class MainMenu extends AppCompatActivity{
         @Override
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
-            populateSongs();
             loadingDialog.dismiss();
+            populateSongs();
         }
     }
 

@@ -44,6 +44,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -84,6 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Song> songs;
     public String songTitle;
     private String songNumber;
+    private Song theSong;
 
     private HashSet<String> collectedMarkers;
 
@@ -98,6 +100,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     long startTime;
     long endTime;
 
+    Integer difficulty;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placemarks = new HashSet<>();
         wholeSong = new HashMap<>();
         songs =  getIntent().getParcelableArrayListExtra("listOfSongs");
+        Log.i(TAG, "listOfSongs: "+ songs);
         collectedMarkers = new HashSet<>();
         hashMapMarkers = new HashMap<>();
         startTime = Calendar.getInstance().getTimeInMillis();
@@ -159,6 +164,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return songName;
     }
 
+    private Song getTheSong(String songNum){
+        theSong = null;
+        for(Song song: songs){
+            if(songNum.equals(song.getNumber())){
+                theSong = song;
+            }
+        }
+        return theSong;
+    }
+
     public void guessSong(View view) {
 
         /*When the guess song button is pressed get the song title using the song number and then
@@ -182,53 +197,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 collectedMarkers = (HashSet<String>) data.getSerializableExtra("collectedMarkers");
-                Log.i(TAG, "onActivityResult: collectedMarkers: " + collectedMarkers);
-                for (String markerLocation : collectedMarkers){
-                    if(hashMapMarkers.containsKey(markerLocation)){
-                        Marker marker = hashMapMarkers.get(markerLocation);
-
-                        marker.remove();
-                        hashMapMarkers.remove(markerLocation);
-                    }
-
-                }
+                removeCollectedMarkersFromMap();
             }
         }
     }
 
-    private String chooseSongNumber(){
-        //When the new song button is clicked, a new random song is selected from the available list
-        Random rand = new Random();
-        Log.i(TAG, "chooseSongNumber: sizeOfSongs: " + songs.size());
-        int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
-        String randomSongNumber = "";
-        if(randomSongNumberInt <= 9){
-            randomSongNumber = "0" + randomSongNumberInt;
+    private void removeCollectedMarkersFromMap(){
+        Log.i(TAG, "onActivityResult: collectedMarkers: " + collectedMarkers);
+        if(collectedMarkers != null){
+            for (String markerLocation : collectedMarkers){
+                if(hashMapMarkers.containsKey(markerLocation)){
+                    Marker marker = hashMapMarkers.get(markerLocation);
+
+                    marker.remove();
+                    hashMapMarkers.remove(markerLocation);
+                }
+
+            }
         }else{
-            randomSongNumber = "" + randomSongNumberInt;
+            collectedMarkers = new HashSet<>();
         }
-        return randomSongNumber;
+        pgDialog.dismiss();
+    }
+
+    private String chooseSongNumber(){
+        //This will be entered when an incomplete Song is chosen rather than a new song
+        if(songs.size() == 1){
+            return songs.get(0).number;
+        }else{
+            //When the new song button is clicked, a new random song is selected from the available list
+            Random rand = new Random();
+            Log.i(TAG, "chooseSongNumber: sizeOfSongs: " + songs.size());
+            int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
+            String randomSongNumber = "";
+            if(randomSongNumberInt <= 9){
+                randomSongNumber = "0" + randomSongNumberInt;
+            }else{
+                randomSongNumber = "" + randomSongNumberInt;
+            }
+            Log.i(TAG, "chooseSongNumber: randomSongNumber: " + randomSongNumber);
+            return randomSongNumber;
+        }
     }
 
     private int getMapDifficulty(int userLevel){
-        //Produces a map difficulty number based on the users level
+        //This will be entered when an incomplete Song is chosen rather than a new song
+        if(songs.size() == 1){
+            Integer incompleteSongLevel = getIntent().getIntExtra("incompleteLevel", 1);
+            return incompleteSongLevel;
+        }else{
+            //Produces a map difficulty number based on the users level
 
-        //Calculates the fraction  of the max level (99), if the user was level 99 they would get a
-        //difficulty of 4 and a level of 1 (5 - 4 = 1). If the user was level 1 they would get a
-        //difficulty of 0 and a level of 5 (5 - 0 = 5).
-        //variation is used so that the user can get a small range of map difficulties
-        Random rand = new Random();
-        int variation = rand.nextInt((25 - (-25)) + 1) + (-25);
-        Log.i(TAG, "getMapDifficulty: SongNumber variation: " + variation);
-        int difficulty = (int) Math.round(((userLevel+variation)/99.0)*4);
-        //make sure the variation doesn't cause the difficulty to be an impossible value
-        if(difficulty > 4 ){
-            difficulty = 4;
-        }else if(difficulty < 0){
-            difficulty = 0;
+            //Calculates the fraction  of the max level (99), if the user was level 99 they would get a
+            //difficulty of 4 and a level of 1 (5 - 4 = 1). If the user was level 1 they would get a
+            //difficulty of 0 and a level of 5 (5 - 0 = 5).
+            //variation is used so that the user can get a small range of map difficulties
+            Random rand = new Random();
+            int variation = rand.nextInt((25 - (-25)) + 1) + (-25);
+            Log.i(TAG, "getMapDifficulty: SongNumber variation: " + variation);
+            int difficultyLevel = (int) Math.round(((userLevel+variation)/99.0)*4);
+            //make sure the variation doesn't cause the difficulty to be an impossible value
+            if(difficultyLevel > 4 ){
+                difficultyLevel = 4;
+            }else if(difficultyLevel < 0){
+                difficultyLevel = 0;
+            }
+            int level = 5 - difficultyLevel;
+            return level;
         }
-        int level = 5 - difficulty;
-        return level;
     }
 
     private void addMarkers() {
@@ -366,8 +402,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent();
-                        intent.putExtra("collectedMarkers", collectedMarkers);
-                        intent.putExtra("songTitle", getSongTitle(songNumber));
+                        IncompleteSong incompleteSong = new
+                                IncompleteSong(getSongTitle(songNumber), collectedMarkers,
+                                placemarks.size(), getTheSong(songNumber),difficulty);
+                        intent.putExtra("incompleteSong", incompleteSong);
+                        intent.putExtra("theSong", (Serializable) getTheSong(songNumber));
                         setResult(RESULT_OK, intent);
                         MapsActivity.this.finish();
                     }
@@ -693,7 +732,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
 
                 Log.i(TAG, "tryDownloadKmlData: The user is level: " + userLevel);
-                Integer difficulty = getMapDifficulty(userLevel);
+                difficulty = getMapDifficulty(userLevel);
+                Log.i(TAG, "tryDownloadKmlData: The mapDifficulty is: " + difficulty);
 
                 kml_url =
                         "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber +
@@ -785,7 +825,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(Integer integer) {
             addMarkers();
-            pgDialog.dismiss();
+            collectedMarkers = (HashSet<String>) getIntent().getSerializableExtra("collectedMarkersMainMenu");
+            removeCollectedMarkersFromMap();
         }
     }
 

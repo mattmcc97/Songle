@@ -14,12 +14,16 @@ public class Model {
     public int progress;
     public String text;
     public String link;
+    public Song theSong;
+    public IncompleteSong theIncompleteSong;
 
-    public Model(int type, String text, int progress, String link)
+    public Model(int type, String text, int progress, String link, Song theSong, IncompleteSong theIncompleteSong)
     {
         this.type = type;
         this.progress = progress;
         this.text = text;
         this.link = link;
+        this.theSong = theSong;
+        this.theIncompleteSong = theIncompleteSong;
     }
 }

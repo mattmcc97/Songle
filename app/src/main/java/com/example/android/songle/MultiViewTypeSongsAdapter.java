@@ -150,11 +150,22 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
             switch (object.type) {
                 case Model.INCOMPLETE_TYPE:
                     ((IncompleteSongViewHolder) holder).songButton.setText(object.text);
-                    ((IncompleteSongViewHolder) holder).giveUpButton.setOnClickListener(new View.OnClickListener() {
+                    ((IncompleteSongViewHolder) holder).songButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
-                            view.getContext().startActivity(new Intent(context, MapsActivity.class));
+                            Intent intent= new Intent(context, MapsActivity.class);
+                            //An ArrayList containing only one song which will be used by the
+                            //maps activity to get a random Song, because there is only one Song
+                            //in the ArrayList, this is the only song that can be returned by the
+                            //Maps Activity and this song will be chosen.
+                            ArrayList<Song> theSongs = new ArrayList<Song>();
+                            theSongs.add(object.theSong);
+                            Log.i("", "onClick: theSong: " + object.theSong.getTitle());
+                            intent.putParcelableArrayListExtra("listOfSongs",theSongs);
+                            intent.putExtra("collectedMarkersMainMenu", object.theIncompleteSong.collectedMarkers);
+                            intent.putExtra("incompleteLevel", object.theIncompleteSong.levelOfDifficulty);
+                            ((Activity) context).startActivityForResult(intent,1);
 
                         }
 
