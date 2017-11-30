@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -144,13 +145,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void goToCurrentLocation(View view) {
         //On the click of location button this method causes the UI to zoom to the users current location
 
-        float zoomLevel = 19.0f; //This goes up to 21
-        LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
-        /*Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.congratulations_songle_coin);
-        dialog.show();*/
+        try{
+            float zoomLevel = 19.0f; //This goes up to 21
+            LatLng currentLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
+        }catch(NullPointerException e){
+            Snackbar.make(view, "No location found.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
 
     }
 
@@ -508,6 +510,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
+        marker.hideInfoWindow();
+
         //if the marker clicked is nearby
         if (userCloseToMarker().contains(marker.getPosition())) {
 
@@ -645,10 +650,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         //return nearby marker
         return collectableMarkers;
-    }
-
-    private void saveGameState(){
-
     }
 
 

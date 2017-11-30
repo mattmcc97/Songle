@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -197,6 +200,15 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                             Toast.makeText(activity, "The song was: " + object.link + ".", Toast.LENGTH_LONG).show();
                                             MainMenu.incompleteSongs.remove(object.theIncompleteSong);
                                             removeItem(object);
+                                            try
+                                            {
+                                                FileOutputStream fileOutputStream = context.openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
+                                                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                                                objectOutputStream.writeObject(MainMenu.incompleteSongs);
+                                                objectOutputStream.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     });
 

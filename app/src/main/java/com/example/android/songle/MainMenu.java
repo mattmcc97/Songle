@@ -1,12 +1,10 @@
 package com.example.android.songle;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -19,22 +17,16 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.text.LoginFilter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.model.Marker;
 
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlPullParser;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,7 +35,6 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class MainMenu extends AppCompatActivity{
@@ -113,6 +104,7 @@ public class MainMenu extends AppCompatActivity{
                     if(incompleteSongs.size() < 3){
                         Intent intent = new Intent(this, MapsActivity.class);
                         intent.putParcelableArrayListExtra("listOfSongs", songs);
+                        writeIncompleteSongsToFile();
                         startActivityForResult(intent, 1);
                     }else{
                         Toast.makeText(MainMenu.this, "The maximum number of songs you can " +
@@ -185,7 +177,7 @@ public class MainMenu extends AppCompatActivity{
         }
     }
 
-    private void writeCompleteSongsFromFile(){
+    private void writeCompleteSongsToFile(){
         try
         {
             FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
@@ -230,10 +222,10 @@ public class MainMenu extends AppCompatActivity{
         }
     }
 
-    private void writeIncompleteSongsFromFile(){
+    private void writeIncompleteSongsToFile(){
         try
         {
-            Log.i(TAG, "writeIncompleteSongsFromFile: IncompleteSongFound: " + incompleteSongs);
+            Log.i(TAG, "writeIncompleteSongsToFile: IncompleteSongFound: " + incompleteSongs);
             FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(incompleteSongs);
@@ -249,13 +241,13 @@ public class MainMenu extends AppCompatActivity{
         Log.i(TAG, "populateSongs: completedSongs before adding new one: " + completedSongs);
         buildCompletedSongs();
         Log.i(TAG, "populateSongs: completedSongs: after read from file about to write: " + completedSongs);
-        writeCompleteSongsFromFile();
+        writeCompleteSongsToFile();
 
         readIncompleteSongsFromFile();
         Log.i(TAG, "populateSongs: incompleteSongs before adding new one: " + incompleteSongs);
         buildIncompleteSongs();
         Log.i(TAG, "populateSongs: incompleteSongs: after read from file about to write: " + incompleteSongs);
-        writeIncompleteSongsFromFile();
+        writeIncompleteSongsToFile();
 
         /*File dir = getFilesDir();
         File file = new File(dir, "IncompleteSongs.ser");
@@ -307,48 +299,6 @@ public class MainMenu extends AppCompatActivity{
         //When the statistics button is clicked, open the StatisticsActivity
         Intent intent = new Intent(this, StatisticsActivity.class);
         startActivity(intent);
-    }
-
-    public void giveUpOnSong(View view) {
-
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        TextView title = new TextView(this);
-        title.setText("Give up?");
-        title.setPadding(10, 50, 10, 0);
-        title.setTextColor(Color.DKGRAY);
-        title.setTypeface(null, Typeface.BOLD);
-        title.setGravity(Gravity.CENTER);
-        title.setTextSize(20);
-
-        alertDialogBuilder.setCustomTitle(title);
-
-        alertDialogBuilder.setTitle("Give up?");
-        alertDialogBuilder.setMessage("Are you sure you want to give up on this song? You won't be" +
-                " able to try it again.");
-        alertDialogBuilder.setPositiveButton("Give Up",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Toast.makeText(MainMenu.this, "The song was Bohemian Rhapsody.", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-
-        TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
-        messageText.setGravity(Gravity.CENTER);
-        alertDialog.show();
-
-
     }
 
     private boolean isNetworkConnected() {
