@@ -195,6 +195,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                         @Override
                                         public void onClick(DialogInterface arg0, int arg1) {
                                             Toast.makeText(activity, "The song was: " + object.link + ".", Toast.LENGTH_LONG).show();
+                                            MainMenu.incompleteSongs.remove(object.theIncompleteSong);
                                             removeItem(object);
                                         }
                                     });

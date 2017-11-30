@@ -69,7 +69,7 @@ public class MainMenu extends AppCompatActivity{
     String completedSongTitle;
 
     //HashMap<songName, HashMap<ListOfCollectedPlacemarks, numberOfPlacemarksForThatSong>
-    ArrayList<IncompleteSong> incompleteSongs;
+    public static ArrayList<IncompleteSong> incompleteSongs;
 
     IncompleteSong incompleteSong;
     Song theSong;
@@ -233,6 +233,7 @@ public class MainMenu extends AppCompatActivity{
     private void writeIncompleteSongsFromFile(){
         try
         {
+            Log.i(TAG, "writeIncompleteSongsFromFile: IncompleteSongFound: " + incompleteSongs);
             FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(incompleteSongs);
@@ -244,7 +245,7 @@ public class MainMenu extends AppCompatActivity{
 
     private void populateSongs(){
 
-        /*readCompleteSongsFromFile();
+        readCompleteSongsFromFile();
         Log.i(TAG, "populateSongs: completedSongs before adding new one: " + completedSongs);
         buildCompletedSongs();
         Log.i(TAG, "populateSongs: completedSongs: after read from file about to write: " + completedSongs);
@@ -254,14 +255,14 @@ public class MainMenu extends AppCompatActivity{
         Log.i(TAG, "populateSongs: incompleteSongs before adding new one: " + incompleteSongs);
         buildIncompleteSongs();
         Log.i(TAG, "populateSongs: incompleteSongs: after read from file about to write: " + incompleteSongs);
-        writeIncompleteSongsFromFile();*/
+        writeIncompleteSongsFromFile();
 
-        File dir = getFilesDir();
+        /*File dir = getFilesDir();
         File file = new File(dir, "IncompleteSongs.ser");
         boolean deleted = file.delete();
         File dir1 = getFilesDir();
         File file1 = new File(dir1, "CompletedSongs.ser");
-        boolean deleted1 = file1.delete();
+        boolean deleted1 = file1.delete();*/
 
 
         mainMenuList = new ArrayList();

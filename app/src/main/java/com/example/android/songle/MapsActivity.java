@@ -276,16 +276,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String desc = marker.getDescription();
             switch (desc) {
                 case ("boring"):
-                    colour = 170.0f;
+                    colour = 90.0f;
                     break;
                 case ("notboring"):
-                    colour = 190.0f;
+                    colour = 180.0f;
                     break;
                 case ("interesting"):
-                    colour = 210.0f;
-                    break;
+                    colour = 270.0f;
                 case ("veryinteresting"):
-                    colour = 230.0f;
+                    colour = 359.0f;
                     break;
                 case ("unclassified"):
                     colour = BitmapDescriptorFactory.HUE_AZURE;

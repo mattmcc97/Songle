@@ -24,6 +24,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.util.LoggingInputStream;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,16 +74,12 @@ public class GuessSong extends AppCompatActivity{
         Log.i(TAG, "onCreate: songTitle: " + getIntent().getStringExtra("songTitle"));
         songTitle = getIntent().getStringExtra("songTitle");
         wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getSerializableExtra("wholeSong");
-        Log.i(TAG, "onCreate: songTitle: "+ songTitle + " wholeSong: " + wholeSong);
 
         collectedMarkers = (HashSet<String>) getIntent().getSerializableExtra("collectedMarkers");
-        Log.i(TAG, "onCreate: songTitle: collectedMarkers: " + collectedMarkers);
 
         placemarks = (HashSet<Placemark>) getIntent().getSerializableExtra("placemarks");
-        Log.i(TAG, "onCreate: songTitle: placemarks: " + placemarks);
 
         distanceWalkedWhilePlaying = getIntent().getFloatExtra("distanceWalkedWhilePlaying", 0.0f);
-        Log.i(TAG, "onCreate: distanceWalkedWhilePlaying: " + distanceWalkedWhilePlaying);
 
         updateNumberOfSongleCoinsText();
 
@@ -112,7 +114,6 @@ public class GuessSong extends AppCompatActivity{
             }
             song += "\n";
         }
-        Log.i(TAG, "buildSong: " + song);
         /*song = song.replaceAll("[A-Za-z0-9]", "_");
         Log.i(TAG, "buildSong: " + song);*/
 
@@ -183,12 +184,14 @@ public class GuessSong extends AppCompatActivity{
                 okBtnLevelUp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        removeFromIncomplete();
                         levelUpDialog.dismiss();
                         showCorrectAnswerDialog();
                     }
                 });
 
             }else{
+                removeFromIncomplete();
                 showCorrectAnswerDialog();
             }
 
@@ -208,6 +211,33 @@ public class GuessSong extends AppCompatActivity{
                 }
             });
 
+        }
+    }
+
+    private void removeFromIncomplete(){
+        IncompleteSong toBeRemoved = null;
+        Log.i(TAG, "onClick: IncompleteSongFound list size: " + MainMenu.incompleteSongs.size());
+        for(IncompleteSong incomplete : MainMenu.incompleteSongs){
+            Log.i(TAG, "onClick: The IncompleteSongFound list: " + incomplete.getSongTitle() + incomplete);
+            if (incomplete.getSongTitle().equals(getIntent().getStringExtra("songTitle"))){
+                Log.i(TAG, "onClick: IncompleteSongFound: "+ incomplete.getSongTitle());
+                toBeRemoved = incomplete;
+            }
+        }
+        try{
+            MainMenu.incompleteSongs.remove(toBeRemoved);
+            Log.i(TAG, "onClick: IncompleteSongFound list after remove: " + MainMenu.incompleteSongs);
+            FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(MainMenu.incompleteSongs);
+            objectOutputStream.close();
+
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
