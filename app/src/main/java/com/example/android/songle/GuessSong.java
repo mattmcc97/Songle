@@ -2,7 +2,6 @@ package com.example.android.songle;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,9 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,14 +21,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.util.LoggingInputStream;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -40,8 +33,11 @@ public class GuessSong extends AppCompatActivity{
 
     private String TAG = "GuessSong";
 
+    //Dialog that appears if the user guesses the song correctly.
     Dialog dialogCorrect;
+    //Dialog that appears if the user guesses the song incorrectly.
     Dialog dialogWrong;
+    //Dialog that appears if the user levels up by guessing the song correctly.
     Dialog levelUpDialog;
 
     private String songTitle = "";
@@ -60,34 +56,55 @@ public class GuessSong extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //if no songle coins
-                Snackbar.make(view, "No Songle Coins available.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                //else - are you sure you want to reveal 5 lyrics using 1 songle coin?
+        /*
+                The song title is passed in by the maps activity to this activity after it has been
+                generated. The song title is used in this activity to check if the user's guess is
+                correct.
 
-            }
-        });*/
-        Log.i(TAG, "onCreate: songTitle: " + getIntent().getStringExtra("songTitle"));
+         */
         songTitle = getIntent().getStringExtra("songTitle");
+
+        /*
+                The wholeSong contains a HashMap where the keys is the line number and the value is
+                another HashMmap corresponding to the line of the song. This contains the word number
+                within the line and the word itself. This data is passed in to this activity from the
+                MapsActivity.
+         */
         wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getSerializableExtra("wholeSong");
 
+        /*
+                A set of markers that have been collected i.e. (13:5) which is the marker that is
+                linked to the word on the 13th line 5 across. This data is passed in to this activity
+                from the MapsActivity.
+         */
         collectedMarkers = (HashSet<String>) getIntent().getSerializableExtra("collectedMarkers");
 
+        /*
+                A set of placemarks, this contains all the markers that would be visible on the map.
+                This data is passed in to this activity from the MapsActivity.
+         */
         placemarks = (HashSet<Placemark>) getIntent().getSerializableExtra("placemarks");
 
+        /*
+                This is used to track the total distance walked by the user in this game. If the user
+                guesses correctly, then this data is used to update the total distance ever walked by
+                the user, in the SharedPreferences, for the statistics.
+         */
         distanceWalkedWhilePlaying = getIntent().getFloatExtra("distanceWalkedWhilePlaying", 0.0f);
 
+        //Refresh the text containing number of songle coins.
         updateNumberOfSongleCoinsText();
 
+        //Builds the song on screen, replacing words that haven't been colected with underlines.
         buildSong(wholeSong);
     }
 
-    private void updateNumberOfSongleCoinsText() {
 
+    /*
+                This method is used to update the text box containing the number of songle coins
+                by accessing the SharedPreferences.
+    */
+    private void updateNumberOfSongleCoinsText() {
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
         TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
@@ -95,27 +112,30 @@ public class GuessSong extends AppCompatActivity{
 
     }
 
+
+    /*
+            A method that takes the HashMap containing the line numbers and word locations. It goes
+            through this HashMap checking it against the collected markers, to decide whether to
+            show the word (collected) or replace the word with underlines (not collected). This creates
+            a large String that is then used to set the text in the TextView.
+     */
     private void buildSong(HashMap<Integer, HashMap<Integer, String>> songLyrics) {
-        Log.i(TAG, "buildSong: sizeOfSong: " + songLyrics.size());
         String song = "";
         for(int i=1; i <= songLyrics.size(); i++){
             HashMap<Integer, String> songLine = null;
             songLine = songLyrics.get(i);
+            //Insert line numbers i.e. "1. ", "2. " etc.
             song += i + ". ";
             for(int j = 1; j <= songLine.size(); j++){
                 String wordLocation = i + ":" + j;
                 if(collectedMarkers.contains(wordLocation)){
                     song = song + songLine.get(j) + " ";
-                    Log.i(TAG, "buildSong: This marker has been collected: " + wordLocation);
                 }else{
                     song = song + songLine.get(j).replaceAll("[A-Za-z0-9]", "_") + " ";
-                    Log.i(TAG, "buildSong: This marker has not been collected.");
                 }
             }
             song += "\n";
         }
-        /*song = song.replaceAll("[A-Za-z0-9]", "_");
-        Log.i(TAG, "buildSong: " + song);*/
 
         lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
         lyricsTextView.setText(song);
@@ -126,37 +146,26 @@ public class GuessSong extends AppCompatActivity{
 
         //Adding to shared preferences the total number of guesses for statistics page
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
-        int numberOfGuesses =
-                statistics.getInt("NumberOfGuesses", 0);
+        int numberOfGuesses = statistics.getInt("NumberOfGuesses", 0);
         SharedPreferences.Editor editorStats = statistics.edit();
-        editorStats.putInt("NumberOfGuesses",
-                numberOfGuesses + 1);
+        editorStats.putInt("NumberOfGuesses", numberOfGuesses + 1);
         editorStats.apply();
-        Log.i(TAG, "submitGuess: NumberOfGuesses: " +
-                statistics.getInt("NumberOfGuesses", 0));
 
         //If the guess is correct
-        if (songGuessEt.getText().toString().equalsIgnoreCase(getIntent().getStringExtra("songTitle"))) {
+        if (isGuessCorrect(songGuessEt.getText().toString(), songTitle)) {
 
             //Adding to shared preferences the total number of correctGuesses for statistics page
-            int numberOfCorrectGuesses =
-                    statistics.getInt("NumberOfCorrectGuesses", 0);
-            editorStats.putInt("NumberOfCorrectGuesses",
-                    numberOfCorrectGuesses + 1);
+            int numberOfCorrectGuesses = statistics.getInt("NumberOfCorrectGuesses", 0);
+            editorStats.putInt("NumberOfCorrectGuesses", numberOfCorrectGuesses + 1);
             editorStats.apply();
-            Log.i(TAG, "submitGuess: NumberOfCorrectGuesses: " +
-                    statistics.getInt("NumberOfCorrectGuesses", 0));
 
-            //Add 500 points for a correct guess
+            //Add an additional 500 points for a correct guess
             SharedPreferences sharedPrefs = getSharedPreferences("score", Context.MODE_PRIVATE);
             int currentLevel = sharedPrefs.getInt("level", 1);
             int currentScore = sharedPrefs.getInt("score", 0);
-            Log.i(TAG, "onMarkerClick: score: currentScore: " + currentScore);
             int newScore = currentScore + 500;
             SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putInt("score", newScore);
-            Log.i(TAG, "onMarkerClick: score: newScore: " + newScore);
-
             editor.apply();
 
             //calculate the users level after the 500 points has been added
@@ -181,6 +190,11 @@ public class GuessSong extends AppCompatActivity{
 
                 Button okBtnLevelUp = (Button) levelUpDialog.findViewById(R.id.level_up_ok_button);
 
+                /*
+                        Once the OK button has been pressed the song should be removed from the
+                        incomplete songs, the dialog should close and the correct answer dialog
+                        should appear.
+                 */
                 okBtnLevelUp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -197,6 +211,9 @@ public class GuessSong extends AppCompatActivity{
 
 
         } else {
+            /*
+                    If the guess was wrong then the wrong answer dialog should be shown.
+             */
             dialogWrong = new Dialog(this);
             dialogWrong.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialogWrong.setContentView(R.layout.dialog_wrong_answer);
@@ -214,19 +231,33 @@ public class GuessSong extends AppCompatActivity{
         }
     }
 
+    /*
+            Strip the guess and the answer down to remove punctuation and spaces and then compare
+            the strings, not considering the case.
+     */
+    private boolean isGuessCorrect(String guess, String answer){
+        String guessStripped = guess.replaceAll("\\p{Punct}+$", "");
+        String answerStripped = answer.replaceAll("\\p{Punct}+$", "");
+        if(answerStripped.equalsIgnoreCase(guessStripped)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /*
+            This method removes the song from the list of incomplete songs, and then overwrites the
+            file of incomplete songs, with the new list.
+     */
     private void removeFromIncomplete(){
         IncompleteSong toBeRemoved = null;
-        Log.i(TAG, "onClick: IncompleteSongFound list size: " + MainMenu.incompleteSongs.size());
         for(IncompleteSong incomplete : MainMenu.incompleteSongs){
-            Log.i(TAG, "onClick: The IncompleteSongFound list: " + incomplete.getSongTitle() + incomplete);
-            if (incomplete.getSongTitle().equals(getIntent().getStringExtra("songTitle"))){
-                Log.i(TAG, "onClick: IncompleteSongFound: "+ incomplete.getSongTitle());
+            if (incomplete.getSongTitle().equals(songTitle)){
                 toBeRemoved = incomplete;
             }
         }
         try{
             MainMenu.incompleteSongs.remove(toBeRemoved);
-            Log.i(TAG, "onClick: IncompleteSongFound list after remove: " + MainMenu.incompleteSongs);
             FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(MainMenu.incompleteSongs);
@@ -241,17 +272,20 @@ public class GuessSong extends AppCompatActivity{
         }
     }
 
+    /*
+            This dialog should appear when the user guesses the song correctly.
+     */
     private void showCorrectAnswerDialog() {
+        //Instantiation and inflation of the dialog
         dialogCorrect = new Dialog(this);
         dialogCorrect.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogCorrect.setContentView(R.layout.dialog_correct_answer);
         dialogCorrect.show();
         dialogCorrect.setCancelable(false);
 
+        //Set the text of a TextView to display the correct answer that the user guessed.
         TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
-        songTitleTv.setText(getIntent().getStringExtra("songTitle"));
-
-        Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
+        songTitleTv.setText(songTitle);
 
         //Update the total distance walked when the user leaves the map screen
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
@@ -259,8 +293,8 @@ public class GuessSong extends AppCompatActivity{
         SharedPreferences.Editor editorStats = statistics.edit();
         editorStats.putFloat("totalDistanceWalked", totalDistanceWalked + distanceWalkedWhilePlaying );
         editorStats.apply();
-        Log.i(TAG, "onClick: Distance: totalDistanceWalked: " + statistics.getFloat("totalDistanceWalked", 0.0f));
 
+        Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,13 +304,21 @@ public class GuessSong extends AppCompatActivity{
         });
     }
 
+
+
+    /*
+            This method is used when the user clicks on the Songle coin button, if they have enough
+            Songle coins they will be asked if they are sure they want to spend a coin. If they do
+            not have enough Songle coins, they will be notified.
+     */
     public void spendSongleCoin(View view) {
 
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
+
         if(currentNumberOfCoins > 0){
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            //Custom alert dialog
 
             TextView title = new TextView(this);
             title.setText("Spend Songle coin?");
@@ -286,6 +328,7 @@ public class GuessSong extends AppCompatActivity{
             title.setGravity(Gravity.CENTER);
             title.setTextSize(20);
 
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setCustomTitle(title);
 
 
@@ -296,9 +339,13 @@ public class GuessSong extends AppCompatActivity{
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
+                            //Dismiss dialog
                             arg0.dismiss();
+                            //Reveal 10 words
                             spentSongleCoin();
+                            //Remove a Songle coin
                             decrementNumberOfSongleCoins();
+                            //Update TextView containing number of Songle coins.
                             updateNumberOfSongleCoinsText();
                         }
                     });
@@ -327,6 +374,11 @@ public class GuessSong extends AppCompatActivity{
 
     }
 
+
+
+    /*
+            This method removes one Songle coin from SharedPreferences.
+     */
     private void decrementNumberOfSongleCoins() {
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
@@ -335,13 +387,22 @@ public class GuessSong extends AppCompatActivity{
         editorSongleCoins.apply();
     }
 
+
+
+    /*
+            This method keeps trying to collect markers from the map until it collects 10 random ones
+            and whilst there are more than 10 markers still on the map.
+     */
     public void spentSongleCoin(){
         int numberOfRandomMarkersAdded = 0;
-        while((numberOfRandomMarkersAdded <=10)&&(placemarks.size() - collectedMarkers.size() > 10)){
-            numberOfRandomMarkersAdded = collectRandomMarker(numberOfRandomMarkersAdded);
-            Log.i(TAG, "spentSongleCoin: numberOfRandomMarkersAdded: " + numberOfRandomMarkersAdded);
-        }
         if(placemarks.size() - collectedMarkers.size() > 10){
+            while((numberOfRandomMarkersAdded <=10)&&(placemarks.size() - collectedMarkers.size() > 10)){
+                numberOfRandomMarkersAdded = collectRandomMarker(numberOfRandomMarkersAdded);
+            }
+            /*
+                 Once 10 markers have been collected, the lyrics should be rebuilt showing the
+                 newest words.
+             */
             buildSong(wholeSong);
         }else{
             Toast.makeText(GuessSong.this, "There is less than 10 markers to be collected, your" +
@@ -349,13 +410,17 @@ public class GuessSong extends AppCompatActivity{
         }
     }
 
+
+
+    /*
+            This method retrieves a random marker from the HashSet of placemarks and adds it to
+            the collected markers HashSet. This method is called when a songle coin has been spent.
+            If a marker has already been added then it shouldn't be added again. This algorithm may
+            be relatively slow but I believe it is better than using the inherent randomness of the
+            HashSet.
+     */
     private int collectRandomMarker(int numberOfRandomMarkersAdded){
 
-        /*
-                This method retrieves a random marker from the HashSet of markers and adds it to
-                the collected markers. This method is called when a songle coin has been spent. If
-                a marker has already been added then it shouldn't be added again.
-                 */
         Random rand = new Random();
         int randomMarker = rand.nextInt(placemarks.size());
         int i = 0;
@@ -363,14 +428,16 @@ public class GuessSong extends AppCompatActivity{
             if((i == randomMarker) && (!collectedMarkers.contains(placemark.getLocation()))){
                 collectedMarkers.add(placemark.getLocation());
                 numberOfRandomMarkersAdded++;
-                Log.i(TAG, "collectRandomMarker: SUCCESS: " + "Marker added to collected markers: " +
-                        "collectedMarkers size: " + collectedMarkers.size());
                 i++;
             }
         }
         return numberOfRandomMarkersAdded;
     }
 
+    /*
+            When the back button is pressed we must pass the collected markers back to the
+            MapsActivity because some markers may have been collected by the Songle coins.
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
@@ -380,6 +447,11 @@ public class GuessSong extends AppCompatActivity{
     }
 
 
+    /*
+            When the user has correctly guessed the song they will be returned to the MainMenu
+            the songTitle will be given back to the MainMenu so that it can add it to the
+            list of completed songs.
+     */
     private void backToMainMenu() {
 
         Intent intent = new Intent(this, MainMenu.class);

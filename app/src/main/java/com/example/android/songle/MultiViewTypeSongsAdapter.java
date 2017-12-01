@@ -8,6 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,13 +41,6 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
     int totalTypes;
     public static final String API_KEY = "AIzaSyBjaJZj0WwqxFVOD8pUsAuGVnYCqXUvYa8";
 
-
-    /*public MultiViewTypeSongsAdapter(Context context, ArrayList<IncompleteSong> incompleteSongs) {
-
-        this.context = context;
-        this.incompleteSongs = incompleteSongs;
-        inflater = LayoutInflater.from(context);
-    }*/
 
     public static class IncompleteSongViewHolder extends RecyclerView.ViewHolder {
 
@@ -157,18 +153,23 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                         @Override
                         public void onClick(View view) {
 
-                            Intent intent= new Intent(context, MapsActivity.class);
-                            //An ArrayList containing only one song which will be used by the
-                            //maps activity to get a random Song, because there is only one Song
-                            //in the ArrayList, this is the only song that can be returned by the
-                            //Maps Activity and this song will be chosen.
-                            ArrayList<Song> theSongs = new ArrayList<Song>();
-                            theSongs.add(object.theSong);
-                            Log.i("", "onClick: theSong: " + object.theSong.getTitle());
-                            intent.putParcelableArrayListExtra("listOfSongs",theSongs);
-                            intent.putExtra("collectedMarkersMainMenu", object.theIncompleteSong.collectedMarkers);
-                            intent.putExtra("incompleteLevel", object.theIncompleteSong.levelOfDifficulty);
-                            ((Activity) context).startActivityForResult(intent,1);
+                            if(isNetworkConnected()||isWifiConnected()){
+                                Intent intent= new Intent(context, MapsActivity.class);
+                                //An ArrayList containing only one song which will be used by the
+                                //maps activity to get a random Song, because there is only one Song
+                                //in the ArrayList, this is the only song that can be returned by the
+                                //Maps Activity and this song will be chosen.
+                                ArrayList<Song> theSongs = new ArrayList<Song>();
+                                theSongs.add(object.theSong);
+                                Log.i("", "onClick: theSong: " + object.theSong.getTitle());
+                                intent.putParcelableArrayListExtra("listOfSongs",theSongs);
+                                intent.putExtra("collectedMarkersMainMenu", object.theIncompleteSong.collectedMarkers);
+                                intent.putExtra("incompleteLevel", object.theIncompleteSong.levelOfDifficulty);
+                                ((Activity) context).startActivityForResult(intent,1);
+                            }else{
+                                Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
 
                         }
 
@@ -295,6 +296,21 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         int currPosition = dataSet.indexOf(model);
         dataSet.remove(currPosition);
         notifyItemRemoved(currPosition);
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    private boolean isWifiConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && (ConnectivityManager.TYPE_WIFI == networkInfo.getType())
+                && networkInfo.isConnected();
     }
 
 

@@ -39,15 +39,16 @@ import java.util.Map;
 
 public class MainMenu extends AppCompatActivity{
 
-    //URL
+    //URL for the songs
     private static final String xml_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
+
     private static final String TAG = "MainMenu";
 
-    //An ArrayList containing all of the songs
+    //An ArrayList containing all of the songs the user could get, if they click new song.
     public static ArrayList<Song> songs;
-
     private static Song song;
 
+    //
     private boolean connectedToNetwork = true;
     private boolean locationServicesAvailable = true;
 
@@ -98,7 +99,7 @@ public class MainMenu extends AppCompatActivity{
 
     public void newSong(View view){
         //When the new song button is clicked, open the MapsActivity
-        if (connectedToNetwork) {
+        if (isNetworkConnected() || isWifiConnected()) {
             if (locationServicesAvailable) {
                 if(songs.size() > 0){
                     if(incompleteSongs.size() < 3){
@@ -124,7 +125,12 @@ public class MainMenu extends AppCompatActivity{
             }
         } else {
             Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+                    .setAction("RETRY", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            tryNetworkAgain();
+                        }
+                    }).show();
         }
     }
 
@@ -267,6 +273,20 @@ public class MainMenu extends AppCompatActivity{
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(adapter);
+        if(mRecyclerView.getAdapter().getItemViewType(0) == 0){
+            TextView noIncompleteSongs = (TextView) findViewById(R.id.no_incomplete_songs_tv);
+            noIncompleteSongs.setVisibility(View.GONE);
+        }
+        int numberOfObjects = mRecyclerView.getAdapter().getItemCount();
+        if(mRecyclerView.getAdapter().getItemViewType(numberOfObjects-1) == 1){
+            TextView completeSongs = (TextView) findViewById(R.id.no_complete_songs_tv);
+            completeSongs.setVisibility(View.GONE);
+        }
+
+
+        if(loadingDialog.isShowing()){
+            loadingDialog.dismiss();
+        }
     }
 
     private void addIncompleteSongsToMainMenuList() {
@@ -329,6 +349,18 @@ public class MainMenu extends AppCompatActivity{
     public void onBackPressed() {
     }
 
+    private void tryNetworkAgain(){
+        /*
+                Execute the methods in the AsyncTask class, to get a fresh set of songs. It may be
+                that the user had originally no signal when they started the app and now do, this
+                allows the user to get the songs.
+         */
+
+        AsyncXMLDownloader downloader = new AsyncXMLDownloader();
+        downloader.execute();
+    }
+
+
     private class AsyncXMLDownloader extends AsyncTask<Object, String, Integer>{
 
         @Override
@@ -348,7 +380,7 @@ public class MainMenu extends AppCompatActivity{
             //Call the appropriate methods to download and parse the xml data
             XmlPullParser receivedData = tryDownloadXmlData();
             int songsFound = tryParseXmlData(receivedData);
-            return songsFound;
+            return 0;
         }
 
         private XmlPullParser tryDownloadXmlData() {
@@ -421,12 +453,12 @@ public class MainMenu extends AppCompatActivity{
                 }
                 eventType = xmlData.next();
             }
+            Log.i(TAG, "processReceivedData: FINISHED BACKGROUND TASK.");
         }
 
         @Override
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
-            loadingDialog.dismiss();
             populateSongs();
         }
     }

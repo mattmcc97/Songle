@@ -84,59 +84,51 @@
                 android:layout_marginLeft="18dp"
                 android:text="Incomplete Songs"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/songs_list"
+                app:layout_constraintBottom_toTopOf="@+id/no_incomplete_songs_tv"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button_separator" />
+
+            <TextView
+                android:id="@+id/no_incomplete_songs_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="You have no incomplete songs."
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/songs_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/incomplete_songs_tv" />
+
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/songs_list"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/no_complete_songs_tv"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/incomplete_songs_tv">
+                app:layout_constraintTop_toBottomOf="@+id/no_incomplete_songs_tv">
 
             </android.support.v7.widget.RecyclerView>
 
-            <!--<View
-                android:id="@+id/incomplete_complete_separator"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/colorAccent"
-                app:layout_constraintBottom_toTopOf="@+id/complete_songs_tv"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/incomplete_songs_list"/>
-
             <TextView
-                android:id="@+id/complete_songs_tv"
+                android:id="@+id/no_complete_songs_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="18dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Completed Songs"
+                android:gravity="center"
+                android:text="You have no complete songs."
                 android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@+id/complete_songs_list"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/incomplete_complete_separator"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/complete_songs_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/complete_songs_tv"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/complete_songs_tv">
-
-            </android.support.v7.widget.RecyclerView>-->
+                app:layout_constraintTop_toBottomOf="@+id/songs_list" />
 
 
         </android.support.constraint.ConstraintLayout>
