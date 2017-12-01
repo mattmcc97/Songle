@@ -10,8 +10,11 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -154,18 +157,24 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                         public void onClick(View view) {
 
                             if(isNetworkConnected()||isWifiConnected()){
-                                Intent intent= new Intent(context, MapsActivity.class);
-                                //An ArrayList containing only one song which will be used by the
-                                //maps activity to get a random Song, because there is only one Song
-                                //in the ArrayList, this is the only song that can be returned by the
-                                //Maps Activity and this song will be chosen.
-                                ArrayList<Song> theSongs = new ArrayList<Song>();
-                                theSongs.add(object.theSong);
-                                Log.i("", "onClick: theSong: " + object.theSong.getTitle());
-                                intent.putParcelableArrayListExtra("listOfSongs",theSongs);
-                                intent.putExtra("collectedMarkersMainMenu", object.theIncompleteSong.collectedMarkers);
-                                intent.putExtra("incompleteLevel", object.theIncompleteSong.levelOfDifficulty);
-                                ((Activity) context).startActivityForResult(intent,1);
+                                if(isLocationEnabled(context)){
+                                    Intent intent= new Intent(context, MapsActivity.class);
+                                    //An ArrayList containing only one song which will be used by the
+                                    //maps activity to get a random Song, because there is only one Song
+                                    //in the ArrayList, this is the only song that can be returned by the
+                                    //Maps Activity and this song will be chosen.
+                                    ArrayList<Song> theSongs = new ArrayList<Song>();
+                                    theSongs.add(object.theSong);
+                                    Log.i("", "onClick: theSong: " + object.theSong.getTitle());
+                                    intent.putParcelableArrayListExtra("listOfSongs",theSongs);
+                                    intent.putExtra("collectedMarkersMainMenu", object.theIncompleteSong.collectedMarkers);
+                                    intent.putExtra("incompleteLevel", object.theIncompleteSong.levelOfDifficulty);
+                                    ((Activity) context).startActivityForResult(intent,1);
+                                }else{
+                                    Snackbar.make(view, "Songle can't get your location. Please ensure you have a " +
+                                            "mobile signal and location services enabled.", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
                             }else{
                                 Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
@@ -311,6 +320,28 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return networkInfo != null && (ConnectivityManager.TYPE_WIFI == networkInfo.getType())
                 && networkInfo.isConnected();
+    }
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
     }
 
 

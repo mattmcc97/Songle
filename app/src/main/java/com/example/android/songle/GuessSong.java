@@ -236,8 +236,8 @@ public class GuessSong extends AppCompatActivity{
             the strings, not considering the case.
      */
     private boolean isGuessCorrect(String guess, String answer){
-        String guessStripped = guess.replaceAll("\\p{Punct}+$", "");
-        String answerStripped = answer.replaceAll("\\p{Punct}+$", "");
+        String guessStripped = (guess.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+","");
+        String answerStripped = (answer.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+","");
         if(answerStripped.equalsIgnoreCase(guessStripped)){
             return true;
         }else{
