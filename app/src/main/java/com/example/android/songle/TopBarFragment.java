@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-public class TopBarFragment extends PreferenceFragment implements View.OnClickListener{
+public class TopBarFragment extends PreferenceFragment implements View.OnClickListener {
 
 
     Dialog dialog;
@@ -30,10 +28,10 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragment
+        //Inflate the layout for this fragment.
         View myLayout = inflater.inflate(R.layout.fragment_top_bar, container, false);
 
-        // add click listener to the button
+        //Add an OnClick listener to the help/instructions button.
         Button helpButton = (Button) myLayout.findViewById(R.id.help_button);
         helpButton.setOnClickListener(this);
 
@@ -45,41 +43,54 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         return myLayout;
     }
 
+    /*
+            This method is responsible for getting the latest number of points the user has and
+            calculating their level and their progress within that level.
+     */
     public void updateLevel() {
 
+        //The current score is retrieved from SharedPreferences.
         SharedPreferences scoreAndLevel = getActivity().getSharedPreferences("score", Context.MODE_PRIVATE);
         int currentScore = scoreAndLevel.getInt("score", 0);
 
-        double level = currentScore/1000.0;
+        //Every level has 1000 points
+        double level = currentScore / 1000.0;
         int integerLevel = (int) level;
 
-        //level could be 4.325 integer level would be 4 so levelProgress would be
-        //4.325 - 4 = 0.325 , 0.325*1000 = 325.
-        int levelProgress = (int) ((level - integerLevel)*1000);
+        /*
+                The user's level could be 4.325, therefore the integer level would be 4 so the
+                progress in that level would be calculated as follows:
+
+                4.325 - 4 = 0.325 , 0.325*1000 = 325.
+         */
+        int levelProgress = (int) ((level - integerLevel) * 1000);
 
 
         levelPb.setMax(1000);
         levelPb.setProgress(levelProgress);
 
-        //add 1 to level so user starts at level 1 not level 0
+        //Add 1 to the user's level so that the levels start at 1 and not 0.
         levelTextView.setText("Level " + (integerLevel + 1));
 
         SharedPreferences.Editor editor = scoreAndLevel.edit();
         editor.putInt("level", (integerLevel + 1));
-        Log.i("ok", "updateLevel: The user is level: " + (integerLevel +1));
         editor.apply();
 
     }
 
 
+    /*
+            The instructions are shown on the screen with the information/help button is clicked
+            in the top left of the screen.
+     */
     @Override
     public void onClick(View v) {
         dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.help_dialog);
-        dialog.setTitle("Help");
         dialog.show();
 
+        //The OK button will close the dialog.
         Button okBtn = (Button) dialog.findViewById(R.id.help_ok_button);
 
         okBtn.setOnClickListener(new View.OnClickListener() {
@@ -90,10 +101,4 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        //getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(getActivity());
-
-    }
 }

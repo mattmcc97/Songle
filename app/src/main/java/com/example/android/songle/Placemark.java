@@ -9,9 +9,19 @@ import java.io.Serializable;
 
 /**
  * Created by Matthew on 26/10/2017.
+ *
+ * This is the class for a Placemark. This is what is retrieved from the KML file.
+ *
+ * The Placemark class stores:
+ * word - This is the word linked to the placemark.
+ * location - This is the location of the word within the lyrics e.g. 13:5 = 13th line 5th word.
+ * description - This is either boring, not boring, interesting, very interesting or unclassified.
+ * styleUrl - the same as description but contains a '#' before it.
+ * coordinates - a String containing the coordinates of the marker within Edinburgh University.
+ *
  */
 
-public class Placemark implements Parcelable, Serializable{
+public class Placemark implements Parcelable, Serializable {
     public final String word;
     public final String location;
     public final String description;
@@ -31,7 +41,7 @@ public class Placemark implements Parcelable, Serializable{
         return word;
     }
 
-    public String getLocation(){
+    public String getLocation() {
         return location;
     }
 
@@ -39,10 +49,7 @@ public class Placemark implements Parcelable, Serializable{
         return description;
     }
 
-    public String getStyleUrl() {
-        return styleUrl;
-    }
-
+    //Converts the coordinates from a String to a LatLng type.
     public LatLng getCoordinates() {
         //remove 0 off the coordinates string and split it on the comma to extract lat and long Strings
         String[] coords = coordinates.substring(0, coordinates.length() - 2).split(",");
@@ -50,6 +57,10 @@ public class Placemark implements Parcelable, Serializable{
         return latlong;
     }
 
+    /*
+        The following methods are used to allow a Placemark to be parcelable, this is a more
+        efficient way to pass data than Serializing it.
+    */
     protected Placemark(Parcel in) {
         word = in.readString();
         location = in.readString();

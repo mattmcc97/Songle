@@ -1,11 +1,15 @@
 package com.example.android.songle;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class SplashScreen extends AppCompatActivity {
+
+    /*
+            This activity only appears while the app is starting up. It does not cause any slowing
+            of the loading process as it does not sleep in the OnCreate method.
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

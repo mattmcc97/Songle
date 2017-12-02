@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 A background (splash screen) that is displayed when the app is loading on the initial app start.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:drawable="@color/colorPrimary"/>
+    <item android:drawable="@color/colorPrimary" />
 
     <item
         android:gravity="center"

@@ -1,22 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Custom button file that modifies buttons so that they are circular. The button also changes colour
 when it is pressed or in focus.
 -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="oval">
-            <solid android:color="@color/colorPrimaryDark"/>
+            <solid android:color="@color/colorPrimaryDark" />
         </shape>
     </item>
     <item android:state_focused="true">
         <shape android:shape="oval">
-            <solid android:color="@color/colorPrimaryLight"/>
+            <solid android:color="@color/colorPrimaryLight" />
         </shape>
     </item>
-    <item >
+    <item>
         <shape android:shape="oval">
-            <solid android:color="@color/colorPrimary"/>
+            <solid android:color="@color/colorPrimary" />
         </shape>
     </item>
 </selector>

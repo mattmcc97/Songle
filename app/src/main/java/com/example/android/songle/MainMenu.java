@@ -35,21 +35,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainMenu extends AppCompatActivity{
+public class MainMenu extends AppCompatActivity {
 
     //URL for the songs
-    private static final String xml_url = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
+    private static final String xml_url =
+            "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.xml";
 
     private static final String TAG = "MainMenu";
 
     //An ArrayList containing all of the songs the user could get, if they click new song.
     public static ArrayList<Song> songs;
-    private static Song song;
 
     //Loading dialog that appears while Songle is accessing the list of Songs.
     ProgressDialog loadingDialog;
-    public static final String API_KEY = "AIzaSyBjaJZj0WwqxFVOD8pUsAuGVnYCqXUvYa8";
-    public static final String VIDEO_ID = "fJ9rUzIMcZQ";
 
     //HashMap containing the SongTitle (as the key) and the YouTube link.
     HashMap<String, String> completedSongs;
@@ -78,8 +76,10 @@ public class MainMenu extends AppCompatActivity{
         incompleteSongs = new ArrayList<IncompleteSong>();
 
         //Initialisation of the Custom Adapter and the RecyclerView it will be used on
-        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(
+                mainMenuList, this, MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
+                this, OrientationHelper.VERTICAL, false);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -102,23 +102,23 @@ public class MainMenu extends AppCompatActivity{
                 The list of songs should be passed to the MapsActivity so that a random song
                 can be chosen
     */
-    public void newSong(View view){
+    public void newSong(View view) {
 
         if (isNetworkConnected() || isWifiConnected()) {
             if (isLocationEnabled(this)) {
-                if(songs.size() > 0){
-                    if(incompleteSongs.size() < 3){
+                if (songs.size() > 0) {
+                    if (incompleteSongs.size() < 3) {
                         Intent intent = new Intent(this, MapsActivity.class);
                         intent.putParcelableArrayListExtra("listOfSongs", songs);
                         writeIncompleteSongsToFile();
                         startActivityForResult(intent, 1);
-                    }else{
+                    } else {
                         Toast.makeText(MainMenu.this, "The maximum number of songs you can " +
                                 "play, at once, is 3. Please give up on one of the " +
                                 "incomplete songs, if you want to guess a " +
                                 "new song.", Toast.LENGTH_LONG).show();
                     }
-                }else{
+                } else {
                     Snackbar.make(view, "Sorry, no songs are available at the minute. " +
                             "Please try again later.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -129,7 +129,8 @@ public class MainMenu extends AppCompatActivity{
                         .setAction("Action", null).show();
             }
         } else {
-            Snackbar.make(view, "No internet connection. Please reconnect and try again.", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "No internet connection. Please reconnect and try again.",
+                    Snackbar.LENGTH_LONG)
                     .setAction("RETRY", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -138,7 +139,6 @@ public class MainMenu extends AppCompatActivity{
                     }).show();
         }
     }
-
 
 
     /*
@@ -150,7 +150,7 @@ public class MainMenu extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if (resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 incompleteSong = (IncompleteSong) data.getSerializableExtra("incompleteSong");
                 theSong = (Song) data.getSerializableExtra("theSong");
                 buildIncompleteSongs();
@@ -164,12 +164,12 @@ public class MainMenu extends AppCompatActivity{
             When the user has completed a song, the song title is passed back to the MainMenu so it
             can be added to the list of completed songs.
      */
-    private void buildCompletedSongs(){
+    private void buildCompletedSongs() {
 
         completedSongTitle = getIntent().getStringExtra("songTitle");
-        if((completedSongTitle != null)&&(!completedSongs.containsKey(completedSongTitle))){
-            for (Song song: songs){
-                if(song.getTitle().equals(completedSongTitle)){
+        if ((completedSongTitle != null) && (!completedSongs.containsKey(completedSongTitle))) {
+            for (Song song : songs) {
+                if (song.getTitle().equals(completedSongTitle)) {
                     completedSongs.put(completedSongTitle, song.getLink());
                 }
             }
@@ -182,10 +182,10 @@ public class MainMenu extends AppCompatActivity{
             This method overwrites the list of completed songs in the file, with the current list
             of completed songs. This method is called once the completedSongs HashMap is updated.
      */
-    private void writeCompleteSongsToFile(){
-        try
-        {
-            FileOutputStream fileOutputStream = openFileOutput("CompletedSongs.ser", Context.MODE_PRIVATE);
+    private void writeCompleteSongsToFile() {
+        try {
+            FileOutputStream fileOutputStream = openFileOutput(
+                    "CompletedSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(completedSongs);
             objectOutputStream.close();
@@ -198,15 +198,14 @@ public class MainMenu extends AppCompatActivity{
     /*
             This method reads the list of completed songs from the file.
     */
-    private void readCompleteSongsFromFile(){
-        try
-        {
-            FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/CompletedSongs.ser");
+    private void readCompleteSongsFromFile() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(
+                    getFilesDir() + "/CompletedSongs.ser");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            completedSongs = (HashMap)objectInputStream.readObject();
+            completedSongs = (HashMap) objectInputStream.readObject();
             objectInputStream.close();
-        }
-        catch(ClassNotFoundException | IOException | ClassCastException e) {
+        } catch (ClassNotFoundException | IOException | ClassCastException e) {
             e.printStackTrace();
         }
     }
@@ -219,20 +218,18 @@ public class MainMenu extends AppCompatActivity{
             progress can be updated.
             - The song is brand new and so it will be added to the ArrayList of incomplete songs.
      */
-    private void buildIncompleteSongs(){
+    private void buildIncompleteSongs() {
 
         boolean songIsAlreadyIncomplete = false;
-        if(incompleteSong!=null){
-            for(IncompleteSong incomplete : incompleteSongs){
-                if (incomplete.getSongTitle().equals(incompleteSong.getSongTitle())){
-                    songIsAlreadyIncomplete = songIsAlreadyIncomplete || true;
+        if (incompleteSong != null) {
+            for (IncompleteSong incomplete : incompleteSongs) {
+                if (incomplete.getSongTitle().equals(incompleteSong.getSongTitle())) {
+                    songIsAlreadyIncomplete = true;
                     incomplete.collectedMarkers.addAll(incompleteSong.collectedMarkers);
                 }
             }
-            if(!songIsAlreadyIncomplete){
+            if (!songIsAlreadyIncomplete) {
                 incompleteSongs.add(incompleteSong);
-            }else{
-
             }
         }
     }
@@ -241,15 +238,14 @@ public class MainMenu extends AppCompatActivity{
     /*
             This method reads the list of incomplete songs from the file.
     */
-    private void readIncompleteSongsFromFile(){
-        try
-        {
-            FileInputStream fileInputStream = new FileInputStream(getFilesDir()+"/IncompleteSongs.ser");
+    private void readIncompleteSongsFromFile() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(
+                    getFilesDir() + "/IncompleteSongs.ser");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             incompleteSongs = (ArrayList<IncompleteSong>) objectInputStream.readObject();
             objectInputStream.close();
-        }
-        catch(ClassNotFoundException | IOException | ClassCastException e) {
+        } catch (ClassNotFoundException | IOException | ClassCastException e) {
             e.printStackTrace();
         }
     }
@@ -259,10 +255,10 @@ public class MainMenu extends AppCompatActivity{
             This method overwrites the list of incomplete songs in the file, with the current list
             of incomplete songs. This method is called once the incompleteSongs ArrayList is updated.
      */
-    private void writeIncompleteSongsToFile(){
-        try
-        {
-            FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
+    private void writeIncompleteSongsToFile() {
+        try {
+            FileOutputStream fileOutputStream = openFileOutput(
+                    "IncompleteSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(incompleteSongs);
             objectOutputStream.close();
@@ -276,7 +272,7 @@ public class MainMenu extends AppCompatActivity{
             This method is responsible for taking the current state of incomplete and complete songs
             and updating the state of the RecyclerView.
      */
-    private void populateSongs(){
+    private void populateSongs() {
 
         readCompleteSongsFromFile();
         buildCompletedSongs();
@@ -295,8 +291,10 @@ public class MainMenu extends AppCompatActivity{
         mainMenuList = new ArrayList();
         addIncompleteSongsToMainMenuList();
 
-        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(mainMenuList,this,MainMenu.this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, OrientationHelper.VERTICAL, false);
+        MultiViewTypeSongsAdapter adapter = new MultiViewTypeSongsAdapter(
+                mainMenuList, this, MainMenu.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
+                this, OrientationHelper.VERTICAL, false);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -308,7 +306,7 @@ public class MainMenu extends AppCompatActivity{
                 least one incomplete song in the list. This means we should not show the message:
                 "There are no incomplete songs".
          */
-        if(mRecyclerView.getAdapter().getItemViewType(0) == 0){
+        if (mRecyclerView.getAdapter().getItemViewType(0) == 0) {
             TextView noIncompleteSongs = (TextView) findViewById(R.id.no_incomplete_songs_tv);
             noIncompleteSongs.setVisibility(View.GONE);
         }
@@ -320,13 +318,13 @@ public class MainMenu extends AppCompatActivity{
                 "There are no complete songs".
          */
         int numberOfObjects = mRecyclerView.getAdapter().getItemCount();
-        if(mRecyclerView.getAdapter().getItemViewType(numberOfObjects-1) == 1){
+        if (mRecyclerView.getAdapter().getItemViewType(numberOfObjects - 1) == 1) {
             TextView completeSongs = (TextView) findViewById(R.id.no_complete_songs_tv);
             completeSongs.setVisibility(View.GONE);
         }
 
         //Close the loading dialog if it is still showing, at this point.
-        if(loadingDialog.isShowing()){
+        if (loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
     }
@@ -342,17 +340,18 @@ public class MainMenu extends AppCompatActivity{
         int i = 1;
         for (IncompleteSong incomplete : incompleteSongs) {
             /*
-                    Calculate the song progress (as a %) by comparing the number of collected markers
-                    with the total number of markers on the map.
+                    Calculate the song progress (as a %) by comparing the number of collected
+                    markers with the total number of markers on the map.
              */
             int progress =
-                    (int)(((incomplete.getCollectedMarkers().size())/((double)incomplete.getTotalNumberOfPlacemarks()))*100);
+                    (int) (((incomplete.getCollectedMarkers().size()) /
+                            ((double) incomplete.getTotalNumberOfPlacemarks())) * 100);
 
             mainMenuList.add(
                     new Model(Model.INCOMPLETE_TYPE,
                             "Song " + i,
                             progress,
-                            incomplete.getSongTitle(),
+                            incomplete.getSongTitle() + " - " + incomplete.getTheSong().getArtist(),
                             incomplete.getTheSong(),
                             incomplete));
 
@@ -370,7 +369,14 @@ public class MainMenu extends AppCompatActivity{
         for (Map.Entry<String, String> entry : completedSongs.entrySet()) {
             String songTitle = entry.getKey();
             String songLink = entry.getValue();
-            mainMenuList.add(new Model(Model.COMPLETE_TYPE,songTitle, 100, songLink, null, null));
+            String artist = "";
+            for(Song aSong : songs){
+                if(aSong.getTitle().equals(songTitle)){
+                    artist = aSong.getArtist();
+                }
+            }
+            mainMenuList.add(new Model(Model.COMPLETE_TYPE, songTitle + " - " + artist,
+                    100, songLink, null, null));
         }
     }
 
@@ -416,9 +422,10 @@ public class MainMenu extends AppCompatActivity{
         int locationMode = 0;
         String locationProviders;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
-                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+                locationMode = Settings.Secure.getInt(
+                        context.getContentResolver(), Settings.Secure.LOCATION_MODE);
 
             } catch (Settings.SettingNotFoundException e) {
                 e.printStackTrace();
@@ -427,8 +434,9 @@ public class MainMenu extends AppCompatActivity{
 
             return locationMode != Settings.Secure.LOCATION_MODE_OFF;
 
-        }else{
-            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        } else {
+            locationProviders = Settings.Secure.getString(
+                    context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
 
@@ -461,13 +469,13 @@ public class MainMenu extends AppCompatActivity{
              that the user had originally no signal when they started the app and now do, this
              allows the user to get the songs.
     */
-    private void tryNetworkAgain(){
+    private void tryNetworkAgain() {
         AsyncXMLDownloader downloader = new AsyncXMLDownloader();
         downloader.execute();
     }
 
 
-    private class AsyncXMLDownloader extends AsyncTask<Object, String, Integer>{
+    private class AsyncXMLDownloader extends AsyncTask<Object, String, Integer> {
 
         /*
                 When loading the map display a circular loading dialog that says "Loading Map...".
@@ -490,7 +498,7 @@ public class MainMenu extends AppCompatActivity{
         }
 
         private XmlPullParser tryDownloadXmlData() {
-            try{
+            try {
                 URL xmlURL = new URL(xml_url);
                 /*
                         Create a new instance of the XmlPullParser class and set the input stream
@@ -499,29 +507,30 @@ public class MainMenu extends AppCompatActivity{
                 XmlPullParser receivedData = XmlPullParserFactory.newInstance().newPullParser();
                 receivedData.setInput(xmlURL.openStream(), null);
                 return receivedData;
-            }catch(XmlPullParserException e){
+            } catch (XmlPullParserException e) {
                 Log.e("Songle", "XmlPullParserException - tryDownloadXmlData", e);
-            }catch (IOException e){
-                Log.e("Songle", "IOException - tryDownloadXmlData" , e);
+            } catch (IOException e) {
+                Log.e("Songle", "IOException - tryDownloadXmlData", e);
             }
             return null;
         }
 
         private int tryParseXmlData(XmlPullParser receivedData) {
             //If there is data from the input stream call the method to parse the data
-            if(receivedData != null){
-                try{
+            if (receivedData != null) {
+                try {
                     processReceivedData(receivedData);
-                }catch(XmlPullParserException e){
+                } catch (XmlPullParserException e) {
                     Log.e("Songle", "XmlPullParserException - tryParseXmlData", e);
-                }catch (IOException e){
-                    Log.e("Songle", "IOException - tryParseXmlData" , e);
+                } catch (IOException e) {
+                    Log.e("Songle", "IOException - tryParseXmlData", e);
                 }
             }
             return 0;
         }
 
-        private void processReceivedData(XmlPullParser xmlData) throws IOException, XmlPullParserException {
+        private void processReceivedData(XmlPullParser xmlData) throws IOException,
+                XmlPullParserException {
 
             String number = "";
             String artist = "";
@@ -534,26 +543,26 @@ public class MainMenu extends AppCompatActivity{
             used to create a new Song object which is added to the ArrayList of songs.
              */
             int eventType = xmlData.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT){
+            while (eventType != XmlPullParser.END_DOCUMENT) {
                 String name = xmlData.getName();
-                switch (eventType){
+                switch (eventType) {
                     case XmlPullParser.START_DOCUMENT:
                         break;
                     case XmlPullParser.START_TAG:
-                        if (name.equalsIgnoreCase("Song")){
+                        if (name.equalsIgnoreCase("Song")) {
                             break;
-                        }else if (name.equalsIgnoreCase("Number")){
+                        } else if (name.equalsIgnoreCase("Number")) {
                             number = xmlData.nextText();
-                        }else if (name.equalsIgnoreCase("Artist")){
+                        } else if (name.equalsIgnoreCase("Artist")) {
                             artist = xmlData.nextText();
-                        }else if (name.equalsIgnoreCase("Title")){
+                        } else if (name.equalsIgnoreCase("Title")) {
                             title = xmlData.nextText();
-                        }else if (name.equalsIgnoreCase("Link")){
+                        } else if (name.equalsIgnoreCase("Link")) {
                             link = xmlData.nextText();
-                            song = new Song(title, number, link, artist);
+                            Song song = new Song(title, number, link, artist);
                             try {
                                 songs.add(song);
-                            }catch (NullPointerException e){
+                            } catch (NullPointerException e) {
                                 Log.e("MainMenu ", "processReceivedData: ", e);
                             }
                         }
@@ -568,7 +577,7 @@ public class MainMenu extends AppCompatActivity{
             super.onPostExecute(integer);
             populateSongs();
             //Close the loading dialog if it is still showing, at this point.
-            if(loadingDialog.isShowing()){
+            if (loadingDialog.isShowing()) {
                 loadingDialog.dismiss();
             }
         }

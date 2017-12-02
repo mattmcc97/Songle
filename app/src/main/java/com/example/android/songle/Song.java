@@ -7,6 +7,14 @@ import java.io.Serializable;
 
 /**
  * Created by Matthew on 18/10/2017.
+ *
+ * This is the class for a Song. This is what is retrieved from the songs.xml file.
+ *
+ * The Song class stores:
+ * title - This is the title of the song.
+ * link - This is the part after the "https://youtu.be/" that is passed to the YouTube player.
+ * number - This is the song number.
+ * artist - This is the artist of the song.
  */
 
 public class Song implements Parcelable, Serializable {
@@ -23,7 +31,7 @@ public class Song implements Parcelable, Serializable {
         this.artist = artist;
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
 
@@ -35,12 +43,17 @@ public class Song implements Parcelable, Serializable {
         return number;
     }
 
+    //Extracts the part of the link after the "https://youtu.be".
     public String getLink() {
         String idOfLink = (link.split("/"))[3];
         return idOfLink;
     }
 
 
+    /*
+        The following methods are used to allow a Placemark to be parcelable, this is a more
+        efficient way to pass data than Serializing it.
+    */
     protected Song(Parcel in) {
         title = in.readString();
         link = in.readString();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/song_layout"
@@ -29,7 +29,7 @@
             android:textAlignment="viewStart"
             android:textAllCaps="false"
             android:textSize="16sp"
-            android:layout_weight="99.99"/>
+            android:layout_weight="99.99" />
 
         <Button
             android:id="@+id/list_item_give_up"
@@ -40,7 +40,7 @@
             android:background="@drawable/circle_button"
             android:foreground="@drawable/give_up_icon"
             android:stateListAnimator="@null"
-            android:theme="@style/PrimaryButton"/>
+            android:theme="@style/PrimaryButton" />
 
     </LinearLayout>
 

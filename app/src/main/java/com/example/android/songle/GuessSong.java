@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -29,7 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
-public class GuessSong extends AppCompatActivity{
+public class GuessSong extends AppCompatActivity {
 
     private String TAG = "GuessSong";
 
@@ -44,8 +43,6 @@ public class GuessSong extends AppCompatActivity{
     private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
     private HashSet<String> collectedMarkers = null;
     private HashSet<Placemark> placemarks = null;
-
-    private TextView lyricsTextView;
 
     private float distanceWalkedWhilePlaying;
 
@@ -70,7 +67,8 @@ public class GuessSong extends AppCompatActivity{
                 within the line and the word itself. This data is passed in to this activity from the
                 MapsActivity.
          */
-        wholeSong = (HashMap<Integer, HashMap<Integer, String>>) getIntent().getSerializableExtra("wholeSong");
+        wholeSong = (HashMap<Integer, HashMap<Integer, String>>)
+                getIntent().getSerializableExtra("wholeSong");
 
         /*
                 A set of markers that have been collected i.e. (13:5) which is the marker that is
@@ -108,7 +106,7 @@ public class GuessSong extends AppCompatActivity{
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
         TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
-        numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins  + " Songle coins available.");
+        numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coins available.");
 
     }
 
@@ -121,23 +119,23 @@ public class GuessSong extends AppCompatActivity{
      */
     private void buildSong(HashMap<Integer, HashMap<Integer, String>> songLyrics) {
         String song = "";
-        for(int i=1; i <= songLyrics.size(); i++){
+        for (int i = 1; i <= songLyrics.size(); i++) {
             HashMap<Integer, String> songLine = null;
             songLine = songLyrics.get(i);
             //Insert line numbers i.e. "1. ", "2. " etc.
             song += i + ". ";
-            for(int j = 1; j <= songLine.size(); j++){
+            for (int j = 1; j <= songLine.size(); j++) {
                 String wordLocation = i + ":" + j;
-                if(collectedMarkers.contains(wordLocation)){
+                if (collectedMarkers.contains(wordLocation)) {
                     song = song + songLine.get(j) + " ";
-                }else{
+                } else {
                     song = song + songLine.get(j).replaceAll("[A-Za-z0-9]", "_") + " ";
                 }
             }
             song += "\n";
         }
 
-        lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
+        TextView lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
         lyricsTextView.setText(song);
     }
 
@@ -170,16 +168,14 @@ public class GuessSong extends AppCompatActivity{
 
             //calculate the users level after the 500 points has been added
             newScore = sharedPrefs.getInt("score", 1);
-            double level = newScore/1000.0;
+            double level = newScore / 1000.0;
             int integerLevel = (int) level;
             int newLevel = integerLevel + 1;
 
             //If the guessing of a song scores the user enough points to level up then a
             //dialog should popup letting them know, this is done by comparing the level before
             //and after the marker is collected.
-            Log.i(TAG, "submitGuess: current level: " + currentLevel);
-            Log.i(TAG, "submitGuess: new level: " + newLevel);
-            if(newLevel == (currentLevel+1)){
+            if (newLevel == (currentLevel + 1)) {
                 levelUpDialog = new Dialog(this);
                 levelUpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 levelUpDialog.setContentView(R.layout.level_up);
@@ -204,7 +200,7 @@ public class GuessSong extends AppCompatActivity{
                     }
                 });
 
-            }else{
+            } else {
                 removeFromIncomplete();
                 showCorrectAnswerDialog();
             }
@@ -235,35 +231,32 @@ public class GuessSong extends AppCompatActivity{
             Strip the guess and the answer down to remove punctuation and spaces and then compare
             the strings, not considering the case.
      */
-    private boolean isGuessCorrect(String guess, String answer){
-        String guessStripped = (guess.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+","");
-        String answerStripped = (answer.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+","");
-        if(answerStripped.equalsIgnoreCase(guessStripped)){
-            return true;
-        }else{
-            return false;
-        }
+    private boolean isGuessCorrect(String guess, String answer) {
+        String guessStripped = (guess.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+", "");
+        String answerStripped = (answer.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+", "");
+        return answerStripped.equalsIgnoreCase(guessStripped);
     }
 
     /*
             This method removes the song from the list of incomplete songs, and then overwrites the
             file of incomplete songs, with the new list.
      */
-    private void removeFromIncomplete(){
+    private void removeFromIncomplete() {
         IncompleteSong toBeRemoved = null;
-        for(IncompleteSong incomplete : MainMenu.incompleteSongs){
-            if (incomplete.getSongTitle().equals(songTitle)){
+        for (IncompleteSong incomplete : MainMenu.incompleteSongs) {
+            if (incomplete.getSongTitle().equals(songTitle)) {
                 toBeRemoved = incomplete;
             }
         }
-        try{
+        try {
             MainMenu.incompleteSongs.remove(toBeRemoved);
-            FileOutputStream fileOutputStream = openFileOutput("IncompleteSongs.ser", Context.MODE_PRIVATE);
+            FileOutputStream fileOutputStream = openFileOutput(
+                    "IncompleteSongs.ser", Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(MainMenu.incompleteSongs);
             objectOutputStream.close();
 
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -291,7 +284,7 @@ public class GuessSong extends AppCompatActivity{
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f);
         SharedPreferences.Editor editorStats = statistics.edit();
-        editorStats.putFloat("totalDistanceWalked", totalDistanceWalked + distanceWalkedWhilePlaying );
+        editorStats.putFloat("totalDistanceWalked", totalDistanceWalked + distanceWalkedWhilePlaying);
         editorStats.apply();
 
         Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
@@ -305,7 +298,6 @@ public class GuessSong extends AppCompatActivity{
     }
 
 
-
     /*
             This method is used when the user clicks on the Songle coin button, if they have enough
             Songle coins they will be asked if they are sure they want to spend a coin. If they do
@@ -316,7 +308,7 @@ public class GuessSong extends AppCompatActivity{
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
 
-        if(currentNumberOfCoins > 0){
+        if (currentNumberOfCoins > 0) {
 
             //Custom alert dialog
 
@@ -364,7 +356,7 @@ public class GuessSong extends AppCompatActivity{
             messageText.setGravity(Gravity.CENTER);
             alertDialog.show();
 
-        }else{
+        } else {
 
             Snackbar.make(view, "Sorry, you do not have any Songle coins " +
                     "available at the moment.", Snackbar.LENGTH_LONG)
@@ -373,7 +365,6 @@ public class GuessSong extends AppCompatActivity{
         }
 
     }
-
 
 
     /*
@@ -388,15 +379,15 @@ public class GuessSong extends AppCompatActivity{
     }
 
 
-
     /*
             This method keeps trying to collect markers from the map until it collects 10 random ones
             and whilst there are more than 10 markers still on the map.
      */
-    public void spentSongleCoin(){
+    public void spentSongleCoin() {
         int numberOfRandomMarkersAdded = 0;
-        if(placemarks.size() - collectedMarkers.size() > 10){
-            while((numberOfRandomMarkersAdded <=10)&&(placemarks.size() - collectedMarkers.size() > 10)){
+        if (placemarks.size() - collectedMarkers.size() > 10) {
+            while ((numberOfRandomMarkersAdded <= 10) &&
+                    (placemarks.size() - collectedMarkers.size() > 10)) {
                 numberOfRandomMarkersAdded = collectRandomMarker(numberOfRandomMarkersAdded);
             }
             /*
@@ -404,12 +395,12 @@ public class GuessSong extends AppCompatActivity{
                  newest words.
              */
             buildSong(wholeSong);
-        }else{
+        } else {
             Toast.makeText(GuessSong.this, "There is less than 10 markers to be collected, your" +
-                    " Songle coin can't be redeemed. Please use it on another song.", Toast.LENGTH_LONG).show();
+                    " Songle coin can't be redeemed. Please use it on another song.",
+                    Toast.LENGTH_LONG).show();
         }
     }
-
 
 
     /*
@@ -419,13 +410,13 @@ public class GuessSong extends AppCompatActivity{
             be relatively slow but I believe it is better than using the inherent randomness of the
             HashSet.
      */
-    private int collectRandomMarker(int numberOfRandomMarkersAdded){
+    private int collectRandomMarker(int numberOfRandomMarkersAdded) {
 
         Random rand = new Random();
         int randomMarker = rand.nextInt(placemarks.size());
         int i = 0;
-        for(Placemark placemark: placemarks){
-            if((i == randomMarker) && (!collectedMarkers.contains(placemark.getLocation()))){
+        for (Placemark placemark : placemarks) {
+            if ((i == randomMarker) && (!collectedMarkers.contains(placemark.getLocation()))) {
                 collectedMarkers.add(placemark.getLocation());
                 numberOfRandomMarkersAdded++;
                 i++;

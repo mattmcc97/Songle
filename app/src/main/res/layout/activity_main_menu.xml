@@ -13,7 +13,7 @@
         android:name="com.example.android.songle.TopBarFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/button_separator"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/new_song_button"/>
+                app:layout_constraintTop_toBottomOf="@+id/new_song_button" />
 
             <View
                 android:id="@+id/button_separator"
@@ -74,7 +74,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/incomplete_songs_tv"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statistics_button"/>
+                app:layout_constraintTop_toBottomOf="@+id/statistics_button" />
 
             <TextView
                 android:id="@+id/incomplete_songs_tv"
