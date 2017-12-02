@@ -168,24 +168,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     /*
-            When the location button is clicked, this method causes the UI to zoom to the users
-            current location.
-     */
-    public void goToCurrentLocation(View view) {
-        try {
-            float zoomLevel = 19.0f; //This goes up to 21
-            LatLng currentLocation = new LatLng(mLastLocation.getLatitude(),
-                    mLastLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
-        } catch (NullPointerException e) {
-            Snackbar.make(view, "No location found.", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
-
-    }
-
-
-    /*
           Using the songNumber generated in the AsyncTask, the songTitle is retrieved.
     */
     private String getSongTitle(String songNum) {
@@ -520,7 +502,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Security exception thrown [onMapReady]");
         }
         // Add ‘‘My location’’ button to the user interface.
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
     }
 

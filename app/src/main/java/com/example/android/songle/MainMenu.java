@@ -145,6 +145,9 @@ public class MainMenu extends AppCompatActivity {
         }
     }
 
+    /*
+            Ask the user for permission to access their location.
+     */
     private void getLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(
                 MainMenu.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
