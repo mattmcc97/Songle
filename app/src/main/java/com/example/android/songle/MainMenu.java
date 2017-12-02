@@ -1,14 +1,17 @@
 package com.example.android.songle;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -68,6 +71,7 @@ public class MainMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        getLocationPermissions();
 
         //Initialisation of Lists and Maps.
         songs = new ArrayList<Song>();
@@ -108,6 +112,7 @@ public class MainMenu extends AppCompatActivity {
             if (isLocationEnabled(this)) {
                 if (songs.size() > 0) {
                     if (incompleteSongs.size() < 3) {
+                        getLocationPermissions();
                         Intent intent = new Intent(this, MapsActivity.class);
                         intent.putParcelableArrayListExtra("listOfSongs", songs);
                         writeIncompleteSongsToFile();
@@ -137,6 +142,18 @@ public class MainMenu extends AppCompatActivity {
                             tryNetworkAgain();
                         }
                     }).show();
+        }
+    }
+
+    private void getLocationPermissions() {
+        if (ActivityCompat.checkSelfPermission(
+                MainMenu.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        MainMenu.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    MainMenu.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
         }
     }
 

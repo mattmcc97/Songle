@@ -765,7 +765,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerLocation.setLongitude(marker.getCoordinates().longitude);
 
             //Calculate the distance to every marker
-            float distance = mLastLocation.distanceTo(markerLocation);
+            float distance = Float.MAX_VALUE;
+            try{
+                distance = mLastLocation.distanceTo(markerLocation);
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
 
             //If the distance to the marker ius less than 10 metres then it can be collected.
             if (distance < 2000.0f) {
