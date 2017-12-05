@@ -120,7 +120,7 @@ public class GuessSong extends AppCompatActivity {
     private void buildSong(HashMap<Integer, HashMap<Integer, String>> songLyrics) {
         String song = "";
         for (int i = 1; i <= songLyrics.size(); i++) {
-            HashMap<Integer, String> songLine = null;
+            HashMap<Integer, String> songLine = new HashMap<>();
             songLine = songLyrics.get(i);
             //Insert line numbers i.e. "1. ", "2. " etc.
             song += i + ". ";

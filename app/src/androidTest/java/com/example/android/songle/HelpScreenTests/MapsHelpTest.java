@@ -1,13 +1,18 @@
-package com.example.android.songle;
+package com.example.android.songle.HelpScreenTests;
 
 
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import com.example.android.songle.R;
+import com.example.android.songle.SplashScreen;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -28,16 +33,26 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class StartScreenHelpTest {
+public class MapsHelpTest {
 
     @Rule
     public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<>(SplashScreen.class);
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
     @Test
-    public void helpTest() {
+    public void mapsHelpTest() {
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.help_button), isDisplayed()));
+                allOf(ViewMatchers.withId(R.id.startButton), isDisplayed()));
         appCompatButton.perform(click());
+
+        ViewInteraction appCompatButton2 = onView(
+                allOf(withId(R.id.new_song_button), withText("New Song")));
+        appCompatButton2.perform(scrollTo(), click());
+
+        ViewInteraction appCompatButton3 = onView(
+                allOf(ViewMatchers.withId(R.id.help_button), isDisplayed()));
+        appCompatButton3.perform(click());
 
         ViewInteraction frameLayout = onView(
                 allOf(withId(android.R.id.content),
@@ -49,9 +64,9 @@ public class StartScreenHelpTest {
                         isDisplayed()));
         frameLayout.check(matches(isDisplayed()));
 
-        ViewInteraction appCompatButton2 = onView(
+        ViewInteraction appCompatButton4 = onView(
                 allOf(withId(R.id.help_ok_button), withText("OK")));
-        appCompatButton2.perform(scrollTo(), click());
+        appCompatButton4.perform(scrollTo(), click());
 
     }
 
@@ -73,4 +88,5 @@ public class StartScreenHelpTest {
             }
         };
     }
+
 }

@@ -742,7 +742,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mLastLocation == null){
             Toast.makeText(MapsActivity.this, "No location found at this moment.",
                     Toast.LENGTH_SHORT).show();
-            return null;
+            return collectableMarkers;
         }else{
             for (Placemark marker : placemarks) {
                 //Get the coordinates from the LatLng and convert them to a Location type

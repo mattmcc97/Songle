@@ -321,7 +321,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                 Toast.makeText(
                                         activity, "Please install YouTube on your device.",
                                         Toast.LENGTH_LONG).show();
-                                //watchYoutubeVideoFromBrowser(object.link);
+                                watchYoutubeVideoFromBrowser(object.link);
                             }
 
                         }
@@ -342,7 +342,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                 Toast.makeText(
                                         activity, "Please install YouTube on your device.",
                                         Toast.LENGTH_LONG).show();
-                                //watchYoutubeVideoFromBrowser(object.link);
+                                watchYoutubeVideoFromBrowser(object.link);
                             }
 
                         }

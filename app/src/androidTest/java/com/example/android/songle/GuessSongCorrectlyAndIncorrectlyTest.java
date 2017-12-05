@@ -45,9 +45,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
+import static org.junit.Assert.*;
+
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class GuessSongCorrectlyTest {
+public class GuessSongCorrectlyAndIncorrectlyTest {
 
     @Rule
     public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<SplashScreen>(SplashScreen.class){
@@ -85,7 +87,7 @@ public class GuessSongCorrectlyTest {
     }
 
     @Test
-    public void guessSongCorrectlyTest() throws UiObjectNotFoundException {
+    public void guessSongCorrectlyAndIncorrectlyTest() throws UiObjectNotFoundException {
 
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.startButton), isDisplayed()));
@@ -109,6 +111,7 @@ public class GuessSongCorrectlyTest {
         floatingActionButton.perform(click());
 
         GuessSong.songTitle = songTitle;
+        assertTrue("songTitle is not null", GuessSong.songTitle != null);
 
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
