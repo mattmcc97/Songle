@@ -739,27 +739,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ArrayList<LatLng> collectableMarkers = new ArrayList<>();
 
-        for (Placemark marker : placemarks) {
-            //Get the coordinates from the LatLng and convert them to a Location type
-            //so that we can use the distanceTo method in the Location class.
-            Location markerLocation = new Location(marker.getWord());
-            markerLocation.setLatitude(marker.getCoordinates().latitude);
-            markerLocation.setLongitude(marker.getCoordinates().longitude);
+        if (mLastLocation == null){
+            Toast.makeText(MapsActivity.this, "No location found at this moment.",
+                    Toast.LENGTH_SHORT).show();
+            return null;
+        }else{
+            for (Placemark marker : placemarks) {
+                //Get the coordinates from the LatLng and convert them to a Location type
+                //so that we can use the distanceTo method in the Location class.
+                Location markerLocation = new Location(marker.getWord());
+                markerLocation.setLatitude(marker.getCoordinates().latitude);
+                markerLocation.setLongitude(marker.getCoordinates().longitude);
 
-            //Calculate the distance to every marker
-            float distance = Float.MAX_VALUE;
-            try{
-                distance = mLastLocation.distanceTo(markerLocation);
-            }catch (NullPointerException e){
-                e.printStackTrace();
-            }
+                //Calculate the distance to every marker
+                float distance = Float.MAX_VALUE;
+                try{
+                    distance = mLastLocation.distanceTo(markerLocation);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
 
-            //If the distance to the marker ius less than 10 metres then it can be collected.
-            if (distance < 2000.0f) {
-                collectableMarkers.add(marker.getCoordinates());
+                //If the distance to the marker ius less than 10 metres then it can be collected.
+                if (distance < 2000.0f) {
+                    collectableMarkers.add(marker.getCoordinates());
+                }
             }
+            return collectableMarkers;
         }
-        return collectableMarkers;
+
     }
 
 

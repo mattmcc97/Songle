@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.android.songle.GuessSong"
-    tools:showIn="@layout/activity_guess_song">
+    tools:showIn="@layout/activity_guess_song"
+    android:id="@+id/scroll_view_guess_song">
 
     <LinearLayout
         android:layout_width="match_parent"

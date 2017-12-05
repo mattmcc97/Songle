@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
@@ -320,6 +321,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                 Toast.makeText(
                                         activity, "Please install YouTube on your device.",
                                         Toast.LENGTH_LONG).show();
+                                //watchYoutubeVideoFromBrowser(object.link);
                             }
 
                         }
@@ -340,6 +342,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                                 Toast.makeText(
                                         activity, "Please install YouTube on your device.",
                                         Toast.LENGTH_LONG).show();
+                                //watchYoutubeVideoFromBrowser(object.link);
                             }
 
                         }
@@ -350,6 +353,18 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                     ((SeparatorSongViewHolder) holder).completedSongsTv.setText(object.text);
                     break;
             }
+        }
+    }
+
+    //Opens YouTube in the app, if it isn't available, it opens in the browser.
+    public void watchYoutubeVideoFromBrowser(String id) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(webIntent);
         }
     }
 

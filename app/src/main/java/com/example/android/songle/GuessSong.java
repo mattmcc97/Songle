@@ -39,7 +39,7 @@ public class GuessSong extends AppCompatActivity {
     //Dialog that appears if the user levels up by guessing the song correctly.
     Dialog levelUpDialog;
 
-    private String songTitle = "";
+    public static String songTitle = "";
     private HashMap<Integer, HashMap<Integer, String>> wholeSong = null;
     private HashSet<String> collectedMarkers = null;
     private HashSet<Placemark> placemarks = null;
@@ -63,7 +63,7 @@ public class GuessSong extends AppCompatActivity {
 
         /*
                 The wholeSong contains a HashMap where the keys is the line number and the value is
-                another HashMmap corresponding to the line of the song. This contains the word number
+                another HashMap corresponding to the line of the song. This contains the word number
                 within the line and the word itself. This data is passed in to this activity from the
                 MapsActivity.
          */

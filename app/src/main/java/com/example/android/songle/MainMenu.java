@@ -390,13 +390,15 @@ public class MainMenu extends AppCompatActivity {
             String songTitle = entry.getKey();
             String songLink = entry.getValue();
             String artist = "";
+            Song completedSong = null;
             for(Song aSong : songs){
                 if(aSong.getTitle().equals(songTitle)){
                     artist = aSong.getArtist();
+                    completedSong = aSong;
                 }
             }
             mainMenuList.add(new Model(Model.COMPLETE_TYPE, songTitle + " - " + artist,
-                    100, songLink, null, null));
+                    100, songLink, completedSong, null));
         }
     }
 

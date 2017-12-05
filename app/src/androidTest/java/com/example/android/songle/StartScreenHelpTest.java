@@ -12,68 +12,46 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class AddIncompleteSongTest {
+public class StartScreenHelpTest {
 
     @Rule
     public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<>(SplashScreen.class);
 
     @Test
-    public void addIncompleteSongTest() {
+    public void helpTest() {
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.startButton), isDisplayed()));
+                allOf(withId(R.id.help_button), isDisplayed()));
         appCompatButton.perform(click());
 
-        ViewInteraction appCompatButton2 = onView(
-                allOf(withId(R.id.new_song_button), withText("New Song")));
-        appCompatButton2.perform(scrollTo(), click());
-
-        // Added a sleep statement to match the app's execution delay.
-        // The recommended way to handle such scenarios is to use Espresso idling resources:
-        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        pressBack();
-
-        ViewInteraction button = onView(
-                allOf(withId(android.R.id.button1), withText("Exit")));
-        button.perform(scrollTo(), click());
-
-        ViewInteraction linearLayout = onView(
-                allOf(withId(R.id.song_layout),
+        ViewInteraction frameLayout = onView(
+                allOf(withId(android.R.id.content),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.songs_list),
+                                        IsInstanceOf.<View>instanceOf(android.widget.FrameLayout.class),
                                         0),
                                 0),
                         isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
+        frameLayout.check(matches(isDisplayed()));
 
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.list_item_song), withText("Song 1"),
-                        withParent(withId(R.id.song_layout)),
-                        isDisplayed()));
-        appCompatButton3.perform(click());
+        ViewInteraction appCompatButton2 = onView(
+                allOf(withId(R.id.help_ok_button), withText("OK")));
+        appCompatButton2.perform(scrollTo(), click());
 
     }
 
