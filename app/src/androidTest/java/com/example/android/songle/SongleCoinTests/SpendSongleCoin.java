@@ -1,10 +1,11 @@
-package com.example.android.songle;
+package com.example.android.songle.SongleCoinTests;
 
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -12,6 +13,9 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import com.example.android.songle.R;
+import com.example.android.songle.SplashScreen;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -25,29 +29,44 @@ import org.junit.runner.RunWith;
 import java.io.File;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class GiveUpTest {
+public class SpendSongleCoin {
 
     @Rule
-    public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<>(SplashScreen.class);
+    public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<SplashScreen>(SplashScreen.class){
+        @Override
+        protected void beforeActivityLaunched() {
+            clearSharedPrefs(InstrumentationRegistry.getTargetContext());
+            super.beforeActivityLaunched();
+        }
+    };
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
     /**
      * Clears everything in the SharedPreferences
      */
+    private void clearSharedPrefs(Context context) {
+        SharedPreferences prefs =
+                context.getSharedPreferences("score", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.commit();
+        SharedPreferences prefs2 =
+                context.getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = prefs2.edit();
+        editor2.clear();
+        editor2.commit();
+    }
 
     @Before
     public void setUp() {
@@ -60,13 +79,13 @@ public class GiveUpTest {
     }
 
     @Test
-    public void giveUpTest() {
+    public void spendSongleCoin() {
         //Click the start button
         ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.startButton), isDisplayed()));
+                allOf(ViewMatchers.withId(R.id.startButton), isDisplayed()));
         appCompatButton.perform(click());
 
-        //Click the new song button
+        //CLick the new song button
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
         appCompatButton2.perform(scrollTo(), click());
@@ -80,49 +99,50 @@ public class GiveUpTest {
             e.printStackTrace();
         }
 
-        //Go back to the main menu
-        pressBack();
+        //Add 1 songle coin for the user for testing purposes
+        SharedPreferences songleCoins = InstrumentationRegistry.getTargetContext().getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editorSongleCoins = songleCoins.edit();
+        editorSongleCoins.putInt("currentNumberOfCoins", 1);
+        editorSongleCoins.apply();
 
-        //Confirm going back by clicking the exit button in the alert dialog
-        ViewInteraction button = onView(
-                allOf(withId(android.R.id.button1), withText("Exit")));
-        button.perform(scrollTo(), click());
+        //Go the guess song screen
+        ViewInteraction floatingActionButton = onView(
+                allOf(withId(R.id.fab_guess_song), isDisplayed()));
+        floatingActionButton.perform(click());
 
-        //Make sure the incompleteSong is there
-        ViewInteraction linearLayout = onView(
-                allOf(withId(R.id.incomplete_song_layout),
+        //Check to see if the textview displays one songle coin available
+        ViewInteraction textView = onView(
+                allOf(withId(R.id.number_of_coins_tv), withText("You have 1 Songle coin available."),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.songs_list),
+                                        withId(R.id.scroll_view_guess_song),
                                         0),
                                 0),
                         isDisplayed()));
-        linearLayout.check(matches(isDisplayed()));
+        textView.check(matches(withText("You have 1 Songle coin available.")));
 
-        //GiveUp button clicked
+
+        //Click the songle coin floating action button to spend a songle coin
+        ViewInteraction floatingActionButton2 = onView(
+                allOf(withId(R.id.fab_spend_songle_coin), isDisplayed()));
+        floatingActionButton2.perform(click());
+
+        //Click the spend button in the alert dialog
         ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.list_item_give_up),
-                        withParent(withId(R.id.incomplete_song_layout)),
-                        isDisplayed()));
-        appCompatButton3.perform(click());
+                allOf(withText("Spend")));
+        appCompatButton3.perform(scrollTo(), click());
 
-        //Confirm give up by clicking the give up button in the alert dialog
-        ViewInteraction appCompatButton4 = onView(
-                allOf(withId(android.R.id.button1), withText("Give Up")));
-        appCompatButton4.perform(scrollTo(), click());
-
-
-        //Make sure the incompleteSong is no longer there
-        ViewInteraction linearLayout2 = onView(
-                allOf(withId(R.id.incomplete_song_layout),
+        //Check that a songle coin has been used and the textview now says that there are no songle
+        //coins available
+        ViewInteraction textView2 = onView(
+                allOf(withId(R.id.number_of_coins_tv), withText("You have 0 Songle coins available."),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.songs_list),
+                                        withId(R.id.scroll_view_guess_song),
                                         0),
                                 0),
                         isDisplayed()));
-        linearLayout2.check(doesNotExist());
-
+        textView2.check(matches(withText("You have 0 Songle coins available.")));
 
     }
 
@@ -144,4 +164,5 @@ public class GiveUpTest {
             }
         };
     }
+
 }

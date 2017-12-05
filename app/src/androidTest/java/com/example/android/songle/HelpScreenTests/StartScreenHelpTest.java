@@ -1,6 +1,7 @@
 package com.example.android.songle.HelpScreenTests;
 
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
@@ -17,9 +18,12 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -37,12 +41,24 @@ public class StartScreenHelpTest {
     @Rule
     public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<>(SplashScreen.class);
 
+    @Before
+    public void setUp() {
+        File[] files = InstrumentationRegistry.getTargetContext().getFilesDir().listFiles();
+        if(files != null){
+            for(File file : files) {
+                file.delete();
+            }
+        }
+    }
+
     @Test
-    public void helpTest() {
+    public void startScreenHelpTest() {
+        //Press the help button
         ViewInteraction appCompatButton = onView(
                 allOf(ViewMatchers.withId(R.id.help_button), isDisplayed()));
         appCompatButton.perform(click());
 
+        //Check that the dialog appears on screen
         ViewInteraction frameLayout = onView(
                 allOf(withId(android.R.id.content),
                         childAtPosition(
@@ -53,6 +69,7 @@ public class StartScreenHelpTest {
                         isDisplayed()));
         frameLayout.check(matches(isDisplayed()));
 
+        //Press the OK button
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.help_ok_button), withText("OK")));
         appCompatButton2.perform(scrollTo(), click());

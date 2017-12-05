@@ -39,7 +39,13 @@ import static org.hamcrest.Matchers.allOf;
 public class IncompleteSongTest {
 
     @Rule
-    public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<>(SplashScreen.class);
+    public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<SplashScreen>(SplashScreen.class){
+        @Override
+        protected void beforeActivityLaunched() {
+            clearSharedPrefs(InstrumentationRegistry.getTargetContext());
+            super.beforeActivityLaunched();
+        }
+    };
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -55,14 +61,26 @@ public class IncompleteSongTest {
         settings.edit().clear().commit();
     }
 
+    /**
+     * Clears everything in the SharedPreferences
+     */
+    private void clearSharedPrefs(Context context) {
+        SharedPreferences prefs =
+                context.getSharedPreferences("score", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.commit();
+    }
+
     @Test
     public void incompleteSongTest() {
 
-
+        //Click the start button
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.startButton), isDisplayed()));
         appCompatButton.perform(click());
 
+        //Click the new song button
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
         appCompatButton2.perform(scrollTo(), click());
@@ -76,12 +94,15 @@ public class IncompleteSongTest {
             e.printStackTrace();
         }
 
+        //Go back to the main menu
         pressBack();
 
+        //Confirm exit to main menu
         ViewInteraction button = onView(
                 allOf(withId(android.R.id.button1), withText("Exit")));
         button.perform(scrollTo(), click());
 
+        //Confirm that the incomplete song appears in the main menu
         ViewInteraction linearLayout = onView(
                 allOf(withId(R.id.incomplete_song_layout),
                         childAtPosition(

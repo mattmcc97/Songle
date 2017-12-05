@@ -89,10 +89,12 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
     @Test
     public void guessSongCorrectlyAndIncorrectlyTest() throws UiObjectNotFoundException {
 
+        //Click the start button
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.startButton), isDisplayed()));
         appCompatButton.perform(click());
 
+        //Click the new song button
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
         appCompatButton2.perform(scrollTo(), click());
@@ -106,10 +108,12 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
             e.printStackTrace();
         }
 
+        //Click the guess song button
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.fab_guess_song), isDisplayed()));
         floatingActionButton.perform(click());
 
+        //Set the song title to some song name and assert that the songTitle is updated and not null
         GuessSong.songTitle = songTitle;
         assertTrue("songTitle is not null", GuessSong.songTitle != null);
 
@@ -122,28 +126,33 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
             e.printStackTrace();
         }
 
-        //wrong guess
+        //Make a wrong guess
         insertTextIntoInput(R.id.song_guess_et, songTitle+"a");
 
+        //Click the submit button
         ViewInteraction appCompatButton3 = onView(
                 allOf(withId(R.id.song_guess_submit), withText("Submit"), isDisplayed()));
         appCompatButton3.perform(click());
 
+        //Click the OK button the wrong answer layout
         ViewInteraction appCompatButton4 = onView(
                 allOf(withId(R.id.wrong_ok_button), withText("OK"), isDisplayed()));
         appCompatButton4.perform(click());
 
-        //correct guess
+        //Make a correct guess
         insertTextIntoInput(R.id.song_guess_et, songTitle);
 
+        //Press the submit button
         ViewInteraction appCompatButton5 = onView(
                 allOf(withId(R.id.song_guess_submit), withText("Submit"), isDisplayed()));
         appCompatButton5.perform(click());
 
+        //Press the OK button in the correct song dialog
         ViewInteraction appCompatButton6 = onView(
                 allOf(withId(R.id.correct_ok_button), withText("OK"), isDisplayed()));
         appCompatButton6.perform(click());
 
+        //Make sure that the complete song appears on the Main menu
         ViewInteraction linearLayout = onView(
                 allOf(withId(R.id.completed_song_layout),
                         childAtPosition(

@@ -54,10 +54,12 @@ public class ThreeIncompleteSongsTest {
     @Test
     public void threeIncompleteSongsTest() {
 
+        //Press start button
         ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.startButton), isDisplayed()));
         appCompatButton.perform(click());
 
+        //Press new song button
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
         appCompatButton2.perform(scrollTo(), click());
@@ -66,16 +68,20 @@ public class ThreeIncompleteSongsTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        //Go back to the main menu
         pressBack();
 
+        //Confirm exit to main menu
         ViewInteraction button = onView(
                 allOf(withId(android.R.id.button1), withText("Exit")));
         button.perform(scrollTo(), click());
+
+        //Create 2 new incomplete songs with the same method
 
         ViewInteraction appCompatButton3 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
@@ -85,7 +91,7 @@ public class ThreeIncompleteSongsTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -104,7 +110,7 @@ public class ThreeIncompleteSongsTest {
         // The recommended way to handle such scenarios is to use Espresso idling resources:
         // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -115,10 +121,12 @@ public class ThreeIncompleteSongsTest {
                 allOf(withId(android.R.id.button1), withText("Exit")));
         button3.perform(scrollTo(), click());
 
+        //Try the new song button again when there is 3 incomplete songs
         ViewInteraction appCompatButton5 = onView(
                 allOf(withId(R.id.new_song_button), withText("New Song")));
         appCompatButton5.perform(scrollTo(), click());
 
+        //Check if the correct Toast appears using the ToastMatcher class
         onView(withText("The maximum number of songs you can " +
                 "play, at once, is 3. Please give up on one of the " +
                 "incomplete songs, if you want to guess a " +

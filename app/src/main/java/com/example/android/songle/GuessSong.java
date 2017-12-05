@@ -100,13 +100,19 @@ public class GuessSong extends AppCompatActivity {
 
     /*
                 This method is used to update the text box containing the number of songle coins
-                by accessing the SharedPreferences.
+                by accessing the SharedPreferences. If there is only one coin 'coin' is used
+                instead of 'coins', in the text.
     */
-    private void updateNumberOfSongleCoinsText() {
+    private  void updateNumberOfSongleCoinsText() {
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
-        TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
-        numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coins available.");
+        if(currentNumberOfCoins == 1){
+            TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
+            numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coin available.");
+        }else{
+            TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
+            numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coins available.");
+        }
 
     }
 
