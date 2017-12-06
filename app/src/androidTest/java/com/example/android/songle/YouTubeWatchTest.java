@@ -2,19 +2,16 @@ package com.example.android.songle;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObjectNotFoundException;
-import android.support.test.uiautomator.UiScrollable;
-import android.support.test.uiautomator.UiSelector;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,25 +29,21 @@ import org.junit.runner.RunWith;
 import java.io.File;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.pressBack;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
-import static android.support.test.espresso.action.ViewActions.swipeDown;
-import static android.support.test.espresso.action.ViewActions.swipeUp;
-import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class GuessSongCorrectlyAndIncorrectlyTest {
+public class YouTubeWatchTest {
 
     @Rule
     public ActivityTestRule<SplashScreen> mActivityTestRule = new ActivityTestRule<SplashScreen>(SplashScreen.class){
@@ -63,7 +56,7 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-    public static final String songTitle = "Bohemian Rhapsody";
+    public static final String songTitle = "Song 2";
 
 
     /**
@@ -98,7 +91,7 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
     }
 
     @Test
-    public void guessSongCorrectlyAndIncorrectlyTest() throws UiObjectNotFoundException {
+    public void youTubeWatchTest() throws UiObjectNotFoundException {
 
         //Click the start button
         ViewInteraction appCompatButton = onView(
@@ -119,15 +112,16 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
             e.printStackTrace();
         }
 
-        //Click the guess song button
+        //Go to the guess song screen
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.fab_guess_song), isDisplayed()));
         floatingActionButton.perform(click());
 
-        //Set the song title to some song name and assert that the songTitle is updated and not null
+        //Change the song title and assert that it is not null
         GuessSong.songTitle = songTitle;
         assertTrue("songTitle is not null", GuessSong.songTitle != null);
 
+        //Swipe up to move down to the bottom of the guess song screen
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
 
@@ -137,33 +131,20 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
             e.printStackTrace();
         }
 
-        //Make a wrong guess
-        insertTextIntoInput(R.id.song_guess_et, songTitle+"a");
-
-        //Click the submit button
-        ViewInteraction appCompatButton3 = onView(
-                allOf(withId(R.id.song_guess_submit), withText("Submit"), isDisplayed()));
-        appCompatButton3.perform(click());
-
-        //Click the OK button the wrong answer layout
-        ViewInteraction appCompatButton4 = onView(
-                allOf(withId(R.id.wrong_ok_button), withText("OK"), isDisplayed()));
-        appCompatButton4.perform(click());
-
-        //Make a correct guess
+        //correct guess
         insertTextIntoInput(R.id.song_guess_et, songTitle);
 
-        //Press the submit button
+        //Submit the correct guess
         ViewInteraction appCompatButton5 = onView(
                 allOf(withId(R.id.song_guess_submit), withText("Submit"), isDisplayed()));
         appCompatButton5.perform(click());
 
-        //Press the OK button in the correct song dialog
+        //Press the ok button when the correct song dialog appears
         ViewInteraction appCompatButton6 = onView(
                 allOf(withId(R.id.correct_ok_button), withText("OK"), isDisplayed()));
         appCompatButton6.perform(click());
 
-        //Make sure that the complete song appears on the Main menu
+        //Check that the completed song appears in the main menu
         ViewInteraction linearLayout = onView(
                 allOf(withId(R.id.completed_song_layout),
                         childAtPosition(
@@ -173,6 +154,33 @@ public class GuessSongCorrectlyAndIncorrectlyTest {
                                 0),
                         isDisplayed()));
         linearLayout.check(matches(isDisplayed()));
+
+        //Click the completed song button
+        ViewInteraction appCompatButton7 = onView(
+                allOf(withId(R.id.complete_list_item_song), isDisplayed()));
+        appCompatButton7.perform(click());
+
+        //Check that the YouTube video appears and loads
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //Go back on the device to remove the YouTube video from the screen
+        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        mDevice.pressBack();
+
+        //Check to see if the completed Song is still on the Main menu
+        ViewInteraction linearLayout2 = onView(
+                allOf(withId(R.id.completed_song_layout),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.songs_list),
+                                        1),
+                                0),
+                        isDisplayed()));
+        linearLayout2.check(matches(isDisplayed()));
 
 
     }

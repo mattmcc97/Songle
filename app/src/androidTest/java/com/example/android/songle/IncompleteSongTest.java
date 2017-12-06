@@ -17,6 +17,7 @@ import android.view.ViewParent;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,6 +60,16 @@ public class IncompleteSongTest {
         }
         SharedPreferences settings = InstrumentationRegistry.getContext().getSharedPreferences("score", Context.MODE_PRIVATE);
         settings.edit().clear().commit();
+    }
+
+    @After
+    public void tearDown() {
+        File[] files = InstrumentationRegistry.getTargetContext().getFilesDir().listFiles();
+        if(files != null){
+            for(File file : files) {
+                file.delete();
+            }
+        }
     }
 
     /**

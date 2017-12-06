@@ -78,12 +78,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //The markers on the map and their song line:number as key
     private HashMap<String, Marker> hashMapMarkers;
 
-    //The markers that have been collected when a user previously attempted the song.
-    private HashMap<String, Marker> incompleteSongCollectedMarkers;
-
     /*
             The wholeSong contains a HashMap where the keys is the line number and the value is
-            another HashMmap corresponding to the line of the song. This contains the word number
+            another HashMap corresponding to the line of the song. This contains the word number
             within the line and the word itself.
     */
     private HashMap<Integer, HashMap<Integer, String>> wholeSong;
@@ -759,8 +756,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
-                //If the distance to the marker ius less than 10 metres then it can be collected.
-                if (distance < 2000.0f) {
+                //If the distance to the marker is less than 10 metres then it can be collected.
+                if (distance < 10.0f) {
                     collectableMarkers.add(marker.getCoordinates());
                 }
             }

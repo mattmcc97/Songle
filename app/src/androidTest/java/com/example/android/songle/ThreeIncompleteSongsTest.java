@@ -14,6 +14,7 @@ import android.view.WindowManager;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +43,16 @@ public class ThreeIncompleteSongsTest {
 
     @Before
     public void setUp() {
+        File[] files = InstrumentationRegistry.getTargetContext().getFilesDir().listFiles();
+        if(files != null){
+            for(File file : files) {
+                file.delete();
+            }
+        }
+    }
+
+    @After
+    public void tearDown() {
         File[] files = InstrumentationRegistry.getTargetContext().getFilesDir().listFiles();
         if(files != null){
             for(File file : files) {
