@@ -261,11 +261,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     /*
-            This method will randomly select a song number to be chosen for the KML URL. If the
-            number chosen is less than 10 then a "0" must be added to the front of the number. A
-            loop occurs until a random song number is chosen that is not already incomplete.
+            A loop occurs until a random song number is chosen that is not already incomplete.
             Also, if the song is incomplete and it is being continued then the songNumber will be
             chosen from a list of size 1.
      */
@@ -280,13 +277,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //Creates a list (max 3) of incomplete song numbers
             ArrayList<String> prohibitedNumbers = new ArrayList<>();
-            for(IncompleteSong incomplete: incompleteSongs){
+            for (IncompleteSong incomplete : incompleteSongs) {
                 prohibitedNumbers.add(incomplete.getTheSong().getNumber());
             }
 
             //Get a songNumber until it isn't prohibited (already incomplete)
             songNumber = getRandomSongNumber();
-            while(prohibitedNumbers.contains(songNumber)){
+            while (prohibitedNumbers.contains(songNumber)) {
                 songNumber = getRandomSongNumber();
             }
 
@@ -294,7 +291,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private String getRandomSongNumber(){
+    /*
+            This method will randomly select a song number to be chosen for the KML URL. If the
+            number chosen is less than 10 then a "0" must be added to the front of the number.
+     */
+    private String getRandomSongNumber() {
         Random rand = new Random();
         int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
         String randomSongNumber = "";
@@ -305,6 +306,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return randomSongNumber;
     }
+
 
     /*
             This method chooses a map difficulty that will be used for the KML URL. The map
@@ -354,8 +356,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             switch (desc) {
                 case ("boring"):
                     colour = BitmapDescriptorFactory.fromResource(R.drawable.ylw_blank);
-                    //BitmapDescriptorFactory.fromBitmap(resizeIcon(
-                            //R.drawable.ylw_blank, 120, 120));
                     break;
                 case ("notboring"):
                     colour = BitmapDescriptorFactory.fromResource(R.drawable.ylw_circle);
@@ -381,14 +381,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /*
-        This method resizes the 64x64 bitmap graphics for the icons.
-
-    public Bitmap resizeIcon(int drawableId,int width, int height){
-        Bitmap icon = BitmapFactory.decodeResource(getResources(),drawableId);
-        return Bitmap.createScaledBitmap(icon, width, height, false);
-    }
-    /*
     /*
             The distance walked is reset and the GoogleMapAPI client is connected.
      */
@@ -566,7 +558,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     greater than the next milestone i.e. 4000m, 5000m then that means that
                     another 1km has been walked and a songle coin must be given to the user.
              */
-            if (totalDistanceWalked + distanceWalkedWhilePlaying > ((totalKilometres+1)*1000.0f)) {
+            if (totalDistanceWalked + distanceWalkedWhilePlaying > ((totalKilometres + 1) * 1000.0f)) {
 
                 /*
                         The total distance is now updated in SharedPreferences and the distance
@@ -670,7 +662,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     points = 15;
                     break;
             }
-
 
 
             //Remove the word from the Placemarks
@@ -787,11 +778,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ArrayList<LatLng> collectableMarkers = new ArrayList<>();
 
-        if (mLastLocation == null){
+        if (mLastLocation == null) {
             Toast.makeText(MapsActivity.this, "No location found at this moment.",
                     Toast.LENGTH_SHORT).show();
             return collectableMarkers;
-        }else{
+        } else {
             for (Placemark marker : placemarks) {
                 //Get the coordinates from the LatLng and convert them to a Location type
                 //so that we can use the distanceTo method in the Location class.
@@ -801,9 +792,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 //Calculate the distance to every marker
                 float distance = Float.MAX_VALUE;
-                try{
+                try {
                     distance = mLastLocation.distanceTo(markerLocation);
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
 
