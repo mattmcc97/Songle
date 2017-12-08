@@ -85,7 +85,7 @@ public class MainMenu extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 this, OrientationHelper.VERTICAL, false);
 
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        RecyclerView mRecyclerView = findViewById(R.id.songs_list);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(adapter);
@@ -115,6 +115,7 @@ public class MainMenu extends AppCompatActivity {
                         getLocationPermissions();
                         Intent intent = new Intent(this, MapsActivity.class);
                         intent.putParcelableArrayListExtra("listOfSongs", songs);
+                        intent.putExtra("listOfIncompleteSongs", incompleteSongs);
                         writeIncompleteSongsToFile();
                         startActivityForResult(intent, 1);
                     } else {
@@ -316,7 +317,7 @@ public class MainMenu extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 this, OrientationHelper.VERTICAL, false);
 
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.songs_list);
+        RecyclerView mRecyclerView = findViewById(R.id.songs_list);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(adapter);
@@ -327,7 +328,7 @@ public class MainMenu extends AppCompatActivity {
                 "There are no incomplete songs".
          */
         if (mRecyclerView.getAdapter().getItemViewType(0) == 0) {
-            TextView noIncompleteSongs = (TextView) findViewById(R.id.no_incomplete_songs_tv);
+            TextView noIncompleteSongs = findViewById(R.id.no_incomplete_songs_tv);
             noIncompleteSongs.setVisibility(View.GONE);
         }
 
@@ -339,7 +340,7 @@ public class MainMenu extends AppCompatActivity {
          */
         int numberOfObjects = mRecyclerView.getAdapter().getItemCount();
         if (mRecyclerView.getAdapter().getItemViewType(numberOfObjects - 1) == 1) {
-            TextView completeSongs = (TextView) findViewById(R.id.no_complete_songs_tv);
+            TextView completeSongs = findViewById(R.id.no_complete_songs_tv);
             completeSongs.setVisibility(View.GONE);
         }
 

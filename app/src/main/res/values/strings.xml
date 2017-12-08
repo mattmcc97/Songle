@@ -10,8 +10,10 @@
     <string name="instructions">
     Move around the map and collect words by clicking on nearby markers.\n\nMarkers on the map have
         different colours depending on how interesting they are:
-        \n\nBoring words - Cyan/Light blue\n\nNot boring words - Yellow\n\nInteresting words -
-        Orange\n\nVery interesting words - Red\n\nYou\'ll get points for every marker you collect.
+        \n\nBoring words - Yellow with no shape\n\nNot boring words - Yellow with a
+        circle\n\nInteresting words -
+        Orange with a diamond\n\nVery interesting words - Red with a star\n\nYou\'ll
+        get points for every marker you collect.
         Collect
         more points for more interesting markers!\n\nEach marker contains a word inside it, use
         these words to guess the song.\n\nPress the guess button, on the map, when you think you\'ve
@@ -19,7 +21,8 @@
         will become.
     As you increase your level, the game will become harder.\n\nFor every 1km you walk, you will
         receive a Songle coin.
-    You can use your Songle coins to reveal 10 random words on a song of your choice.
+    You can use your Songle coins to reveal 10 random words on a song of your choice.\n\nSaving:\nTo
+        save your progress in a song, simply return to the main menu.
     </string>
     <string name="ok">OK</string>
     <string name="submit">Submit</string>

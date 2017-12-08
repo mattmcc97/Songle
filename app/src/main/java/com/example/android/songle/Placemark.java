@@ -2,6 +2,7 @@ package com.example.android.songle;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -49,9 +50,14 @@ public class Placemark implements Parcelable, Serializable {
         return description;
     }
 
+    public String getStyleUrl() {
+        return styleUrl;
+    }
+
     //Converts the coordinates from a String to a LatLng type.
     public LatLng getCoordinates() {
-        //remove 0 off the coordinates string and split it on the comma to extract lat and long Strings
+        //remove z axis (0) off the coordinates string and split it on the comma
+        //to extract lat and long Strings
         String[] coords = coordinates.substring(0, coordinates.length() - 2).split(",");
         LatLng latlong = new LatLng(Double.parseDouble(coords[1]), Double.parseDouble(coords[0]));
         return latlong;

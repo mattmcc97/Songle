@@ -32,11 +32,11 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         View myLayout = inflater.inflate(R.layout.fragment_top_bar, container, false);
 
         //Add an OnClick listener to the help/instructions button.
-        Button helpButton = (Button) myLayout.findViewById(R.id.help_button);
+        Button helpButton = myLayout.findViewById(R.id.help_button);
         helpButton.setOnClickListener(this);
 
-        levelPb = (ProgressBar) myLayout.findViewById(R.id.level_pb);
-        levelTextView = (TextView) myLayout.findViewById(R.id.level_tv);
+        levelPb = myLayout.findViewById(R.id.level_pb);
+        levelTextView = myLayout.findViewById(R.id.level_tv);
 
         updateLevel();
 
@@ -91,7 +91,7 @@ public class TopBarFragment extends PreferenceFragment implements View.OnClickLi
         dialog.show();
 
         //The OK button will close the dialog.
-        Button okBtn = (Button) dialog.findViewById(R.id.help_ok_button);
+        Button okBtn = dialog.findViewById(R.id.help_ok_button);
 
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override

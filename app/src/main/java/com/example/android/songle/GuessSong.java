@@ -50,7 +50,7 @@ public class GuessSong extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_song);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         /*
@@ -103,14 +103,14 @@ public class GuessSong extends AppCompatActivity {
                 by accessing the SharedPreferences. If there is only one coin 'coin' is used
                 instead of 'coins', in the text.
     */
-    private  void updateNumberOfSongleCoinsText() {
+    private void updateNumberOfSongleCoinsText() {
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int currentNumberOfCoins = songleCoins.getInt("currentNumberOfCoins", 0);
         if(currentNumberOfCoins == 1){
-            TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
+            TextView numberOfSongleCoinsTv = findViewById(R.id.number_of_coins_tv);
             numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coin available.");
         }else{
-            TextView numberOfSongleCoinsTv = (TextView) findViewById(R.id.number_of_coins_tv);
+            TextView numberOfSongleCoinsTv = findViewById(R.id.number_of_coins_tv);
             numberOfSongleCoinsTv.setText("You have " + currentNumberOfCoins + " Songle coins available.");
         }
 
@@ -141,12 +141,12 @@ public class GuessSong extends AppCompatActivity {
             song += "\n";
         }
 
-        TextView lyricsTextView = (TextView) this.findViewById(R.id.lyrics_tv);
+        TextView lyricsTextView = this.findViewById(R.id.lyrics_tv);
         lyricsTextView.setText(song);
     }
 
     public void submitGuess(View view) {
-        EditText songGuessEt = (EditText) (findViewById(R.id.song_guess_et));
+        EditText songGuessEt = findViewById(R.id.song_guess_et);
 
         //Adding to shared preferences the total number of guesses for statistics page
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
@@ -187,10 +187,10 @@ public class GuessSong extends AppCompatActivity {
                 levelUpDialog.setContentView(R.layout.level_up);
                 levelUpDialog.show();
                 levelUpDialog.setCancelable(false);
-                TextView tv = (TextView) levelUpDialog.findViewById(R.id.new_level_number_tv);
+                TextView tv = levelUpDialog.findViewById(R.id.new_level_number_tv);
                 tv.setText("" + newLevel);
 
-                Button okBtnLevelUp = (Button) levelUpDialog.findViewById(R.id.level_up_ok_button);
+                Button okBtnLevelUp = levelUpDialog.findViewById(R.id.level_up_ok_button);
 
                 /*
                         Once the OK button has been pressed the song should be removed from the
@@ -221,7 +221,7 @@ public class GuessSong extends AppCompatActivity {
             dialogWrong.setContentView(R.layout.dialog_wrong_answer);
             dialogWrong.show();
 
-            Button okBtn = (Button) dialogWrong.findViewById(R.id.wrong_ok_button);
+            Button okBtn = dialogWrong.findViewById(R.id.wrong_ok_button);
 
             okBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -237,7 +237,7 @@ public class GuessSong extends AppCompatActivity {
             Strip the guess and the answer down to remove punctuation and spaces and then compare
             the strings, not considering the case.
      */
-    private boolean isGuessCorrect(String guess, String answer) {
+    public boolean isGuessCorrect(String guess, String answer) {
         String guessStripped = (guess.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+", "");
         String answerStripped = (answer.replaceAll("[^a-zA-Z0-9]", "")).replaceAll("\\s+", "");
         return answerStripped.equalsIgnoreCase(guessStripped);
@@ -283,7 +283,7 @@ public class GuessSong extends AppCompatActivity {
         dialogCorrect.setCancelable(false);
 
         //Set the text of a TextView to display the correct answer that the user guessed.
-        TextView songTitleTv = (TextView) dialogCorrect.findViewById(R.id.song_title_tv);
+        TextView songTitleTv = dialogCorrect.findViewById(R.id.song_title_tv);
         songTitleTv.setText(songTitle);
 
         //Update the total distance walked when the user leaves the map screen
@@ -293,7 +293,7 @@ public class GuessSong extends AppCompatActivity {
         editorStats.putFloat("totalDistanceWalked", totalDistanceWalked + distanceWalkedWhilePlaying);
         editorStats.apply();
 
-        Button okBtn = (Button) dialogCorrect.findViewById(R.id.correct_ok_button);
+        Button okBtn = dialogCorrect.findViewById(R.id.correct_ok_button);
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -358,7 +358,7 @@ public class GuessSong extends AppCompatActivity {
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
 
-            TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
+            TextView messageText = alertDialog.findViewById(android.R.id.message);
             messageText.setGravity(Gravity.CENTER);
             alertDialog.show();
 

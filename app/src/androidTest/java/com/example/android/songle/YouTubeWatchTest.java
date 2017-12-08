@@ -124,9 +124,10 @@ public class YouTubeWatchTest {
         //Swipe up to move down to the bottom of the guess song screen
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
         onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
+        onView(withId(android.R.id.content)).perform(ViewActions.swipeUp());
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

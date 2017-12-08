@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/number_of_coins_tv"
@@ -23,7 +24,7 @@
             android:text="You have 0 Songle coins available."
             android:textSize="18sp"
             android:paddingRight="16dp"
-            android:paddingBottom="20dp" />
+            android:paddingBottom="20dp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -51,7 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:background="@color/colorAccent"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="30dp"
+            android:id="@+id/above_edit_text_guess"/>
 
         <EditText
             android:id="@+id/song_guess_et"

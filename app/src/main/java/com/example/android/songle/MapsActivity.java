@@ -9,6 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -29,10 +34,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -89,6 +96,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Song> songs;
 
     /*
+            The list of incompleteSongs that are used so that a new song cannot be a song that is
+            already incomplete.
+     */
+    private ArrayList<IncompleteSong> incompleteSongs;
+
+    /*
             The songTitle and songNumber corresponding to the song that is being used to play
             the current game.
      */
@@ -132,6 +145,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Passed in from the MainMenu activity
         songs = getIntent().getParcelableArrayListExtra("listOfSongs");
+        incompleteSongs = (ArrayList<IncompleteSong>)
+                getIntent().getSerializableExtra("listOfIncompleteSongs");
 
         collectedMarkers = new HashSet<>();
 
@@ -249,25 +264,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*
             This method will randomly select a song number to be chosen for the KML URL. If the
-            number chosen is less than 10 then a "0" must be added to the front of the number.
+            number chosen is less than 10 then a "0" must be added to the front of the number. A
+            loop occurs until a random song number is chosen that is not already incomplete.
             Also, if the song is incomplete and it is being continued then the songNumber will be
             chosen from a list of size 1.
      */
     private String chooseSongNumber() {
         //This will be entered when an incomplete Song is chosen rather than a new song
         if (songs.size() == 1) {
+            Log.i(TAG, "chooseSongNumber: " + songs.get(0).getNumber());
             return songs.get(0).number;
         } else {
-            Random rand = new Random();
-            int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
-            String randomSongNumber = "";
-            if (randomSongNumberInt <= 9) {
-                randomSongNumber = "0" + randomSongNumberInt;
-            } else {
-                randomSongNumber = "" + randomSongNumberInt;
+
+            String songNumber = "";
+
+            //Creates a list (max 3) of incomplete song numbers
+            ArrayList<String> prohibitedNumbers = new ArrayList<>();
+            for(IncompleteSong incomplete: incompleteSongs){
+                prohibitedNumbers.add(incomplete.getTheSong().getNumber());
             }
-            return randomSongNumber;
+
+            //Get a songNumber until it isn't prohibited (already incomplete)
+            songNumber = getRandomSongNumber();
+            while(prohibitedNumbers.contains(songNumber)){
+                songNumber = getRandomSongNumber();
+            }
+
+            return songNumber;
         }
+    }
+
+    private String getRandomSongNumber(){
+        Random rand = new Random();
+        int randomSongNumberInt = rand.nextInt(songs.size()) + 1;
+        String randomSongNumber = "";
+        if (randomSongNumberInt <= 9) {
+            randomSongNumber = "0" + randomSongNumberInt;
+        } else {
+            randomSongNumber = "" + randomSongNumberInt;
+        }
+        return randomSongNumber;
     }
 
     /*
@@ -283,7 +319,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
 
             //Calculates the fraction  of the max level (99), if the user was level 99 they would
-            //get a difficulty of 4 and a msp number of 1 (5 - 4 = 1). If the user was level 1 they
+            //get a difficulty of 4 and a map number of 1 (5 - 4 = 1). If the user was level 1 they
             //would get a difficulty of 0 and a map number of 5 (5 - 0 = 5).
             //Variation is used so that the user can get a range of map difficulties. The variation
             //basically edits the level from a range of -25 to + 25.
@@ -305,29 +341,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*
             This method is responsible for adding the markers to the map. The markers have different
-            descriptions, and depending on their descriptions, they are given a colour on the map.
+            descriptions, and depending on their descriptions, they are given a colour
+            and shape on the map.
             The markers are also added to the HashMap of markers so they can be removed easily.
      */
     private void addMarkers() {
 
         for (Placemark marker : placemarks) {
-            float colour = BitmapDescriptorFactory.HUE_CYAN;
+            BitmapDescriptor colour = BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_CYAN);
             String desc = marker.getDescription();
             switch (desc) {
                 case ("boring"):
-                    colour = BitmapDescriptorFactory.HUE_CYAN;
+                    colour = BitmapDescriptorFactory.fromResource(R.drawable.ylw_blank);
+                    //BitmapDescriptorFactory.fromBitmap(resizeIcon(
+                            //R.drawable.ylw_blank, 120, 120));
                     break;
                 case ("notboring"):
-                    colour = BitmapDescriptorFactory.HUE_YELLOW;
+                    colour = BitmapDescriptorFactory.fromResource(R.drawable.ylw_circle);
                     break;
                 case ("interesting"):
-                    colour = BitmapDescriptorFactory.HUE_ORANGE;
+                    colour = BitmapDescriptorFactory.fromResource(R.drawable.orange_diamond);
                     break;
                 case ("veryinteresting"):
-                    colour = BitmapDescriptorFactory.HUE_RED;
+                    colour = BitmapDescriptorFactory.fromResource(R.drawable.red_stars);
                     break;
                 case ("unclassified"):
-                    colour = BitmapDescriptorFactory.HUE_CYAN;
+                    colour = BitmapDescriptorFactory.defaultMarker(
+                            BitmapDescriptorFactory.HUE_CYAN);
                     break;
             }
             Marker mapMarker = mMap.addMarker(new MarkerOptions()
@@ -335,12 +376,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(marker.getDescription())
                     .title(marker.getWord())
                     .alpha(0.82f)
-                    .icon(BitmapDescriptorFactory.defaultMarker(colour)));
+                    .icon(colour));
             hashMapMarkers.put(marker.getLocation(), mapMarker);
         }
     }
 
+    /*
+        This method resizes the 64x64 bitmap graphics for the icons.
 
+    public Bitmap resizeIcon(int drawableId,int width, int height){
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),drawableId);
+        return Bitmap.createScaledBitmap(icon, width, height, false);
+    }
+    /*
     /*
             The distance walked is reset and the GoogleMapAPI client is connected.
      */
@@ -540,8 +588,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         When the OK button is clicked the dialog will disappear and the user can
                         continue with the current game.
                  */
-                Button okBtn = (Button)
-                        songleCoinCollectedDialog.findViewById(R.id.congratulations_ok_button);
+                Button okBtn = songleCoinCollectedDialog.findViewById(R.id.congratulations_ok_button);
 
                 okBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -571,7 +618,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
              */
             LatLng currentLocation = new LatLng(
                     mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+
+            //Camera is zoomed into the user's location with a smooth animation
+            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                    currentLocation, 19);
+            mMap.animateCamera(location);
 
         }
 
@@ -679,10 +730,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             levelUpDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             levelUpDialog.setContentView(R.layout.level_up);
             levelUpDialog.show();
-            TextView tv = (TextView) levelUpDialog.findViewById(R.id.new_level_number_tv);
+            TextView tv = levelUpDialog.findViewById(R.id.new_level_number_tv);
             tv.setText("" + newLevel);
 
-            Button okBtn = (Button) levelUpDialog.findViewById(R.id.level_up_ok_button);
+            Button okBtn = levelUpDialog.findViewById(R.id.level_up_ok_button);
 
             okBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -756,8 +807,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
-                //If the distance to the marker is less than 10 metres then it can be collected.
-                if (distance < 10.0f) {
+                //If the distance to the marker is less than 25 metres then it can be collected.
+                if (distance < 25.0f) {
                     collectableMarkers.add(marker.getCoordinates());
                 }
             }
@@ -931,10 +982,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //After the background thread has been executed add the markers to the map.
         @Override
         protected void onPostExecute(Integer integer) {
+            Log.i(TAG, "onPostExecute: parsed.");
             addMarkers();
+            Log.i(TAG, "onPostExecute: markers added.");
             collectedMarkers = (HashSet<String>) getIntent().getSerializableExtra(
                     "collectedMarkersMainMenu");
             removeCollectedMarkersFromMap();
+            Log.i(TAG, "onPostExecute: collected markers removed.");
         }
     }
 

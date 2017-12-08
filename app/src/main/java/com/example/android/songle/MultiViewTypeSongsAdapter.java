@@ -61,9 +61,9 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         public IncompleteSongViewHolder(View itemView) {
             super(itemView);
 
-            this.songButton = (Button) itemView.findViewById(R.id.list_item_song);
-            this.giveUpButton = (Button) itemView.findViewById(R.id.list_item_give_up);
-            this.songProgressBar = (ProgressBar) itemView.findViewById(R.id.list_item_progress_bar);
+            this.songButton = itemView.findViewById(R.id.list_item_song);
+            this.giveUpButton = itemView.findViewById(R.id.list_item_give_up);
+            this.songProgressBar = itemView.findViewById(R.id.list_item_progress_bar);
 
         }
     }
@@ -78,12 +78,9 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
         public CompleteSongViewHolder(View itemView) {
             super(itemView);
 
-            this.songButtonComplete = (Button)
-                    itemView.findViewById(R.id.complete_list_item_song);
-            this.youTubeButton = (Button)
-                    itemView.findViewById(R.id.complete_list_item_youtube);
-            this.songProgressBarComplete = (ProgressBar)
-                    itemView.findViewById(R.id.complete_list_item_progress_bar);
+            this.songButtonComplete = itemView.findViewById(R.id.complete_list_item_song);
+            this.youTubeButton = itemView.findViewById(R.id.complete_list_item_youtube);
+            this.songProgressBarComplete = itemView.findViewById(R.id.complete_list_item_progress_bar);
 
         }
     }
@@ -98,7 +95,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
             super(itemView);
 
             this.songSeparator = itemView.findViewById(R.id.incomplete_complete_separator);
-            this.completedSongsTv = (TextView) itemView.findViewById(R.id.complete_songs_tv);
+            this.completedSongsTv = itemView.findViewById(R.id.complete_songs_tv);
 
         }
     }
@@ -286,8 +283,7 @@ public class MultiViewTypeSongsAdapter extends RecyclerView.Adapter {
                             AlertDialog alertDialog = alertDialogBuilder.create();
                             alertDialog.show();
 
-                            TextView messageText = (TextView)
-                                    alertDialog.findViewById(android.R.id.message);
+                            TextView messageText = alertDialog.findViewById(android.R.id.message);
                             messageText.setGravity(Gravity.CENTER);
                             alertDialog.show();
 

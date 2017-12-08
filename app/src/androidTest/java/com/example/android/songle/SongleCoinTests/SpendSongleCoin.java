@@ -110,6 +110,12 @@ public class SpendSongleCoin {
                 allOf(withId(R.id.fab_guess_song), isDisplayed()));
         floatingActionButton.perform(click());
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         //Check to see if the textview displays one songle coin available
         ViewInteraction textView = onView(
                 allOf(withId(R.id.number_of_coins_tv), withText("You have 1 Songle coin available."),

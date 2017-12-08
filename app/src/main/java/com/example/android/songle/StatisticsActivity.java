@@ -33,7 +33,7 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences songleCoins = getSharedPreferences("songleCoins", Context.MODE_PRIVATE);
         int totalNumberOfCoins = songleCoins.getInt("totalNumberOfCoins", 0);
 
-        TextView numberOfSongleCoins = (TextView) findViewById(R.id.number_of_songle_coins_tv);
+        TextView numberOfSongleCoins = findViewById(R.id.number_of_songle_coins_tv);
         numberOfSongleCoins.setText("" + totalNumberOfCoins);
 
     }
@@ -46,7 +46,7 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         int numberOfCorrectGuesses = statistics.getInt("NumberOfCorrectGuesses", 0);
 
-        TextView numberOfCorrectGuessesTv = (TextView) findViewById(R.id.number_of_correct_guesses_tv);
+        TextView numberOfCorrectGuessesTv = findViewById(R.id.number_of_correct_guesses_tv);
         numberOfCorrectGuessesTv.setText("" + numberOfCorrectGuesses);
     }
 
@@ -59,7 +59,7 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         int numberOfGuesses = statistics.getInt("NumberOfGuesses", 0);
 
-        TextView numberOfGuessesTv = (TextView) findViewById(R.id.number_of_guesses_tv);
+        TextView numberOfGuessesTv = findViewById(R.id.number_of_guesses_tv);
         numberOfGuessesTv.setText("" + numberOfGuesses);
     }
 
@@ -71,7 +71,7 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         int numberOfMarkersCollected = statistics.getInt("LifetimeNumberOfMarkersCollected", 0);
 
-        TextView numberOfMarkersTv = (TextView) findViewById(R.id.number_of_markers_tv);
+        TextView numberOfMarkersTv = findViewById(R.id.number_of_markers_tv);
         numberOfMarkersTv.setText("" + numberOfMarkersCollected);
 
     }
@@ -84,7 +84,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private void updateTotalPlayTime() {
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         long totalPlayTime = statistics.getLong("totalPlayTime", 0);
-        TextView totalPlayTimeTv = (TextView) findViewById(R.id.total_play_time_tv);
+        TextView totalPlayTimeTv = findViewById(R.id.total_play_time_tv);
         long hours = totalPlayTime / 3600;
         long minutes = totalPlayTime / 60;
 
@@ -99,7 +99,7 @@ public class StatisticsActivity extends AppCompatActivity {
         SharedPreferences statistics = getSharedPreferences("statistics", Context.MODE_PRIVATE);
         float totalDistanceWalked = statistics.getFloat("totalDistanceWalked", 0.0f) / (1000.0f);
 
-        TextView distanceWalkedTv = (TextView) findViewById(R.id.distance_walked_tv);
+        TextView distanceWalkedTv = findViewById(R.id.distance_walked_tv);
 
         distanceWalkedTv.setText(String.format("%.1f", totalDistanceWalked) + "km");
 
